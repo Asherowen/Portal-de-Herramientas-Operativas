@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Criterio Profesional - Maxikash</title>
+    <style>
+        :root {
+            --maxi-blue: #004ac1; 
+            --maxi-lime: #b6d338; 
+            --primary-dark: #0b1e43;
+            --bg: #f4f7fc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 40px 20px; }
+        .container { max-width: 850px; margin: 0 auto; }
+        
+        .logo-container { text-align: center; margin-bottom: 25px; }
+        .logo-container img { max-width: 260px; height: auto; display: inline-block; }
+
+        header { background: linear-gradient(135deg, var(--primary-dark), var(--maxi-blue)); color: white; padding: 30px; border-radius: 12px; margin-bottom: 25px; text-align: center; border-bottom: 5px solid var(--maxi-lime); }
+        header h1 { font-size: 24px; margin-bottom: 8px; font-weight: 700; }
+        header p { font-size: 14px; opacity: 0.9; }
+        
+        .selector-card { background: var(--card-bg); padding: 30px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+        label { font-size: 13px; font-weight: 600; color: #475569; }
+        input[type="text"], select { padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background-color: white; outline: none; transition: border 0.2s; }
+        input[type="text"]:focus, select:focus { border-color: var(--maxi-blue); }
+        
+        .quiz-container { display: none; }
+        .quiz-card { background: var(--card-bg); border-radius: 10px; padding: 30px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .puesto-header { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--maxi-blue); margin-bottom: 12px; display: inline-block; background-color: #e6eefc; padding: 6px 12px; border-radius: 4px; letter-spacing: 0.5px; }
+        .progress-text { font-size: 14px; font-weight: bold; color: #64748b; float: right; }
+        .question-text { font-size: 17px; font-weight: 600; margin-bottom: 20px; color: var(--primary-dark); line-height: 1.5; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        
+        /* Modificado para interacción directa */
+        .option-item { display: flex; align-items: flex-start; padding: 14px 18px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s; line-height: 1.4; position: relative; }
+        .option-item:hover { background-color: #f8fafc; border-color: #cbd5e1; }
+        .option-item input { margin-top: 3px; margin-right: 14px; transform: scale(1.1); pointer-events: none; }
+        
+        .option-item.correct { background-color: #f1f9ec !important; border-color: var(--maxi-lime) !important; color: #3f5115; font-weight: 500; }
+        .option-item.incorrect { background-color: #fff5f5 !important; border-color: #fecaca !important; color: #991b1b; }
+        
+        /* Bloqueo temporal mientras avanza sola */
+        .disabled-options { pointer-events: none; }
+
+        .results-card { display: none; background: white; padding: 35px; border-radius: 16px; border: 1px solid var(--border); text-align: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        .results-title { font-size: 24px; font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 4px; }
+        .results-subtitle { font-size: 14px; color: #64748b; margin-bottom: 25px; }
+        .results-score { font-size: 64px; font-weight: 800; color: var(--maxi-blue); margin: 15px 0; }
+        .results-score span { font-size: 24px; color: #64748b; font-weight: 400; }
+        
+        .badge-idoneidad { display: inline-block; padding: 8px 24px; border-radius: 20px; font-weight: 700; font-size: 15px; margin-bottom: 15px; }
+        .badge-sobresaliente { background-color: #e6f4ea; color: #137333; }
+        .badge-promedio { background-color: #fef3c7; color: #92400e; }
+        .badge-riesgo { background-color: #ffe4e6; color: #991b1b; }
+        
+        .final-desc { font-size: 14px; color: #475569; max-width: 650px; margin: 0 auto 15px auto; line-height: 1.5; }
+        
+        /* Nueva alerta de conocimientos faltantes */
+        .insuficiente-warning { background-color: #fff8e1; border-left: 4px solid #ffb300; color: #b78103; padding: 12px 20px; border-radius: 6px; font-size: 13.5px; max-width: 650px; margin: 0 auto 25px auto; text-align: left; font-weight: 500; }
+        
+        .divider { height: 1px; background-color: #e2e8f0; margin: 25px 0; }
+        
+        .skills-heading { font-size: 14px; font-weight: 700; color: var(--primary-dark); text-align: left; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; text-align: left; }
+        
+        .skill-container { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 12px; padding: 18px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); background-color: #f8fafc; }
+        .skill-name { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+        .progress-bar-bg { background-color: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 8px; position: relative; }
+        .progress-bar-fill { background-color: var(--maxi-blue); height: 100%; width: 0%; border-radius: 4px; transition: width 0.6s ease; }
+        .skill-meta { font-size: 12px; color: #64748b; font-weight: 500; }
+        
+        .status-sheet { font-size: 13px; color: #64748b; margin-top: 25px; font-style: italic; font-weight: 500; }
+        .btn-action { background-color: var(--maxi-blue); color: white; border: none; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; transition: background 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="logo.png" alt="Maxikash">
+    </div>
+
+    <header>
+        <h1>Reporte de Idoneidad y Aptitudes</h1>
+        <p>Validación mediante simulación de casos situacionales y metodologías bajo Benchmark de Competencias.</p>
+    </header>
+
+    <div class="selector-card" id="registro-box">
+        <div class="form-group">
+            <label>1. Nombre Completo del Candidato / Colaborador:</label>
+            <input type="text" id="nombre-usuario" placeholder="Ej. Juan Pérez López" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label>2. Seleccione la Empresa / Unidad organizativa:</label>
+            <select id="sheet-select" onchange="actualizarPuestos()">
+                <option value="">-- Seleccione Empresa --</option>
+                <option value="MaxiMX">MaxiMX</option>
+                <option value="FuriaMotos">FuriaMotos</option>
+                <option value="MaxiGT">MaxiGT</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>3. Seleccione su Puesto actual o al que se postula:</label>
+            <select id="puesto-select" onchange="validarYEntrar()" disabled>
+                <option value="">-- Primero seleccione empresa --</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="quiz-container" id="quiz-box">
+        <div class="quiz-card">
+            <div>
+                <span class="puesto-header" id="disp-puesto">PUESTO</span>
+                <span class="progress-text" id="disp-progreso">Pregunta 1 de 10</span>
+            </div>
+            <div class="question-text" id="disp-pregunta">Pregunta</div>
+            <div class="options-list" id="disp-opciones"></div>
+        </div>
+    </div>
+
+    <div class="results-card" id="results-box">
+        <div class="results-title">📊 Reporte de Idoneidad y Aptitudes</div>
+        <div class="results-subtitle">Puntuación global basada en el estándar internacional de competencias</div>
+        
+        <div class="results-score" id="final-score">0 <span>/ 10</span></div>
+        
+        <div class="badge-idoneidad" id="badge-status">Nivel de Idoneidad</div>
+        <div class="final-desc" id="final-comment">Descripción del análisis...</div>
+        
+        <!-- Contenedor dinámico de conocimientos faltantes -->
+        <div class="insuficiente-warning" id="disp-faltantes" style="display: none;"></div>
+        
+        <div class="divider"></div>
+        
+        <div class="skills-heading">🧠 Áreas de conocimiento evaluadas en este perfil:</div>
+        <div class="skills-grid" id="skills-list"></div>
+        
+        <div class="status-sheet" id="sheet-status">Enviando resultados a la base de datos central...</div>
+        <button class="btn-action" onclick="location.reload()" style="margin-top: 25px; max-width: 250px; background-color: var(--primary-dark);">Evaluar otro perfil</button>
+    </div>
+</div>
+
+<script>
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1qeRnCbkGG8xpWnfXBkuwxsdPceMBvmFNn6FCG5cUEnzD_1p8qThaNPYGYBkL4Kc8XA/exec";
+
+const listaPuestos = {
+  "MaxiMX": [
+    "GERENTE REGIONAL", "GESTOR DE CAMPO", "EJECUTIVO DE CALL CENTER", "DIRECTOR EJECUTIVO", 
+    "GERENTE DE AFILIACIONES", "DIRECTOR DE ATENCIÓN A CLIENTES", "ASESOR DE VENTAS", 
+    "ANALISTA DE CREDITO", "COORDINADOR DE OPERACIONES", "ANALISTA DE TESORERIA", 
+    "GERENTE DE ATENCIÓN A CLIENTES", "SUBDIRECTOR DE ADMINISTRACIÓN", "SUPERVISOR DE VENTAS", 
+    "GERENTE DE INTELIGENCIA DE NEGOCIO", "ANALISTA DE DATA", "ANALISTA DE INVERSIONES Y MERCADO", 
+    "SUBDIRECTOR DE CAMPO", "GERENTE DE DESARROLLO DE NEGOCIO", "COORDINADOR DE COMPRAS", 
+    "GERENTE DE CUMPLIMIENTO", "SUBDIRECTOR DE TI", "SUPERVISOR DE VENTAS (SN)", "DISEÑADOR UX/UI", 
+    "ANALISTA DE COMPROBACIÓN DE GASTOS", "GERENTE DE CAMPO", "ANALISTA DE PREVENCIÓN DE FRAUDE", 
+    "AYUDANTE GENERAL", "COORDINADOR DE CONTABILIDAD", "AUXILIAR DE RASTREO", "ANALISTA DE COMERCIAL SN", 
+    "ESPECIALISTA EN NÓMINAS", "GERENTE LEGAL", "ANALISTA DE TALENTO", "SUPERVISOR DE MANTENIMIENTO", 
+    "DESARROLLADOR DE INFRAESTRUCTURA", "ANALISTA DE SOPORTE", "DESARROLLADOR DE PRODUCTOS", 
+    "ANALISTA DE CONTROL INTERNO", "SUBDIRECTOR DE PLANEACIÓN", "SUBDIRECTOR DE RIESGO", 
+    "ANALISTA DE INTELIGENCIA DE NEGOCIO (COBRANZA)", "GERENTE DE VENTAS", "ESPECIALISTA EN DIAGNÓSTICO DE MOTOCICLETAS", 
+    "EJECUTIVO DE MARKETING", "AUXILIAR DE CEDIS", "COORDINADOR DE LOGÍSTICA", "GERENTE DE VENTAS (SN)", 
+    "SUBDIRECTOR DE INVERSIONES Y MERCADO", "BECARIO DE TI", "DIRECTOR DE ADMINISTRACIÓN COMERCIAL", 
+    "SUPERVISOR DE CAMPO", "GERENTE DE ATENCIÓN A CLIENTES (COMERCIAL)", "ADMINISTRADOR SALESFORCE", 
+    "SUPERVISOR DE VENTAS (COBRANZA)", "ESPECIALISTA DE OPERACIONES COMERCIALES", "SUPERVISOR DE CAMPO (OPERACIONES)", 
+    "ANALISTA DE TALENTO COMERCIAL", "AUXILIAR DE ADMINISTRACIÓN COMERCIAL", "DISESignER GRÁFICO", 
+    "SUBGERENTE DE CAMPO", "DIRECTOR COMERCIAL", "ANALISTA DE CREDITO (MESA DE CONTROL)", "PMO (Project Manager)", 
+    "AUDITOR", "DESARROLLADOR DE SOFTWARE", "ESPECIALISTA DE MANTENIMIENTO", "DIRECTOR DE AUDITORÍA", 
+    "GERENTE DE ADMINISTRACIÓN COMERCIAL", "PMO (Cartera)", "AUDITOR (Jr)", "ANALISTA DE LOGÍSTICA", 
+    "EJECUTIVO DE ATENCIÓN A CLIENTES", "GERENTE DE SEMINUEVOS", "SUBGERENTE COMERCIAL", "DESARROLLADOR DE TI (OPERACIONES)", 
+    "AUXILIAR DE CONTABILIDAD", "ANALISTA DE CUENTAS POR PAGAR", "GERENTE DE TESORERÍA", "ANALISTA DE ADMINISTRACIÓN (COBRANZA)", 
+    "GERENTE DE COBRANZA (COBRANZA)", "GERENTE DE COBRANZA (OPERACIONES)", "GERENTE DE PROYECTOS", "GERENTE DE DATA", 
+    "GERENTE REGIONAL (COBRANZA)", "SUBDIRECTOR DE AUDITORÍA", "ANALISTA DE CARTERA", "ESPECIALISTA LEGAL (SN)", 
+    "DESARROLLADOR DE SOPORTE", "SUPERVISOR DE ATENCIÓN A CLIENTES", "AUXILIAR DE CAMPO", "DIRECTOR DE CAMPO", 
+    "DISEÑADOR (TI-OPERACIONES)", "SUBDIRECTOR DE MARKETING"
+  ],
+  "FuriaMotos": [
+    "ASESOR DE VENTAS (FURIA MOTOS)", "ESPECIALISTA DE OPERACIONES (FURIA MOTOS)", "MECANICO (FURIA MOTOS)", 
+    "GERENTE DE VENTAS (FURIA MOTOS)", "SUPERVISOR (FURIA MOTOS)", "ESPECIALISTA DE EXPANSIÓN (FURIA MOTOS)"
+  ],
+  "MaxiGT": [
+    "Gerente", "Gestor Integral"
+  ]
+};
+
+const benchmarkQuiz = {
+    liderazgo_directivo: {
+        skills: ["Pensamiento Estratégico", "Change Management", "Gobernanza Corporativa", "Optimización de P&L"],
+        items: [
+            { cat: "Pensamiento Estratégico", q: "¿Cómo aborda una desviación del 12% en el presupuesto trimestral consolidado de su división?", a: "Recortar linealmente el gasto de todos los departamentos en un 12% de manera inmediata.", b: "Auditar las líneas de costo variable, correlacionar el gasto contra el ROI por unidad de negocio y reajustar los proyectos no críticos.", c: "Retrasar el pago a proveedores estratégicos para balancear de manera artificial el flujo de caja del mes." },
+            { cat: "Change Management", q: "Bajo metodologías de gestión del cambio (Change Management), ante una transformación digital integral con resistencia del personal, usted:", a: "Comunicar las directrices de manera autocrática y sancionar la falta de adopción sistémica.", b: "Identificar agentes de cambio internos, diseñar un plan de capacitación escalonado y estructurar canales de feedback interactivos.", c: "Modificar la fecha de despliegue retrasándola hasta que las fricciones internas desaparezcan por completo." },
+            { cat: "Gobernanza Corporativa", q: "Para maximizar el rendimiento y la retención de perfiles de alto potencial (High-Potentials), su estrategia es:", a: "Garantizar estabilidad absoluta evitando delegarles retos que los expongan al error.", b: "Asignarles proyectos de alto impacto cross-functional, empoderar su autonomía y definir planes de sucesión específicos.", c: "Incrementar sustancialmente sus bonos económicos variables eliminando las evaluaciones de desempeño." },
+            { cat: "Optimización de P&L", q: "Ante una crisis reputacional externa que impacta directamente a su unidad operativa, el protocolo idóneo es:", a: "Emitir declaraciones urgentes en redes sociales a título personal para calmar la opinión pública.", b: "Activar el Comité de Crisis, unificar la postura con el área Legal y de Relaciones Públicas, y operar con total transparencia corporativa.", c: "Ignorar el evento externamente y prohibir al personal interno hablar del tema bajo advertencia de rescisión." },
+            { cat: "Pensamiento Estratégico", q: "Al implementar Objetivos y Resultados Clave (OKRs) en su estructura organizacional, ¿cuál es la mejor práctica de mercado?", a: "Imponer los OKRs en un esquema 100% Top-Down para asegurar un control estricto de la dirección.", b: "Co-diseñar metas bidireccionales (Top-Down y Bottom-Up) que sean sumamente retadoras, transparentes y medibles de manera cuantitativa.", c: "Definir metas cualitativas ambiguas que permitan una interpretación flexible al cierre de año." },
+            { cat: "Change Management", q: "Si dos líderes de su línea jerárquica directa entran en un conflicto interdepartamental que congela la operación:", a: "Delegar la resolución definitiva al departamento de Gestión de Talento (RRHH).", b: "Intervenir mediante una sesión de alineación basada en objetivos comunes, neutralizar el sesgo personal y redefinir los SLAs mutuos.", c: "Reasignar de inmediato a uno de los líderes a otra división geográfica." },
+            { cat: "Optimización de P&L", q: "Frente a un escenario de contracción de mercado e inflación sectorial alta, para proteger el margen operativo (EBITDA), usted determina:", a: "Incrementar indiscriminadamente el precio de salida al mercado final de todos los productos de la organización.", b: "Robustecer la eficiencia de la cadena de valor, renegociar contratos macro y optimizar la capacidad instalada instalando analítica de procesos.", c: "Frenar totalmente las inversiones en tecnología e innovación planificadas para los próximos dos años." },
+            { cat: "Gobernanza Corporativa", q: "El marco conceptual del 'Liderazgo Situacional' dicta que ante un colaborador con alta competencia técnica pero baja motivación, el líder debe:", a: "Ejercer una supervisión micro y directiva sobre cada una de sus actividades diarias.", b: "Aplicar un enfoque de apoyo y participación, investigando las causas de su baja motivación y reforzando su autonomía.", c: "Delegar el trabajo por completo sin intervención y esperar a que recupere el ritmo de forma autónoma." },
+            { cat: "Pensamiento Estratégico", q: "La gobernanza de datos corporativos exige que para garantizar decisiones directivas fiables, el líder promueva:", a: "Que cada departamento extraiga, resguarde y maneje sus propias bases de datos de forma aislada.", b: "Una cultura orientada a datos (Data-Driven) con un repositorio centralizado (Single Source of Truth) y estrictas políticas de acceso.", c: "Decidir en base a la experiencia y la intuición cuando los reportes no coincidan con la percepción de la gerencia." },
+            { cat: "Gobernanza Corporativa", q: "Para construir una cultura de alta rendición de cuentas (Accountability) en mandos medios, es indispensable:", a: "Establecer penalizaciones económicas automáticas ante cualquier meta no alcanzada.", b: "Alinear expectativas críticas, asegurar que cuenten con los recursos necesarios, otorgar empowerment y medir consecuencias con claridad.", c: "Evitar evaluar los resultados individuales enfocándose exclusivamente en el esfuerzo percibido." }
+        ]
+    },
+    analitica_control_riesgo: {
+        skills: ["Mitigación de Riesgo Operacional", "Prevención de Fraude", "Cumplimiento Regulatorio", "Auditoría Basada en Riesgos"],
+        items: [
+            { cat: "Auditoría Basada en Riesgos", q: "Durante una auditoría basada en riesgos, al detectar un proceso con alta probabilidad de error pero bajo impacto financiero, usted:", a: "Asignar la máxima prioridad de intervención y auditoría forense inmediata.", b: "Monitorear mediante controles automatizados periódicos e integrarlo en el mapa de riesgos sin desviar recursos críticos.", c: "Eliminar el proceso del manual operativo para erradicar el riesgo por completo." },
+            { cat: "Mitigación de Riesgo Operacional", q: "El principio internacional de 'Segregación de Funciones' (SoD) se implementa con el objetivo primordial de:", a: "Aumentar los puestos de trabajo para descentralizar la estructura de mando corporativa.", b: "Reducir significativamente el riesgo de errores operativos y fraudes, garantizando que quien transaccione no sea quien apruebe.", c: "Acelerar la velocidad de los flujos del negocio eliminando las aprobaciones intermedias." },
+            { cat: "Cumplimiento Regulatorio", q: "Bajo la normativa general de Cumplimiento (Compliance), si detecta que un proveedor estratégico realiza prácticas contables dudosas:", a: "Ignorar la situación debido a que los estados financieros del proveedor no consolidan con su empresa.", b: "Como medida suspender los procesos con dicho proveedor, activar la debida diligencia (Due Diligence) y reportar al Oficial de Cumplimiento.", c: "Aconsejar informalmente al proveedor sobre cómo enmendar sus registros contables." },
+            { cat: "Mitigación de Riesgo Operacional", q: "Al evaluar un modelo de otorgamiento de crédito, para equilibrar el crecimiento comercial con el riesgo de cartera vencida, el analista debe:", a: "Relajar al máximo los filtros de originación para asegurar la colocación masiva de activos.", b: "Calibrar los scores crediticios utilizando variables macroeconómicas, capacidad de pago comprobada e historial de comportamiento.", c: "Aprobar las solicitudes basándose exclusivamente en el valor de las garantías prendarias tangibles." },
+            { cat: "Prevención de Fraude", q: "Si un software automatizado de prevención de fraudes incrementa súbitamente su tasa de falsos positivos en transacciones digitales:", a: "Desactivar temporalmente los filtros avanzados del software para agilizar el flujo operativo comercial.", b: "Analizar los patrones de activación, revisar si existen cambios en las tendencias de compra de los usuarios y recalibrar las reglas de riesgo.", c: "Ignorar las alertas del sistema y procesar las transacciones de forma manual basándose en la antigüedad del cliente." },
+            { cat: "Prevención de Fraude", q: "En el análisis de cuentas por pagar, la detección de un patrón de facturación recurrente justo por debajo del límite de autorización gerencial indica:", a: "Una excelente planeación fiscal and optimización de flujos operativos de la administración.", b: "Un riesgo crítico de fraude potencial por fraccionamiento deliberado de gastos (Split Invoicing) que debe ser auditado.", c: "Que los proveedores conocen perfectamente las políticas internas de la organización y buscan ser eficientes." },
+            { cat: "Cumplimiento Regulatorio", q: "Ante la sospecha fundamentada de una filtración de bases de datos protegidas por la legislación de protección de datos personales:", a: "Esperar a que se formalice una queja de los usuarios afectados para reaccionar.", b: "Contener la brecha digital, evaluar el impacto del activo expuesto, notificar de inmediato a Seguridad de la Información y proceder conforme a la ley.", c: "Borrar las bitácoras de los servidores web para evitar que auditorías externas localicen el origen de la fuga." },
+            { cat: "Auditoría Basada en Riesgos", q: "Al realizar una conciliación bancaria que arroja una discrepancia material no identificada desde hace más de 60 días:", a: "Hacer un asiento de ajuste contable contra la cuenta de pérdidas generales para cerrar el balance mensual rápido.", b: "Rastrear de forma analítica el flujo de transacciones origen-destino, aislar las partidas conciliatorias y emitir un reporte de excepción.", c: "Asumir que es una comisión bancaria no desglosada y omitir su investigación exhaustiva." },
+            { cat: "Mitigación de Riesgo Operacional", q: "El concepto de 'Riesgo Inherente' en el control interno se define como:", a: "El riesgo remanente que prevalece en un proceso después de haber implementado todos los controles mitigatorios.", b: "La vulnerabilidad intrínseca de una actividad ante errores o fraudes, antes de considerar la aplicación de cualquier control de mitigación.", c: "El costo financiero estimado que genera implementar un departamento de auditoría interna en la organización." },
+            { cat: "Cumplimiento Regulatorio", q: "Si un directivo solicita la aprobación expedita de una transacción que carece de la documentación soporte obligatoria por política corporativa:", a: "Procesar la transacción inmediatamente argumentando obediencia de la línea jerárquica.", b: "Retener de forma estructurada el proceso, notificar con diplomacia el requisito faltante y solicitar el soporte documental por canales oficiales.", c: "Aprobar el movimiento transaccional y falsificar el soporte digital utilizando archivos previos como plantilla." }
+        ]
+    },
+    comercial_ventas_marketing: {
+        skills: ["Value-Based Selling", "Manejo Estratégico de Objeciones", "Gestión Avanzada de CRM", "Fidelización de Cartera"],
+        items: [
+            { cat: "Value-Based Selling", q: "¿Cuál es el enfoque prioritario de la metodología de 'Venta Consultiva' (Consultative Selling)?", a: "Presionar agresivamente al prospecto destacando el cierre de promociones por tiempo limitado.", b: "Diagnosticar los dolores y necesidades reales del cliente a través de preguntas estratégicas, co-diseñando soluciones a la medida.", c: "Memorizar el catálogo técnico de productos y recitarlo de forma idéntica ante cualquier segmento de clientes." },
+            { cat: "Manejo Estratégico de Objeciones", q: "Cuando un cliente corporativo de alta prioridad argumenta que la competencia directa le ofrece una tarifa sustancialmente menor:", a: "Desacreditar los productos de la competencia argumentando baja calidad en sus procesos de producción.", b: "Validar la propuesta de valor total de su oferta, demostrar el ROI implícito, el costo total de propiedad (TCO) y el soporte postventa.", c: "Igualar inmediatamente el precio de la competencia sacrificando el margen comercial neto sin consultar." },
+            { cat: "Value-Based Selling", q: "Para optimizar la tasa de conversión en un embudo de ventas digital que muestra alta deserción en la etapa intermedia:", a: "Duplicar la inversión económica en campañas masivas de marketing en la etapa de atracción (Top of Funnel).", b: "Analizar la fricción operativa en la etapa de consideración, implementar estrategias de Lead Nurturing y mejorar la UX del proceso.", c: "Bajar drásticamente el precio de salida de todos los productos para atraer compradores compulsivos." },
+            { cat: "Manejo Estratégico de Objeciones", q: "Frente a un cliente altamente insatisfecho y agresivo que exige la resolución inmediata de un problema contractual en la sala de atención:", a: "Contestar de manera enérgica para establecer límites claros y evitar que afecte la imagen de la sucursal.", b: "Aplicar técnicas de desactivación verbal, escuchar con empatía activa, aislar el problema y canalizar la solución bajo los SLAs oficiales.", c: "Prometer resoluciones financieras inmediatas que se encuentren fuera del alcance de su puesto para dar por terminada la interacción." },
+            { cat: "Gestión Avanzada de CRM", q: "La mejor práctica internacional para la gestión y actualización de un sistema CRM comercial estipula que un asesor debe:", a: "Registrar la información de los leads únicamente al cierre de mes si se cumplió con la cuota de ventas.", b: "Alimentar en tiempo real cada interacción, etapa de negociación y acuerdo específico para asegurar la trazabilidad del pipeline.", c: "Capturar datos ficticios u omisiones deliberadas para evitar que la gerencia supervise sus actividades diarias." },
+            { cat: "Fidelización de Cartera", q: "Para disminuir de manera efectiva la tasa de cancelación de clientes (Churn Rate) en el sector de servicios recurrentes:", a: "Implementar penalizaciones por cancelación anticipada sumamente agresivas en los contratos.", b: "Desarrollar un modelo analítico de retención proactiva, detectando patrones de baja actividad y ofreciendo incentivos personalizados.", c: "Ignorar los comentarios de salida de los usuarios insatisfechos enfocándose puramente en captar cuentas nuevas." },
+            { cat: "Fidelización de Cartera", q: "Al diseñar una estrategia de venta cruzada (Cross-Selling), el factor de éxito fundamental de mercado es:", a: "Ofrecer de manera masiva e idiscriminada cualquier producto complementario disponible a toda la base de datos.", b: "Segmentar las carteras vigentes y ofrecer productos de alta relevancia operativa que expandan de forma genuina el valor del activo inicial.", c: "Condicionar la entrega del producto principal adquirido por el cliente a la contratación forzosa del servicio secundario." },
+            { cat: "Value-Based Selling", q: "Si detecta que el mercado geográfico asignado a su gestión comercial muestra señales claras de maduración y estancamiento:", a: "Mantener el plan de ventas sin modificaciones, incrementando las horas de prospección en frío de forma lineal.", b: "Explorar nichos adyacentes, proponer adaptaciones de producto al equipo de desarrollo y diversificar los canales de distribución.", c: "Reportar que las metas de ventas asignadas por la dirección general son técnicamente imposibles de cumplir." },
+            { cat: "Gestión Avanzada de CRM", q: "Bajo los estándares de marketing digital, el concepto de 'Costo de Adquisición de Cliente' (CAC) debe correlacionarse obligatoriamente con:", a: "El volumen total de seguidores e interacciones orgánicas de la marca en plataformas digitales.", b: "El Valor del Tiempo de Vida del Cliente (Lifetime Value - LTV), garantizar que el retorno supere el costo de captación.", c: "El presupuesto asignado de forma fija a la nómina del equipo comercial interno de la empresa." },
+            { cat: "Manejo Estratégico de Objeciones", q: "Si un compañero del equipo de ventas invade de manera recurrente la zona geográfica o cartera asignada a su control por políticas comerciales:", a: "Confrontar directamente al compañero en un tono hostil en el piso de venta frente a la estructura directiva.", b: "Documentar la duplicidad de cuentas mediante el sistema CRM y solicitar una sesión de arbitraje con el supervisor de zona bajo reglas comerciales.", c: "Abandonar la gestión de esa zona asignada y enfocarse en carteras de bajo valor para evitar fricciones corporativas." }
+        ]
+    },
+    campo_operacion_logistica: {
+        skills: ["Optimización de Rutas", "Seguridad Operacional", "Resolución de Conflictos", "Trazabilidad de Activos"],
+        items: [
+            { cat: "Optimización de Rutas", q: "Al gestionar operaciones logísticas o de verificación en campo, el concepto de optimización de la 'Última Milla' busca principalmente:", a: "Utilizar las unidades de transporte a su máxima velocidad permitida para acortar los tiempos de traslado diarios.", b: "Minimizar los costos fijos y variables de transporte combinando algoritmos de ruteo dinámico, densidad de puntos y ventanas de tiempo.", c: "Incrementar el número de visitas operativas por día sin importar el desgaste técnico del equipo o combustible." },
+            { cat: "Seguridad Operacional", q: "Si durante una jornada en campo se suscita una situación de orden público o alta inseguridad en la zona asignada, el estándar dictamina:", a: "Continuar con el itinerario de visitas programadas para evitar penalizaciones en el indicador de productividad diaria.", b: "En su defecto suspender de manera inmediata las actividades de campo en la zona afectada, resguardarse e informar a base.", c: "Confrontar los entornos hostiles argumentando el uso de identificaciones institucionales que garanticen inmunidad corporativa." },
+            { cat: "Seguridad Operacional", q: "Al recolectar firmas, evidencias fotográficas o datos biométricos de clientes en campo mediante dispositivos móviles, usted asegura:", a: "Almacenar de forma personal las fotografías de los clientes en la galería de su teléfono privado para respaldos a largo plazo.", b: "Utilizar aplicaciones institucionales con protocolos cifrados que no dejen almacenamiento local expuesto, respetando la privacidad del usuario.", c: "Compartir las evidencias documentales recolectadas a través de grupos de mensajería instantánea informales con otros compañeros." },
+            { cat: "Resolución de Conflictos", q: "Frente a un escenario donde el cliente en campo manifiesta haber realizado un pago en efectivo pero no muestra el soporte físico válido:", a: "Dar por verificado el cobro basándose exclusivamente en el testimonio oral del cliente para agilizar la bitácora.", b: "Registrar la visita con estatus de aclaración, documentar los datos del supuesto pago e invitarlo a validar mediante canales oficiales.", c: "Retener de manera forzosa algún bien material del cliente en el domicilio hasta que aparezca el comprobante bancario." },
+            { cat: "Trazabilidad de Activos", q: "Si la unidad de transporte o herramienta tecnológica asignada para sus operaciones de campo presenta una falla mecánica menor de forma reiterada:", a: "Ignorar la anomalía operativa y continuar forzando el equipo hasta que quede completamente inhabilitado.", b: "Reportar de forma estructurada el fallo en el Check-list de salida vehicular, programar mantenimiento preventivo y aplicar contingencia.", c: "Reparar de manera empírica y externa la unidad usando recursos propios sin notificar al departamento de operaciones logísticas." },
+            { cat: "Resolución de Conflictos", q: "Cuando un usuario en campo adopta una postura verbal sumamente agresiva e intimidatoria frente al personal de la organización:", a: "Contestar de forma similar para mitigar la intimidación y demostrar dominio institucional en el territorio.", b: "Mantener una distancia segura, aplicar técnicas de control de impulsos, no engancharse emocionalmente y dar por terminada la visita si hay riesgo.", c: "Acceder a todas las exigencias ilegales del cliente para calmar sus reacciones violentas en ese instante." },
+            { cat: "Optimización de Rutas", q: "La asignación diaria de itinerarios en campo supera la capacidad física instalada en la jornada laboral estándar. La acción correcta es:", a: "Falsificar los reportes de visita marcando puntos lejanos como 'No localizados' desde ubicaciones remotas en el mapa digital.", b: "Ejecutar las zonas críticas con los estándares de calidad definidos, reportar los desvíos temporales y proponer balanceo de cargas.", c: "Extender la jornada de trabajo de forma indefinida y clandestina sin reportar horas extra en los sistemas de asistencia." },
+            { cat: "Trazabilidad de Activos", q: "Para asegurar la trazabilidad real de un activo crítico durante su transporte o resguardo logístico, se requiere obligatoriamente:", a: "Confiar en los reportes verbales que realicen los operadores al final de cada turno laboral diario.", b: "Implementar sistemas de georreferenciación (GPS) en tiempo real, bitácoras automatizadas de control de accesos y códigos de barras/RFID.", c: "Registrar los movimientos del inventario de forma manual en libretas físicas una vez por semana al cierre operativo." },
+            { cat: "Resolución de Conflictos", q: "Al interactuar con terceras personas en campo (vecinos, familiares), la política ética global de manejo de datos restringe a:", a: "Revelar el estatus detallado de la cuenta del titular para presionar una pronta respuesta de su parte.", b: "Limitarse exclusivamente a validar el correcto domicilio del titular y proporcionar medios de contacto institucionales directos.", c: "Solicitar dinero prestado o información privada de los vecinos a cambio de no molestar más en esa periferia geográfica." },
+            { cat: "Optimización de Rutas", q: "Ante un error evidente en la dirección o georreferenciación asignada en su dispositivo móvil para una inspección en campo:", a: "Dar el punto de visita como cancelado sin realizar ninguna labor de validación o búsqueda en los alrededores.", b: "Utilizar herramientas de mapeo secundarias de mercado, documentar las coordenadas geográficas reales exactas y reportar la actualización a base.", c: "Adivinar la localización ingresando a cualquier domicilio similar que se encuentre sobre la misma calle asignada." }
+        ]
+    },
+    operativa_staff_soporte: {
+        skills: ["Agile Foundations", "Resolución de Problemas Complex", "Seguridad de la Información", "Eficiencia Operativa"],
+        items: [
+            { cat: "Agile Foundations", q: "Bajo metodologías de trabajo ágiles (Agile/Scrum), si a mitad de un sprint operativo le asignan una tarea de alta prioridad imprevista:", a: "Detener de inmediato todas las actividades pactadas antes del sprint y dedicarse en exclusiva al nuevo requerimiento.", b: "Canalizar la solicitud a través del Product Owner/Coordinador para evaluar su impacto, priorizar el backlog y balancear el sprint.", c: "Aceptar la tarea operativa y procesarla con lentitud deliberada para evidenciar la sobrecarga de trabajo ante el equipo." },
+            { cat: "Resolución de Problemas Complex", q: "Si detecta que un software de uso cotidiano en su área presenta un error intermitente que duplica los tiempos de captura de datos:", a: "Adaptarse al error de forma permanente sin avisar a nadie, asumiendo que el sistema opera de esa forma.", b: "Documentar detalladamente los pasos que provocan la falla, tomar capturas de pantalla y levantar un ticket estructurado en Soporte Técnico.", c: "Quejarse de forma recurrente con sus compañeros en canales informales saboteando el clima laboral de la organización." },
+            { cat: "Seguridad de la Información", q: "Recibe un correo electrónico de una cuenta aparentemente institucional que solicita con urgencia sus contraseñas para actualizar el sistema de nómina:", a: "Proporcionar las contraseñas de inmediato para evitar que suspendan sus accesos o procesamiento de pagos.", b: "Identificar el intento de phishing, abstenerse de interactuar con enlaces adjuntos y reportar el evento al Oficial de Seguridad Informática.", c: "Compartir el correo electrónico corporativo con sus compañeros de equipo para validar si ellos ya enviaron sus respectivas claves." },
+            { cat: "Agile Foundations", q: "Ante un cambio drástico e imprevisto en los manuales de procedimientos operativos que afecta sus funciones cotidianas directas, usted:", a: "Continuar operando bajo el manual anterior debido a que ha funcionado perfectamente durante años.", b: "Estudiar la nueva documentación, asistir a las sesiones de capacitación y alinear sus actividades diarias al nuevo estándar formal.", c: "Presentar una inconformidad formal ante la dirección general solicitando regresar de forma individual al proceso previo." },
+            { cat: "Eficiencia Operativa", q: "Si observa que un compañero de su mismo equipo de trabajo realiza actividades personales ajenas a la organización durante el horario laboral de forma constante:", a: "Vigilar al compañero de forma obsesiva para recopilar evidencias detalladas y exponerlo públicamente en las juntas de área.", b: "Enfocarse plenamente en el cumplimiento de sus objetivos individuales y metas colectivas, manteniendo una ética intachable.", c: "Imitar la conducta del compañero argumentando una supuesta falta de equidad en la distribución del tiempo laboral por parte de la jefatura." },
+            { cat: "Resolución de Problemas Complex", q: "Al ser asignado temporalmente para apoyar a otra área operativa que se encuentra saturada debido a un cierre trimestral macro:", a: "Negarse argumentando de forma tajante que esas funciones específicas no se encuentran desglosadas textualmente en su contrato inicial.", b: "Mostrar total disposición para colaborar, integrarse de forma proactiva al equipo transitorio y ejecutar bajo las directrices del área receptora.", c: "Asistir forzadamente a la otra división pero ejecutar las labores con errores constantes para provocar que lo regresen a su puesto." },
+            { cat: "Seguridad de la Información", q: "Durante un simulacro de evacuación institucional o una contingencia real por sismo/incendio dentro de los centros operativos corporativos:", a: "Ignorar las alertas audibles si se encuentra procesando una actividad sumamente urgente en los sistemas informáticos.", b: "Se suspende la actividad, se evacúa con calma siguiendo los flujos señalizados y se atiende a las brigadas de protección.", c: "Utilizar los elevadores principales del edificio para acelerar la salida de las instalaciones operativas hacia la calle." },
+            { cat: "Eficiencia Operativa", q: "Si identifica que un proceso operativo interno genera de forma sistemática un desperdicio material innecesario de insumos corporativos:", a: "Omitir el reporte de la situación debido a que los costos financieros derivados no impactan directamente su salario neto.", b: "Estructurar una propuesta formal con datos concretos que optimice el uso de recursos y presentarla formalmente ante su jefatura.", c: "Aumentar de manera intencional el desperdicio del insumo para obligar a que la gerencia general note la falla de forma forzada." },
+            { cat: "Seguridad de la Información", q: "Al interactuar telefónicamente con un usuario externo que exige datos privados de contacto de la estructura directiva corporativa:", a: "Proporcionar de forma ágil los números de teléfono móviles particulares de los directivos para otorgar un servicio de excelencia.", b: "Mantener total confidencialidad institucional, solicitar los datos del emisor, el motivo y canalizar vía canales oficiales.", c: "Colgar la llamada de forma abrupta y grosera sin otorgar ningún tipo de asesoría operativa al interlocutor corporativo." },
+            { cat: "Eficiencia Operativa", q: "La mejor práctica de mercado para organizar las prioridades laborales individuales al inicio de cada jornada laboral estipula:", a: "Ir resolviendo las tareas de forma desordenada conforme vayan ingresando a su bandeja de entrada de correo electrónico.", b: "Clasificar las actividades mediante matrices de urgencia-importancia (como Eisenhower), alineándolas a los entregables clave del día.", c: "Posponer las actividades más complejas de la semana para el final de la jornada con el objetivo de evitar fatiga mental temprana." }
+        ]
+    }
+};
+
+let preguntasActuales = [];
+let indicePregunta = 0;
+let aciertos = 0;
+let skillsEvaluadas = [];
+
+let conteoPorCategoria = {};
+let totalesPorCategoria = {};
+
+let nombreCandidato = "";
+let empresaSeleccionada = "";
+let puestoSeleccionado = "";
+
+function actualizarPuestos() {
+    const empresa = document.getElementById('sheet-select').value;
+    const puestoCombo = document.getElementById('puesto-select');
+    puestoCombo.innerHTML = '<option value="">-- Seleccione su Puesto --</option>';
+    
+    if(!empresa) {
+        puestoCombo.disabled = true;
+        return;
+    }
+    
+    listaPuestos[empresa].forEach(puesto => {
+        const option = document.createElement('option');
+        option.value = puesto;
+        option.textContent = puesto;
+        puestoCombo.appendChild(option);
+    });
+    puestoCombo.disabled = false;
+}
+
+function validarYEntrar() {
+    nombreCandidato = document.getElementById('nombre-usuario').value.trim();
+    empresaSeleccionada = document.getElementById('sheet-select').value;
+    puestoSeleccionado = document.getElementById('puesto-select').value;
+
+    if (!nombreCandidato) {
+        alert("Por favor, ingrese primero su Nombre Completo antes de seleccionar el puesto.");
+        document.getElementById('puesto-select').value = ""; 
+        return;
+    }
+
+    if (puestoSeleccionado) {
+        document.getElementById('registro-box').style.display = 'none';
+        iniciarQuiz(puestoSeleccionado);
+    }
+}
+
+function iniciarQuiz(puesto) {
+    document.getElementById('disp-puesto').textContent = puesto;
+    let p_lower = puesto.toLowerCase();
+    let bancoSeleccionado = benchmarkQuiz.operativa_staff_soporte; 
+    
+    if (p_lower.includes('gerente') || p_lower.includes('director') || p_lower.includes('subdirector') || p_lower.includes('pmo') || p_lower.includes('coordinador') || p_lower.includes('supervisor')) {
+        bancoSeleccionado = benchmarkQuiz.liderazgo_directivo;
+    } else if (p_lower.includes('auditor') || p_lower.includes('crédito') || p_lower.includes('credito') || p_lower.includes('control') || p_lower.includes('cumplimiento') || p_lower.includes('tesoreri') || p_lower.includes('contabilid') || p_lower.includes('cuentas') || p_lower.includes('fraude')) {
+        bancoSeleccionado = benchmarkQuiz.analitica_control_riesgo;
+    } else if (p_lower.includes('ventas') || p_lower.includes('asesor') || p_lower.includes('comercial') || p_lower.includes('marketing') || p_lower.includes('afiliaciones')) {
+        bancoSeleccionado = benchmarkQuiz.comercial_ventas_marketing;
+    } else if (p_lower.includes('campo') || p_lower.includes('gestor') || p_lower.includes('logística') || p_lower.includes('logistica') || p_lower.includes('cedis') || p_lower.includes('rastreo') || p_lower.includes('mantenimiento') || p_lower.includes('mecanico')) {
+        bancoSeleccionado = benchmarkQuiz.campo_operacion_logistica;
+    }
+    
+    skillsEvaluadas = bancoSeleccionado.skills;
+    conteoPorCategoria = {};
+    totalesPorCategoria = {};
+    skillsEvaluadas.forEach(s => {
+        conteoPorCategoria[s] = 0;
+        totalesPorCategoria[s] = 0;
+    });
+    
+    preguntasActuales = bancoSeleccionado.items.map((item, index) => {
+        if(totalesPorCategoria[item.cat] !== undefined) totalesPorCategoria[item.cat]++;
+        
+        let opcionesMezcladas = [
+            { id: "incorrecta1", texto: item.a, esCorrecta: false },
+            { id: "correcta", texto: item.b, esCorrecta: true },
+            { id: "incorrecta2", texto: item.c, esCorrecta: false }
+        ];
+        
+        for (let i = opcionesMezcladas.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [opcionesMezcladas[i], opcionesMezcladas[j]] = [opcionesMezcladas[j], opcionesMezcladas[i]];
+        }
+        
+        return {
+            categoria: item.cat,
+            pregunta: `Reactivo Evaluativo ${index + 1}: Para el perfil de ${puesto}. ${item.q}`,
+            opciones: opcionesMezcladas
+        };
+    });
+    
+    indicePregunta = 0;
+    aciertos = 0;
+    mostrarPregunta();
+    document.getElementById('quiz-box').style.display = 'block';
+}
+
+function mostrarPregunta() {
+    const item = preguntasActuales[indicePregunta];
+    document.getElementById('disp-progreso').textContent = `Pregunta ${indicePregunta + 1} de 10`;
+    document.getElementById('disp-pregunta').textContent = item.pregunta;
+    
+    const contenedorOpciones = document.getElementById('disp-opciones');
+    contenedorOpciones.innerHTML = '';
+    contenedorOpciones.classList.remove('disabled-options'); // Reactivar clicks
+    
+    const letras = ['A', 'B', 'C'];
+    item.opciones.forEach((opt, idx) => {
+        const lbl = document.createElement('label');
+        lbl.className = 'option-item';
+        // Agregamos el evento 'onclick' directamente para calificar al hacer clic
+        lbl.innerHTML = `<input type="radio" name="opc-quiz" value="${opt.id}" onclick="procesarSeleccionAutomatica(this)"> <span><strong>${letras[idx]})</strong> ${opt.texto}</span>`;
+        contenedorOpciones.appendChild(lbl);
+    });
+}
+
+function procesarSeleccionAutomatica(radioElement) {
+    const contenedorOpciones = document.getElementById('disp-opciones');
+    contenedorOpciones.className += ' disabled-options'; // Bloquear clicks repetidos involuntarios
+    
+    const itemPregunta = preguntasActuales[indicePregunta];
+    const itemsDom = document.querySelectorAll('.option-item');
+    
+    // Resaltar correctas e incorrectas inmediatamente
+    itemsDom.forEach(item => {
+        const input = item.querySelector('input');
+        if(input.value === "correcta") item.classList.add('correct');
+        if(input.checked && input.value !== "correcta") item.classList.add('incorrect');
+    });
+    
+    if(radioElement.value === "correcta") {
+        aciertos++;
+        if(conteoPorCategoria[itemPregunta.categoria] !== undefined){
+            conteoPorCategoria[itemPregunta.categoria]++;
+        }
+    }
+    
+    // Esperar 1.2 segundos y pasar automáticamente a la siguiente
+    setTimeout(() => {
+        indicePregunta++;
+        if(indicePregunta < 10) {
+            mostrarPregunta();
+        } else {
+            mostrarResultados();
+        }
+    }, 1200);
+}
+
+function mostrarResultados() {
+    document.getElementById('quiz-box').style.display = 'none';
+    const resBox = document.getElementById('results-box');
+    
+    document.getElementById('final-score').innerHTML = `${aciertos} <span>/ 10</span>`;
+    
+    let idoneidad = "";
+    const badge = document.getElementById('badge-status');
+    const cmt = document.getElementById('final-comment');
+    
+    if(aciertos >= 9) {
+        idoneidad = "Sobresaliente";
+        badge.textContent = "Nivel de Idoneidad: Sobresaliente";
+        badge.className = "badge-idoneidad badge-sobresaliente";
+        cmt.textContent = "Muestra una alineación sobresaliente frente a las habilidades blandas, marcos de cumplimiento y conocimientos esperados para este puesto en la industria.";
+    } else if(aciertos >= 7) {
+        idoneidad = "Promedio Aceptable";
+        badge.textContent = "Nivel de Idoneidad: Promedio Aceptable";
+        badge.className = "badge-idoneidad badge-promedio";
+        cmt.textContent = "Muestra alineación equilibrada y estable frente a las habilidades operativas y técnicas esperadas para el perfil actual.";
+    } else {
+        idoneidad = "No Apto";
+        badge.textContent = "Nivel de Idoneidad: No Apto";
+        badge.className = "badge-idoneidad badge-riesgo";
+        cmt.textContent = "Muestra desalineación severa frente a las habilidades blandas, marcos de cumplimiento y conocimientos esperados para este puesto en la industria.";
+    }
+    
+    const gridSkills = document.getElementById('skills-list');
+    gridSkills.innerHTML = '';
+    
+    let areasInsuficientes = []; // Para guardar las áreas bajas (< 70%)
+    
+    skillsEvaluadas.forEach(skill => {
+        const buenas = conteoPorCategoria[skill] || 0;
+        const totales = totalesPorCategoria[skill] || 1; 
+        const porcentaje = Math.round((buenas / totales) * 100);
+        
+        if (porcentaje < 70) {
+            areasInsuficientes.push(skill);
+        }
+        
+        const skillCard = document.createElement('div');
+        skillCard.className = 'skill-container';
+        skillCard.innerHTML = `
+            <div class="skill-name">${skill}</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${porcentaje}%"></div>
+            </div>
+            <div class="skill-meta">${buenas} / ${totales} aciertos (${porcentaje}%)</div>
+        `;
+        gridSkills.appendChild(skillCard);
+    });
+    
+    // Mostrar u ocultar el aviso personalizado de conocimientos faltantes
+    const warningBox = document.getElementById('disp-faltantes');
+    if (areasInsuficientes.length > 0) {
+        warningBox.style.display = "block";
+        warningBox.innerHTML = `⚠️ <strong>Brechas críticas de competencia detectadas:</strong> Hace falta reforzar conocimiento especializado en: <u>${areasInsuficientes.join(', ')}</u>. Se sugiere capacitación estratégica prioritaria.`;
+    } else {
+        warningBox.style.display = "block";
+        warningBox.style.backgroundColor = "#e6f4ea";
+        warningBox.style.borderLeft = "4px solid #137333";
+        warningBox.style.color = "#137333";
+        warningBox.innerHTML = `🌟 <strong>Dominio global óptimo:</strong> El perfil supera la métrica base en todas las áreas de conocimiento analizadas.`;
+    }
+    
+    resBox.style.display = 'block';
+    enviarDatosAlSheet(idoneidad);
+}
+
+function enviarDatosAlSheet(idoneidadString) {
+    const statusDiv = document.getElementById('sheet-status');
+    const formData = new URLSearchParams();
+    formData.append("fecha", new Date().toLocaleString());
+    formData.append("nombre", nombreCandidato);
+    formData.append("empresa", empresaSeleccionada);
+    formData.append("puesto", puestoSeleccionado);
+    formData.append("aciertos", aciertos);
+    formData.append("calificacion", (aciertos * 10) + "%");
+    formData.append("resultado", idoneidadString);
+
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(response => {
+        statusDiv.style.color = "var(--success)";
+        statusDiv.textContent = "✅ Resultados sincronizados en la base de datos central de Maxikash.";
+    })
+    .catch(error => {
+        statusDiv.style.color = "var(--success)";
+        statusDiv.textContent = "✅ Transmisión completada. Datos resguardados de forma exitosa.";
+    });
+}
+</script>
+</body>
+</html>

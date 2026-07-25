@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-900 text-slate-100 scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxikash - Quiz Especializado por Puestos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#004fd3',
+                            blueDeep: '#081c4b',
+                            green: '#c3d64c',
+                            darkBg: '#090d16',
+                            cardBg: '#111827'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Reglas de impresión exactas para preservar la estética oscura y la estrella morada */
+        @media print {
+            body {
+                background-color: #090d16 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #diploma-puesto-box, #diploma-puesto-box * {
+                visibility: visible;
+            }
+            #diploma-puesto-box {
+                position: absolute;
+                left: 5%;
+                top: 5%;
+                width: 90%;
+                background: linear-gradient(to bottom right, #020617, #081c4b) !important;
+                border: 2px solid rgba(168, 85, 247, 0.5) !important;
+                border-radius: 1rem !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                box-shadow: none !important;
+            }
+            /* Forzar visualización de iconos y textos de color en impresión */
+            .fa-certificate, .text-purple-400 {
+                color: #c084fc !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .text-brand-green {
+                color: #c3d64c !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased bg-brand-darkBg text-slate-100 p-4 sm:p-8 overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- REGRESAR AL PORTAL -->
+        <div class="flex justify-between items-center print:hidden">
+            <a href="index.html" class="inline-flex items-center gap-2 text-xs font-bold text-brand-green hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Portal de Onboarding
+            </a>
+            <span class="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/20 uppercase tracking-widest">Evaluación de Puesto</span>
+        </div>
+
+        <!-- ENCABEZADO -->
+        <div class="bg-gradient-to-r from-brand-blueDeep to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-2xl print:hidden">
+            <h1 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-briefcase text-brand-green"></i> Sistema de Evaluación Técnica Avanzada
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">Selecciona tu puesto específico para cargar tus 10 reactivos operacionales reglamentarios.</p>
+        </div>
+
+        <!-- CONFIGURACIÓN INICIAL DEL QUIZ -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4 print:hidden">
+            <div>
+                <label class="block text-xs font-black text-slate-300 mb-2">1. Selecciona tu puesto asignado:</label>
+                <select id="puesto-select" onchange="loadCustomQuiz()" class="w-full bg-slate-900 border border-slate-800 focus:border-brand-green rounded-xl py-3 px-4 text-xs text-slate-200 outline-none transition cursor-pointer">
+                    <!-- ÁREA DE COBRANZA -->
+                    <option value="gestor_domiciliaria">Gestor de Cobranza Domiciliaria</option>
+                    <option value="gestor_telefonica">Gestor de Cobranza Telefónica</option>
+                    <option value="supervisor_cobranza">Supervisor de Cobranza</option>
+                    <option value="gerente_cobranza">Gerente de Cobranza</option>
+                    
+                    <!-- ÁREA COMERCIAL / CRÉDITO -->
+                    <option value="asesor_credito">Asesor de Crédito Individual</option>
+                    <option value="analista_credito">Analista de Crédito y Riesgos</option>
+                    <option value="ejecutivo_ventas">Ejecutivo de Ventas Fintech</option>
+                    
+                    <!-- ÁREA ADMINISTRATIVA Y SOPORTE -->
+                    <option value="auxiliar_rrhh">Auxiliar de Recursos Humanos</option>
+                    <option value="soporte_tecnico">Especialista de Soporte Técnico</option>
+                    <option value="atencion_clientes">Agente de Atención a Clientes</option>
+                    
+                    <!-- OTROS PUESTOS -->
+                    <option value="auditor_interno">Auditor Interno de Procesos</option>
+                    <option value="coordinador_capacitacion">Coordinador de Capacitación</option>
+                    <option value="analista_datos">Analista de Business Intelligence</option>
+                    <option value="contador_general">Contador General Fiscal</option>
+                    <option value="ejecutivo_facturacion">Ejecutivo de Facturación</option>
+                    <option value="tester_qa">Ingeniero de Calidad / QA Tester</option>
+                    <option value="desarrollador_software">Desarrollador de Software Jr</option>
+                    <option value="disenador_ux_ui">Diseñador UX / UI</option>
+                    <option value="community_manager">Community Manager / Marketing</option>
+                    <option value="especialista_seo">Especialista en Growth SEO</option>
+                    <option value="reclutador_it">Reclutador Operativo e IT</option>
+                    <option value="abogado_corporativo">Abogado Corporativo Jr</option>
+                    <option value="analista_pld">Analista de Cumplimiento / PLD</option>
+                    <option value="gerente_operaciones">Gerente General de Operaciones</option>
+                    <option value="supervisor_ventas">Supervisor del Área Comercial</option>
+                    <option value="auxiliar_contable">Auxiliar Contable y Fiscal</option>
+                    <option value="recepcionista_corporativo">Recepcionista / Control de Accesos</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-black text-slate-300 mb-2">2. Introduce tu nombre completo para el diploma:</label>
+                <input type="text" id="puesto-user-name" placeholder="Ej. Owen Ruiz" class="w-full bg-slate-900 border border-slate-800 focus:border-brand-green rounded-xl py-3 px-4 text-xs text-slate-200 outline-none transition">
+            </div>
+        </div>
+
+        <!-- CONTENEDOR DONDE SE INYECTAN LAS PREGUNTAS DINÁMICAMENTE -->
+        <div id="questions-dynamic-container" class="space-y-4 print:hidden">
+            <!-- Las 10 preguntas se generarán aquí mediante JavaScript -->
+        </div>
+
+        <!-- BOTÓN DE ENVÍO -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 justify-between shadow-2xl print:hidden">
+            <span id="quiz-puestos-error" class="text-xs text-red-500 font-bold hidden"><i class="fa-solid fa-triangle-exclamation"></i> Por favor responde todas las 10 preguntas e ingresa tu nombre.</span>
+            <button onclick="evaluatePuestosQuiz()" class="w-full sm:w-auto ml-auto bg-brand-blue hover:bg-brand-blue/90 text-white font-extrabold text-xs px-8 py-3.5 rounded-xl uppercase tracking-wider transition border border-brand-blue/20 hover:border-brand-green/40 shadow-lg">
+                Finalizar y Validar Competencias
+            </button>
+        </div>
+
+        <!-- DIPLOMA DE PUESTO -->
+        <div id="diploma-puesto-box" class="hidden p-8 bg-gradient-to-br from-slate-950 to-brand-blueDeep/40 border-2 border-purple-500/50 rounded-2xl text-center space-y-6 shadow-2xl relative overflow-hidden">
+            <div class="text-purple-400 text-6xl animate-pulse"><i class="fa-solid fa-certificate"></i></div>
+            <div class="space-y-1">
+                <h4 class="text-2xl font-black text-white tracking-tight">CERTIFICADO DE COMPETENCIA TÉCNICA</h4>
+                <p class="text-xs text-purple-400 font-bold tracking-widest uppercase" id="diploma-puesto-title">PUESTO VALIDADO</p>
+            </div>
+            <p class="text-xs text-slate-400">Otorgado con éxito a la trayectoria de:</p>
+            <p id="diploma-puesto-user" class="text-xl font-extrabold text-white tracking-wide border-b border-slate-800 pb-2 max-w-md mx-auto uppercase"></p>
+            <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+                Por haber completado y aprobado satisfactoriamente los 10 criterios de evaluación específicos exigidos por los comités operativos de Maxikash para el correcto desarrollo de sus funciones estructurales.
+            </p>
+            <div class="pt-4 text-[10px] text-slate-500 font-bold space-y-1">
+                <p class="text-slate-300">Amigo Efectivo S.A. de C.V. — Unidad de Evaluación Fintech</p>
+                <p class="text-slate-400">ID DE REGISTRO ÚNICO: <span id="diploma-unico-id" class="text-brand-green font-mono font-bold"></span></p>
+            </div>
+
+            <!-- BOTÓN DE IMPRESIÓN (Se oculta automáticamente al imprimir) -->
+            <div class="pt-4 print:hidden">
+                <button onclick="window.print()" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl uppercase tracking-wider transition shadow-lg">
+                    <i class="fa-solid fa-print"></i> Imprimir mi Certificado
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BANCO DE DATOS DE PREGUNTAS CON 3 OPCIONES -->
+    <script>
+        const quizData = {
+            gestor_domiciliaria: [
+                { q: "1. ¿Cuál es el primer paso obligatorio al presentarse en el domicilio del cliente?", options: [{txt: "Identificarse con credencial corporativa vigente y explicar el motivo de la visita de forma educada.", correct: true}, {txt: "Exigir el pago total inmediato con voz fuerte para ejercer presión.", correct: false}, {txt: "Ingresar de forma autónoma a la propiedad privada sin aguardar respuesta.", correct: false}] },
+                { q: "2. Si el deudor legítimo no se encuentra, pero un familiar directo atiende la puerta, ¿cómo procede?", options: [{txt: "Dejar un citatorio confidencial cerrado dirigido al titular, sin revelar montos ni datos sensibles a terceros.", correct: true}, {txt: "Detallar el estado de cuenta y las consecuencias legales al familiar para que lo presione.", correct: false}, {txt: "Retirarse del lugar de inmediato sin dejar ningún tipo de notificación física.", correct: false}] },
+                { q: "3. ¿Qué acción debe tomar si el cliente realiza un abono en efectivo en campo?", options: [{txt: "Emitir un recibo foliado oficial al instante y subir la evidencia a la plataforma de inmediato.", correct: true}, {txt: "Guardar el dinero en la billetera y reportarlo hasta el cierre de operaciones del fin de semana.", correct: false}, {txt: "Aceptar transferencias bancarias directas a la cuenta de ahorros personal del gestor.", correct: false}] },
+                { q: "4. Ante una actitud hostil o agresión verbal física inminente en el domicilio, ¿cuál es el protocolo?", options: [{txt: "Retirarse inmediatamente resguardando su integridad física y levantar un reporte de incidencia en el sistema.", correct: true}, {txt: "Discutir firmemente con el cliente hasta lograr que firme una promesa de pago.", correct: false}, {txt: "Solicitar el auxilio inmediato de otros gestores de campo de zonas aledañas para confrontación.", correct: false}] },
+                { q: "5. ¿Cuál es la herramienta tecnológica obligatoria para trazar la ruta de visitas diarias?", options: [{txt: "El sistema de geolocalización y mapas integrado en el dispositivo corporativo.", correct: true}, {txt: "Elegir las colonias de forma aleatoria basándose en la experiencia personal diaria.", correct: false}, {txt: "Utilizar mapas impresos obsoletos ajenos al control de la plataforma central.", correct: false}] },
+                { q: "6. Si el domicilio asignado en el sistema resulta ser un terreno baldío o dirección inexistente, usted debe:", options: [{txt: "Registrar la verificación domiciliaria fallida adjuntando evidencia fotográfica de las nomenclaturas.", correct: true}, {txt: "Omitir la cuenta y continuar con la siguiente visita sin dejar registro del error.", correct: false}, {txt: "Inventar datos de contacto de vecinos simulando haber realizado la validación física.", correct: false}] },
+                { q: "7. ¿Qué norma legal prohíbe revelar los datos de deudas a los vecinos del cliente?", options: [{txt: "La Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).", correct: true}, {txt: "El Código de Comercio en su sección de correspondencias estándar.", correct: false}, {txt: "La Ley General de Instituciones de Crédito Bancario General.", correct: false}] },
+                { q: "8. ¿Cuál es el objetivo principal del Gestor Domiciliario en Maxikash?", options: [{txt: "Recuperar la cartera vencida mediante la conciliación, ofreciendo planes aprobados por el sistema.", correct: true}, {txt: "Embargar bienes de manera autónoma durante la primera visita técnica.", correct: false}, {txt: "Clausurar locales comerciales de los acreditados con firmas simuladas.", correct: false}] },
+                { q: "9. ¿Qué se entiende por un 'Convenio de Pago' válido en campo?", options: [{txt: "Aquel estructurado por el sistema central, firmado por el cliente y cargado en la aplicación.", correct: true}, {txt: "Un acuerdo verbal informal donde el deudor promete pagar en una fecha imprecisa.", correct: false}, {txt: "Un documento genérico en blanco firmado únicamente por el deudor externo.", correct: false}] },
+                { q: "10. ¿En qué horarios está autorizado realizar visitas de cobranza según las normativas vigentes?", options: [{txt: "Únicamente en los horarios permitidos por la regulación legal aplicable (7:00 AM a 10:00 PM).", correct: true}, {txt: "A cualquier hora de la madrugada siempre y cuando se localice al titular en casa.", correct: false}, {txt: "Exclusivamente en días festivos y fines de semana después de la medianoche.", correct: false}] }
+            ],
+            gestor_telefonica: [
+                { q: "1. ¿Cuál es el saludo inicial obligatorio en cada llamada saliente de cobranza?", options: [{txt: "Mencionar el nombre del ejecutivo, la institución Maxikash y validar la identidad del titular.", correct: true}, {txt: "Preguntar inmediatamente por qué no ha realizado su pago correspondiente.", correct: false}, {txt: "Exigir los datos bancarios secretos sin presentarse de manera formal.", correct: false}] },
+                { q: "2. Si el cliente alega que ya pagó pero no se refleja en el sistema, ¿qué se solicita?", options: [{txt: "El comprobante de transferencia o depósito para enviarlo a validación con el área de conciliación.", correct: true}, {txt: "Que vuelva a pagar de inmediato y que pida la devolución de su primer pago después.", correct: false}, {txt: "Dar de baja la deuda basándose únicamente en la palabra del cliente sin soporte.", correct: false}] },
+                { q: "3. ¿Qué tono de voz e identidad de comunicación se debe mantener ante clientes difíciles?", options: [{txt: "Tono profesional, firme, empático, asertivo y libre de confrontaciones.", correct: true}, {txt: "Tono impositivo e irónico para demostrar la autoridad de la institución financiera.", correct: false}, {txt: "Tono sumiso cediendo a todas las demandas informales fuera de contrato.", correct: false}] },
+                { q: "4. ¿Cómo debe documentarse una llamada telefónica en el CRM corporativo?", options: [{txt: "Registrando un resumen claro del estatus (Promesa de pago, Negativa, Buzón) con fecha y hora.", correct: true}, {txt: "Colocando solo un punto o dejando el espacio en blanco si el cliente no contestó.", correct: false}, {txt: "Escribir comentarios subjetivos o insultos sobre el deudor en la bitácora pública.", correct: false}] },
+                { q: "5. ¿Qué constituye una violación grave a la confidencialidad de datos por teléfono?", options: [{txt: "Dar información de saldos y moras a un tercero o familiar que contestó el teléfono.", correct: true}, {txt: "Solicitar al titular que confirme los últimos dígitos de su año de nacimiento para autenticación.", correct: false}, {txt: "Mencionar el nombre de la fintech Maxikash exclusivamente al titular de la cuenta.", correct: false}] },
+                { q: "6. ¿Qué es una 'Promesa de Pago (PP)' en la gestión telefónica?", options: [{txt: "Un compromiso con fecha específica y monto exacto registrado en el sistema.", correct: true}, {txt: "Una declaración vaga donde el cliente menciona que 'tratará de conseguir dinero'.", correct: false}, {txt: "La desconexión total de la línea telefónica sin intenciones de abono.", correct: false}] },
+                { q: "7. Si la llamada es transferida al buzón de voz de manera repetitiva, ¿cuál es la acción correcta?", options: [{txt: "Tipificar la llamada como Buzón de Voz y programar el reintento automático por sistema.", correct: true}, {txt: "Llamar compulsivamente cada dos minutos desde su teléfono personal.", correct: false}, {txt: "Bloquear el expediente del cliente permanentemente asignándolo como incobrable.", correct: false}] },
+                { q: "8. Al recibir insultos o palabras altisonantes por parte de un deudor, el protocolo indica:", options: [{txt: "Advertir respetuosamente que de continuar con el lenguaje la llamada será terminada, y colgar si persiste.", correct: true}, {txt: "Responder con el mismo lenguaje para equilibrar la comunicación y no dejarse intimidar.", correct: false}, {txt: "Transferir la llamada inmediatamente a la dirección general sin mediar advertencias.", correct: false}] },
+                { q: "9. ¿Cuál es el beneficio de ofrecer una reestructura telefónica autorizada por riesgos?", options: [{txt: "Ayudar al cliente a regularizar su situación reduciendo su pago mensual incrementando el plazo formal.", correct: true}, {txt: "Condonar el 100% de la deuda original sin autorización formal de la dirección general.", correct: false}, {txt: "Generar cobros extras de intereses moratorios ocultos sin el consentimiento del deudor.", correct: false}] },
+                { q: "10. El uso de marcadores predictivos automatizados en el Call Center nos ayuda a:", options: [{txt: "Maximizar el tiempo efectivo de conversación disminuyendo los tiempos muertos entre folios.", correct: true}, {txt: "Espiar las conversaciones personales de otros compañeros dentro de la misma sala.", correct: false}, {txt: "Marcar a números telefónicos inexistentes fuera de la República Mexicana.", correct: false}] }
+            ],
+            asesor_credito: [
+                { q: "1. ¿Qué documento es indispensable para iniciar el cotejo de identidad de un solicitante de crédito?", options: [{txt: "Identificación oficial vigente (INE o Pasaporte) original y legible.", correct: true}, {txt: "Cualquier credencial con fotografía, incluso si está vencida hace años.", correct: false}, {txt: "Una fotografía digital borrosa de una credencial escolar antigua.", correct: false}] },
+                { q: "2. ¿Cómo se define la capacidad de pago de un cliente durante la entrevista comercial?", options: [{txt: "La diferencia entre los ingresos mensuales demostrables y sus gastos fijos o deudas vigentes.", correct: true}, {txt: "El monto total de dinero que el cliente dice que le sobra cada quincena de manera verbal.", correct: false}, {txt: "Los ahorros familiares hipotéticos que el solicitante espera recibir en el futuro.", correct: false}] },
+                { q: "3. ¿Qué acción constituye un conflicto de interés grave para un Asesor de Crédito?", options: [{txt: "Aprobar u operar expedientes financieros de familiares directos o amigos cercanos.", correct: true}, {txt: "Ofrecer las tasas de interés institucionales vigentes publicadas en el catálogo oficial.", correct: false}, {txt: "Asistir a las capacitaciones quincenales obligatorias organizadas por capital humano.", correct: false}] },
+                { q: "4. ¿Cuál es la manera correcta de manejar el historial del Buró de Crédito del cliente?", options: [{txt: "Analizarlo de forma estrictamente confidencial en el sistema para determinar el nivel de riesgo.", correct: true}, {txt: "Imprimirlo y enseñárselo a otros clientes como ejemplo de mal historial.", correct: false}, {txt: "Vender la base de datos de los historiales a agencias comerciales externas.", correct: false}] },
+                { q: "5. Si detecta alteraciones evidentes o falsificación en un comprobante de ingresos, usted debe:", options: [{txt: "Rechazar el trámite inmediatamente y dar aviso al área de prevención de fraudes.", correct: true}, {txt: "Aceptar el documento simulando no darse cuenta para cumplir con la meta de ventas mensual.", correct: false}, {txt: "Modificar los números manualmente en Photoshop para cuadrar el perfil.", correct: false}] },
+                { q: "6. ¿Qué es el CAT en los productos financieros de Maxikash?", options: [{txt: "El Costo Anual Total, indicador financiero que incorpora la totalidad de costos y gastos del crédito.", correct: true}, {txt: "La Comisión por Apertura Temprana cobrada únicamente a cuentas platino.", correct: false}, {txt: "El Control de Activos Totales del departamento de auditoría interna corporativa.", correct: false}] },
+                { q: "7. ¿Cuál es el canal oficial para que el cliente reciba el depósito de su crédito autorizado?", options: [{txt: "Transferencia interbancaria SPEI directo a la cuenta CLABE validada a nombre del titular.", correct: true}, {txt: "Entrega de dinero en efectivo por medio de los asesores en cafeterías públicas.", correct: false}, {txt: "Depósitos dirigidos a tarjetas de tiendas departamentales de terceros.", correct: false}] },
+                { q: "8. ¿Por qué es fundamental realizar una visita de validación al negocio o empleo del solicitante?", options: [{txt: "Para constatar la existencia física, arraigo y veracidad de la fuente de ingresos declarada.", correct: true}, {txt: "Para solicitar muestras gratuitas del producto que comercializa el cliente.", correct: false}, {txt: "Para auditar las declaraciones fiscales anuales de la empresa directamente en sitio.", correct: false}] },
+                { q: "9. ¿Qué rol juegan las referencias personales en el expediente de crédito?", options: [{txt: "Servir como canales alternos de localización y validación de la moralidad crediticia.", correct: true}, {txt: "Actuar automáticamente como avales legales solidarios obligados a liquidar el saldo.", correct: false}, {txt: "Sustituir la firma digital del titular en caso de fallecimiento imprevisto.", correct: false}] },
+                { q: "10. Al promover los productos de Maxikash, el asesor debe destacar siempre:", options: [{txt: "Los términos, condiciones, comisiones y tasas de interés reales de manera transparente.", correct: true}, {txt: "Promesas falsas de que el crédito no genera intereses si se paga con retrasos.", correct: false}, {txt: "Garantías ficticias sobre la eliminación del registro en buró de crédito en 24 horas.", correct: false}] }
+            ]
+        };
+
+        const puestosRestantes = [
+            "supervisor_cobranza", "gerente_cobranza", "analista_credito", "ejecutivo_ventas", 
+            "auxiliar_rrhh", "soporte_tecnico", "atencion_clientes", "auditor_interno", 
+            "coordinador_capacitacion", "analista_datos", "contador_general", "ejecutivo_facturacion", 
+            "tester_qa", "desarrollador_software", "disenador_ux_ui", "community_manager", 
+            "especialista_seo", "reclutador_it", "abogado_corporativo", "analista_pld", 
+            "gerente_operaciones", "supervisor_ventas", "auxiliar_contable", "recepcionista_corporativo"
+        ];
+
+        puestosRestantes.forEach(puesto => {
+            quizData[puesto] = Array.from({ length: 10 }, (_, i) => ({
+                q: `${i + 1}. [${puesto.replace('_', ' ').toUpperCase()}] - Criterio Operativo Especializado Nº${i + 1}: ¿Cuál es el lineamiento regulado para mitigar riesgos en este proceso operativo?`,
+                options: [
+                    {txt: `Aplicar los protocolos estandarizados de control, documentación interna y auditoría del puesto institucional.`, correct: true},
+                    {txt: `Proceder de forma aislada sin registrar movimientos ni bitácoras en el software central de Maxikash.`, correct: false},
+                    {txt: `Delegar la responsabilidad total de las operaciones críticas a prestadores de servicio externos sin contrato.`, correct: false}
+                ]
+            }));
+        });
+
+        // Función para mezclar un arreglo aleatoriamente (Algoritmo Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function loadCustomQuiz() {
+            const puesto = document.getElementById('puesto-select').value;
+            const container = document.getElementById('questions-dynamic-container');
+            container.innerHTML = "";
+
+            const preguntas = quizData[puesto] || quizData['gestor_domiciliaria'];
+
+            preguntas.forEach((item, index) => {
+                const questionBox = document.createElement('div');
+                questionBox.className = "bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3";
+                
+                // Clonar y mezclar las 3 opciones de respuesta aleatoriamente
+                let opcionesClonadas = [...item.options];
+                shuffle(opcionesClonadas);
+
+                questionBox.innerHTML = `
+                    <p class="text-xs font-black text-slate-200">${item.q}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                        <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                            <input type="radio" name="pq${index}" value="${opcionesClonadas[0].correct ? 'correct' : 'incorrect'}" class="accent-brand-blue">
+                            <span>${opcionesClonadas[0].txt}</span>
+                        </label>
+                        <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                            <input type="radio" name="pq${index}" value="${opcionesClonadas[1].correct ? 'correct' : 'incorrect'}" class="accent-brand-blue">
+                            <span>${opcionesClonadas[1].txt}</span>
+                        </label>
+                        <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                            <input type="radio" name="pq${index}" value="${opcionesClonadas[2].correct ? 'correct' : 'incorrect'}" class="accent-brand-blue">
+                            <span>${opcionesClonadas[2].txt}</span>
+                        </label>
+                    </div>
+                `;
+                container.appendChild(questionBox);
+            });
+        }
+
+        function evaluatePuestosQuiz() {
+            const name = document.getElementById('puesto-user-name').value.trim();
+            const puestoSelect = document.getElementById('puesto-select');
+            const errorLabel = document.getElementById('quiz-puestos-error');
+            
+            if (!name) {
+                errorLabel.classList.remove('hidden');
+                return;
+            }
+
+            let allAnswered = true;
+            for (let i = 0; i < 10; i++) {
+                const checked = document.querySelector(`input[name="pq${i}"]:checked`);
+                if (!checked) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+
+            if (!allAnswered) {
+                errorLabel.classList.remove('hidden');
+                return;
+            }
+
+            errorLabel.classList.add('hidden');
+            
+            const numeroAleatorio = Math.floor(1000 + Math.random() * 9000);
+            const nombreSanitizado = name.toUpperCase().replace(/\s+/g, '');
+            const idUnicoCertificado = `MK-CERT-2026-${nombreSanitizado}-${numeroAleatorio}`;
+
+            document.getElementById('diploma-puesto-user').textContent = name;
+            document.getElementById('diploma-puesto-title').textContent = "PUESTO: " + puestoSelect.options[puestoSelect.selectedIndex].text.toUpperCase();
+            document.getElementById('diploma-unico-id').textContent = idUnicoCertificado;
+            
+            document.getElementById('diploma-puesto-box').classList.remove('hidden');
+            document.getElementById('diploma-puesto-box').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.onload = loadCustomQuiz;
+    </script>
+</body>
+</html>

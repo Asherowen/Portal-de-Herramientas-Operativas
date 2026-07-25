@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Bajas · Maxikash</title>
+    <!-- Librerías -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ---------- Reset ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f3f7;
+            color: #1e2a3a;
+            padding: 20px;
+        }
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* ---------- Colores institucionales ---------- */
+        :root {
+            --maxi-orange: #F47920;
+            --maxi-orange-dark: #D95B0E;
+            --maxi-blue: #0057A0;
+            --maxi-blue-light: #e6f0fa;
+            --maxi-gray: #f0f3f7;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+            --radius: 14px;
+        }
+
+        /* ---------- HEADER FIJO ---------- */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            padding: 12px 28px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .header-left img {
+            height: 52px;
+            width: auto;
+            object-fit: contain;
+        }
+        .header-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .header-right .datetime {
+            background: var(--maxi-gray);
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+        .header-right .badge-count {
+            background: var(--maxi-orange);
+            color: #fff;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .header-actions .btn-export {
+            background: var(--maxi-blue);
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-actions .btn-export:hover {
+            background: #004080;
+        }
+        .header-actions .btn-export.pdf {
+            background: #dc3545;
+        }
+        .header-actions .btn-export.pdf:hover {
+            background: #b02a37;
+        }
+        .filter-select {
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1.5px solid #dce2ea;
+            background: #fafbfc;
+            font-size: 13px;
+            font-weight: 500;
+            color: #2c3e50;
+            outline: none;
+            cursor: pointer;
+            transition: border 0.2s;
+            min-width: 150px;
+        }
+        .filter-select:focus {
+            border-color: var(--maxi-orange);
+        }
+        .search-global {
+            padding: 4px 12px 4px 32px;
+            border-radius: 30px;
+            border: 1.5px solid #dce2ea;
+            background: #fafbfc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236b7a8e" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;
+            background-size: 14px;
+            font-size: 13px;
+            color: #2c3e50;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            min-width: 200px;
+        }
+        .search-global:focus {
+            border-color: var(--maxi-orange);
+            box-shadow: 0 0 0 2px rgba(244, 121, 32, 0.2);
+        }
+        .search-global::placeholder {
+            color: #a0aec0;
+        }
+
+        .drop-zone-inline {
+            background: #f8f9fb;
+            border: 2px dashed var(--maxi-orange);
+            border-radius: 30px;
+            padding: 6px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            flex-wrap: wrap;
+        }
+        .drop-zone-inline:hover {
+            background: #fff4e6;
+            border-color: var(--maxi-orange-dark);
+        }
+        .drop-zone-inline .icon {
+            font-size: 20px;
+            color: var(--maxi-orange);
+        }
+        .drop-zone-inline p {
+            font-size: 14px;
+            color: #3a4a5e;
+            margin: 0;
+        }
+        .drop-zone-inline p strong {
+            color: var(--maxi-orange);
+        }
+        .drop-zone-inline .btn-upload {
+            background: var(--maxi-orange);
+            color: #fff;
+            border: none;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .drop-zone-inline .btn-upload:hover {
+            background: var(--maxi-orange-dark);
+        }
+        .drop-zone-inline .file-status {
+            font-size: 13px;
+            color: #28a745;
+            font-weight: 500;
+        }
+        #fileInput {
+            display: none;
+        }
+        .drop-zone-inline.dragover {
+            background: #fff4e6;
+            border-color: var(--maxi-orange-dark);
+        }
+
+        /* ---------- MÉTRICAS ---------- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .metric-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 18px 14px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-left: 6px solid var(--maxi-blue);
+            transition: transform 0.15s;
+        }
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+        .metric-card .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7a8e;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .metric-card .value {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--maxi-blue);
+            margin: 6px 0 2px;
+        }
+        .metric-card .sub {
+            font-size: 14px;
+            color: #4a5a6e;
+        }
+        .metric-card.orange { border-left-color: var(--maxi-orange); }
+        .metric-card.orange .value { color: var(--maxi-orange); }
+        .metric-card.green { border-left-color: #28a745; }
+        .metric-card.green .value { color: #28a745; }
+        .metric-card.purple { border-left-color: #6f42c1; }
+        .metric-card.purple .value { color: #6f42c1; }
+
+        /* ---------- GRÁFICOS ---------- */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+        .chart-box {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 18px 18px 12px;
+            box-shadow: var(--shadow);
+        }
+        .chart-box h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--maxi-blue);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-box h3 small {
+            font-weight: 400;
+            font-size: 13px;
+            color: #6b7a8e;
+        }
+        .dona-layout {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            min-height: 200px;
+        }
+        .dona-chart-wrap {
+            flex: 0 0 48%;
+            position: relative;
+            height: 200px;
+        }
+        .dona-legend-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .dona-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            transition: background 0.1s;
+        }
+        .dona-legend-item:hover { background: #f0f3f7; }
+        .dona-legend-color { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+        .dona-legend-label { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+        .dona-legend-value { font-weight: 700; color: var(--maxi-blue); white-space: nowrap; font-size: 12px; }
+        .dona-legend-pct { color: #6b7a8e; font-size: 11px; white-space: nowrap; min-width: 40px; text-align: right; }
+
+        /* ---------- TABLA CON AUTO AJUSTE Y TODOS LOS REGISTROS ---------- */
+        .table-wrapper {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 18px 16px 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        .table-wrapper .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .table-wrapper .table-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--maxi-blue);
+        }
+        .table-wrapper .table-header .row-count {
+            font-size: 14px;
+            color: #6b7a8e;
+        }
+        .table-scroll {
+            overflow: auto;
+            max-height: 600px;
+        }
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            table-layout: auto; /* AUTO AJUSTE */
+        }
+        .table-wrapper thead th {
+            background: var(--maxi-blue-light);
+            color: var(--maxi-blue);
+            font-weight: 600;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid var(--maxi-blue);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            vertical-align: top;
+        }
+        .table-wrapper td {
+            padding: 6px 12px;
+            border-bottom: 1px solid #edf0f5;
+            vertical-align: middle;
+            white-space: nowrap; /* Para que el texto no se envuelva y la columna se ajuste al contenido */
+            max-width: 0; /* Para permitir que el contenido crezca */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Permitir que comentarios se envuelva y tenga un ancho máximo */
+        .table-wrapper td:nth-child(12) {
+            white-space: normal;
+            max-width: 300px;
+        }
+        /* Ocultar columnas */
+        .col-correo, .col-telefono, .col-zona, .col-supervisor {
+            display: none;
+        }
+        .table-wrapper tr:hover td {
+            background: #f8faff;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        .badge-secondary { background: #e9edf2; color: #3a4a5e; }
+        .truncate { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle; }
+
+        /* ---------- FOOTER ---------- */
+        .footer {
+            text-align: center;
+            padding: 20px 0 6px;
+            color: #6b7a8e;
+            font-size: 14px;
+            border-top: 1px solid #dce2ea;
+            margin-top: 8px;
+        }
+        .footer strong { color: var(--maxi-blue); }
+        .footer .copy { color: var(--maxi-orange); }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 900px) {
+            .dona-layout { flex-direction: column; align-items: stretch; min-height: auto; }
+            .dona-chart-wrap { flex: 1; height: 200px; }
+            .dona-legend-wrap { max-height: 120px; flex-direction: row; flex-wrap: wrap; gap: 4px 12px; }
+            .dona-legend-item { flex: 0 0 auto; width: auto; }
+            .charts-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 820px) {
+            .header { flex-direction: column; align-items: stretch; gap: 12px; padding: 12px 16px; }
+            .header-right { flex-direction: column; align-items: stretch; }
+            .drop-zone-inline { justify-content: center; padding: 10px; }
+            .header-actions { justify-content: center; flex-wrap: wrap; }
+            .filter-select { min-width: 120px; }
+            .search-global { min-width: 150px; }
+            .metrics-grid { grid-template-columns: repeat(2,1fr); }
+            .table-wrapper td { white-space: normal; } /* En móvil, permitir wrap */
+            .table-wrapper td:nth-child(12) { max-width: 150px; }
+        }
+        @media (max-width: 500px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .dona-chart-wrap { height: 160px; }
+        }
+
+        /* ---------- PRINT ---------- */
+        @media print {
+            .header { position: static !important; box-shadow: none !important; border:1px solid #ddd; }
+            .header-actions .btn-export { display: none !important; }
+            .drop-zone-inline { display: none !important; }
+            .table-scroll { max-height: none !important; overflow: visible !important; }
+            .table-wrapper thead th { position: static !important; }
+            .footer { position: fixed; bottom:0; width:100%; }
+            body { padding:10px !important; background:#fff !important; }
+            .dashboard { max-width:100% !important; }
+            .chart-box { break-inside: avoid; page-break-inside: avoid; }
+            .charts-row { break-inside: avoid; page-break-inside: avoid; }
+            .table-wrapper { break-inside: auto; page-break-inside: auto; }
+            .metrics-grid { break-inside: avoid; page-break-inside: avoid; }
+            .filter-select { display: none !important; }
+            .search-global { display: none !important; }
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-overlay .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 16px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .btn-clear-filters {
+            background: #e9edf2;
+            border: none;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #2c3e50;
+            transition: background 0.2s;
+        }
+        .btn-clear-filters:hover { background: #d5dce6; }
+    </style>
+</head>
+<body>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <span>Generando archivo...</span>
+    </div>
+
+    <div class="dashboard" id="dashboardContent">
+
+        <!-- HEADER FIJO -->
+        <header class="header">
+            <div class="header-left">
+                <img src="logo.png" alt="Maxikash" />
+            </div>
+            <div class="header-right">
+                <span class="datetime" id="fechaHora"><i class="far fa-clock"></i> Cargando...</span>
+                <span class="badge-count" id="totalRegistrosBadge"><i class="fas fa-users"></i> 0</span>
+                <div class="header-actions">
+                    <!-- BÚSQUEDA GLOBAL -->
+                    <input type="text" id="searchGlobal" class="search-global" placeholder="Buscar en todos los registros..." />
+                    <!-- FILTRO ESTATUS FINIQUITO -->
+                    <select id="filterFiniquito" class="filter-select">
+                        <option value="">Finiquito: Todos</option>
+                    </select>
+                    <!-- FILTRO ESTATUS FAD -->
+                    <select id="filterFad" class="filter-select">
+                        <option value="">FAD: Todos</option>
+                    </select>
+                    <button class="btn-export" id="btnExportImage"><i class="fas fa-image"></i> Imagen</button>
+                    <button class="btn-export pdf" id="btnExportPDF"><i class="fas fa-file-pdf"></i> PDF</button>
+                </div>
+                <div class="drop-zone-inline" id="dropZoneInline">
+                    <span class="icon"><i class="fas fa-file-excel"></i></span>
+                    <p><strong>Arrastra</strong> tu .xlsx</p>
+                    <button class="btn-upload" id="btnCargar"><i class="fas fa-upload"></i> Cargar</button>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls" />
+                    <span class="file-status" id="fileStatus"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MÉTRICAS -->
+        <div class="metrics-grid">
+            <div class="metric-card"><div class="label">Total Bajas</div><div class="value" id="totalBajas">0</div><div class="sub">registros</div></div>
+            <div class="metric-card orange"><div class="label">% Finiquito Firmado</div><div class="value" id="pctFiniquito">0%</div><div class="sub" id="subFiniquito">0 / 0</div></div>
+            <div class="metric-card orange"><div class="label">% FAD Firmado</div><div class="value" id="pctFad">0%</div><div class="sub" id="subFad">0 / 0</div></div>
+            <div class="metric-card green"><div class="label">% Cierre de Proceso</div><div class="value" id="pctCierre">0%</div><div class="sub" id="subCierre">0 / 0</div></div>
+            <div class="metric-card purple"><div class="label">% Dispersar</div><div class="value" id="pctDispersar">0%</div><div class="sub" id="subDispersar">0 / 0</div></div>
+        </div>
+
+        <!-- GRÁFICOS -->
+        <div class="charts-row">
+            <div class="chart-box">
+                <h3><i class="fas fa-chart-pie" style="color:var(--maxi-orange);"></i> Estatus de Cierre <small>(Proceso)</small></h3>
+                <div class="dona-layout">
+                    <div class="dona-chart-wrap"><canvas id="chartCierre"></canvas></div>
+                    <div class="dona-legend-wrap" id="donaLegend"><div style="color:#6b7a8e; font-size:12px; padding:2px 0;">Carga un archivo para ver los datos</div></div>
+                </div>
+            </div>
+            <div class="chart-box">
+                <h3><i class="fas fa-chart-bar" style="color:var(--maxi-blue);"></i> Firmas <small>Finiquito vs FAD</small></h3>
+                <div class="chart-container" style="height:200px;"><canvas id="chartFirmas"></canvas></div>
+            </div>
+        </div>
+
+        <!-- TABLA SIN LÍMITE Y CON AUTO AJUSTE -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h3><i class="fas fa-table" style="color:var(--maxi-orange);"></i> Detalle completo de bajas</h3>
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <span class="row-count" id="rowCount">0 registros</span>
+                    <button class="btn-clear-filters" id="btnClearAllFilters"><i class="fas fa-times"></i> Limpiar filtros</button>
+                </div>
+            </div>
+            <div class="table-scroll">
+                <table id="dataTable">
+                    <thead id="tableHead">
+                        <tr>
+                            <th>#</th>
+                            <th>Fec. Último Día</th>
+                            <th>Estatus Finiquito</th>
+                            <th>FAD</th>
+                            <th>Motivo</th>
+                            <th>Área</th>
+                            <th>Puesto</th>
+                            <th>Nombre</th>
+                            <th class="col-correo">Correo</th>
+                            <th class="col-telefono">Teléfono</th>
+                            <th class="col-zona">Zona</th>
+                            <th>Comentarios</th>
+                            <th>Adeudos</th>
+                            <th class="col-supervisor">Supervisor</th>
+                            <th>Estatus Proceso</th>
+                            <th>Estatus Cierre</th>
+                            <th>Otras Fechas (Pago)</th>
+                            <th>Estatus Pago</th>
+                            <th>Fec. Tent. Disp.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="19" style="text-align:center; padding:30px; color:#6b7a8e;">
+                            <i class="fas fa-cloud-upload-alt" style="font-size:24px; display:block; margin-bottom:8px;"></i>
+                            Carga un archivo Excel para ver los datos
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <span class="copy">© 2026 Maxikash</span> · Dashboard de Bajas ·
+            Desarrollado por <strong>Owen Ruiz</strong>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ================================================================
+            //  DOM REFS
+            // ================================================================
+            const dropZone = document.getElementById('dropZoneInline');
+            const fileInput = document.getElementById('fileInput');
+            const btnCargar = document.getElementById('btnCargar');
+            const fileStatus = document.getElementById('fileStatus');
+            const fechaHora = document.getElementById('fechaHora');
+            const totalRegistrosBadge = document.getElementById('totalRegistrosBadge');
+
+            const totalBajasEl = document.getElementById('totalBajas');
+            const pctFiniquitoEl = document.getElementById('pctFiniquito');
+            const subFiniquitoEl = document.getElementById('subFiniquito');
+            const pctFadEl = document.getElementById('pctFad');
+            const subFadEl = document.getElementById('subFad');
+            const pctCierreEl = document.getElementById('pctCierre');
+            const subCierreEl = document.getElementById('subCierre');
+            const pctDispersarEl = document.getElementById('pctDispersar');
+            const subDispersarEl = document.getElementById('subDispersar');
+
+            const tableBody = document.getElementById('tableBody');
+            const rowCount = document.getElementById('rowCount');
+            const donaLegend = document.getElementById('donaLegend');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const btnClearAll = document.getElementById('btnClearAllFilters');
+            const filterFiniquitoSelect = document.getElementById('filterFiniquito');
+            const filterFadSelect = document.getElementById('filterFad');
+            const searchGlobalInput = document.getElementById('searchGlobal');
+
+            let chartCierre = null;
+            let chartFirmas = null;
+
+            let allRegistros = [];
+            let registrosFiltrados = [];
+            let filtroFiniquito = '';
+            let filtroFad = '';
+            let globalSearch = '';
+
+            // ================================================================
+            //  UTILIDADES
+            // ================================================================
+            function normalizar(str) {
+                if (str === undefined || str === null) return '';
+                return String(str).trim();
+            }
+
+            function normalizarUpper(str) {
+                return normalizar(str).toUpperCase();
+            }
+
+            function esFirmado(val) {
+                const v = normalizarUpper(val);
+                return v === 'FIRMADO' || v === 'FIRMADO' || v === 'FIRMADO';
+            }
+
+            function formatearFechaHora() {
+                const now = new Date();
+                const opts = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+                    second: '2-digit', hour12: false };
+                return now.toLocaleString('es-MX', opts);
+            }
+
+            function actualizarReloj() {
+                fechaHora.textContent = '🕒 ' + formatearFechaHora();
+            }
+            actualizarReloj();
+            setInterval(actualizarReloj, 10000);
+
+            // ================================================================
+            //  PROCESAR EXCEL
+            // ================================================================
+            function procesarExcel(workbook) {
+                let sheetName = 'BAJAS';
+                let sheet = workbook.Sheets[sheetName];
+                if (!sheet) {
+                    const first = workbook.SheetNames[0];
+                    if (first) { sheet = workbook.Sheets[first];
+                        sheetName = first; } else throw new Error('No se encontró ninguna hoja.');
+                }
+
+                const raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false });
+                if (raw.length < 3) throw new Error('El archivo no contiene suficientes filas.');
+
+                let headerIdx = -1;
+                let headers = [];
+                for (let i = 0; i < Math.min(raw.length, 25); i++) {
+                    const row = raw[i];
+                    if (!row || row.length === 0) continue;
+                    const joined = row.join(' ').toUpperCase();
+                    if (joined.includes('ESTATUS FINIQUITO') && joined.includes('RENUNCIA POR FAD')) {
+                        headerIdx = i;
+                        headers = row.map(c => normalizar(String(c)));
+                        break;
+                    }
+                }
+                if (headerIdx === -1) throw new Error('No se encontraron los encabezados requeridos.');
+
+                const colNames = headers.map((h, idx) => ({ name: h, idx }));
+                const findCol = (patterns) => {
+                    for (const p of patterns) {
+                        const pUp = normalizarUpper(p);
+                        for (const c of colNames) {
+                            const cUp = normalizarUpper(c.name);
+                            if (cUp === pUp || cUp.includes(pUp) || pUp.includes(cUp)) return c.idx;
+                        }
+                    }
+                    return -1;
+                };
+
+                const idx = {
+                    fecha: findCol(['FECHA ULTIMO DIA LABORAL', 'ULTIMO DIA']),
+                    finiquito: findCol(['ESTATUS FINIQUITO', 'FINIQUITO']),
+                    fad: findCol(['RENUNCIA POR FAD', 'FAD']),
+                    motivo: findCol(['MOTIVO DE BAJA', 'MOTIVO']),
+                    area: findCol(['AREA']),
+                    puesto: findCol(['PUESTO']),
+                    nombre: findCol(['NOMBRE COLABORADOR', 'COLABORADOR', 'NOMBRE']),
+                    correo: findCol(['CORREO ELECTRONICO', 'CORREO']),
+                    telefono: findCol(['TELEFONO']),
+                    zona: findCol(['ZONA']),
+                    comentarios: findCol(['COMENTARIOS']),
+                    adeudos: findCol(['ADEUDOS']),
+                    supervisor: findCol(['SUPERVISOR', 'JEFE INMEDIATO']),
+                    estatusProceso: findCol(['ESTATUS DE PROCESO', 'ESTATUS PROCESO']),
+                    estatusCierre: findCol(['ESTATUS DE CIERRE PROCESO', 'ESTATUS CIERRE']),
+                    otrasFechasPago: findCol(['OTRAS FECHAS']),
+                    estatusPago: findCol(['ESTATUS PAGO']),
+                    otrasFechasDisp: -1,
+                };
+
+                let countOtras = 0;
+                for (let i = 0; i < headers.length; i++) {
+                    if (normalizarUpper(headers[i]) === 'OTRAS FECHAS') {
+                        countOtras++;
+                        if (countOtras === 2) {
+                            idx.otrasFechasDisp = i;
+                            break;
+                        }
+                    }
+                }
+                if (idx.otrasFechasDisp === -1) {
+                    idx.otrasFechasDisp = findCol(['FECHA TENTATIVA DISPERSION', 'FECHA DISPERSION', 'DISPERSION']);
+                }
+
+                const registros = [];
+                for (let i = headerIdx + 1; i < raw.length; i++) {
+                    const row = raw[i];
+                    if (!row || row.length === 0) continue;
+                    const hasData = row.some(c => c && String(c).trim() !== '');
+                    if (!hasData) continue;
+
+                    const get = (j) => (j >= 0 && j < row.length) ? row[j] : '';
+
+                    const fechaRaw = normalizar(get(idx.fecha));
+                    const finiquito = normalizar(get(idx.finiquito));
+                    const fad = normalizar(get(idx.fad));
+                    let estProceso = normalizarUpper(get(idx.estatusProceso));
+                    let estCierre = normalizarUpper(get(idx.estatusCierre));
+                    let estPago = normalizarUpper(get(idx.estatusPago));
+                    const otrasPago = normalizar(get(idx.otrasFechasPago));
+                    const otrasDisp = normalizar(get(idx.otrasFechasDisp));
+
+                    if (!estProceso) {
+                        if (esFirmado(finiquito) && esFirmado(fad)) {
+                            estProceso = 'CIERRE DE PROCESO';
+                        } else {
+                            const faltan = [];
+                            if (!esFirmado(finiquito)) faltan.push('Finiquito');
+                            if (!esFirmado(fad)) faltan.push('FAD');
+                            estProceso = faltan.join(', ') || 'Pendiente';
+                        }
+                    }
+                    if (!estCierre) {
+                        estCierre = (estProceso === 'CIERRE DE PROCESO') ? 'PAGADO' : 'PEND DE PAGO';
+                    }
+                    if (!estPago) {
+                        estPago = (estProceso === 'CIERRE DE PROCESO') ? 'DISPERSAR' : '';
+                    }
+
+                    registros.push({
+                        fecha: fechaRaw,
+                        finiquito: finiquito,
+                        fad: fad,
+                        motivo: normalizar(get(idx.motivo)),
+                        area: normalizar(get(idx.area)),
+                        puesto: normalizar(get(idx.puesto)),
+                        nombre: normalizar(get(idx.nombre)) || 'Sin nombre',
+                        correo: normalizar(get(idx.correo)),
+                        telefono: normalizar(get(idx.telefono)),
+                        zona: normalizar(get(idx.zona)),
+                        comentarios: normalizar(get(idx.comentarios)),
+                        adeudos: normalizar(get(idx.adeudos)),
+                        supervisor: normalizar(get(idx.supervisor)),
+                        estatusProceso: estProceso,
+                        estatusCierre: estCierre,
+                        otrasFechasPago: otrasPago,
+                        estatusPago: estPago,
+                        otrasFechasDisp: otrasDisp,
+                    });
+                }
+
+                if (registros.length === 0) throw new Error('No se encontraron registros de bajas.');
+                return registros;
+            }
+
+            // ================================================================
+            //  POBLAR FILTROS
+            // ================================================================
+            function populateFilters() {
+                // Finiquito
+                const finiqValues = new Set();
+                allRegistros.forEach(r => { if (r.finiquito) finiqValues.add(r.finiquito); });
+                const finiqSorted = Array.from(finiqValues).sort((a, b) => a.localeCompare(b));
+                filterFiniquitoSelect.innerHTML = '<option value="">Finiquito: Todos</option>';
+                finiqSorted.forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = val;
+                    filterFiniquitoSelect.appendChild(opt);
+                });
+                if (filtroFiniquito) filterFiniquitoSelect.value = filtroFiniquito;
+                else filterFiniquitoSelect.value = '';
+
+                // FAD
+                const fadValues = new Set();
+                allRegistros.forEach(r => { if (r.fad) fadValues.add(r.fad); });
+                const fadSorted = Array.from(fadValues).sort((a, b) => a.localeCompare(b));
+                filterFadSelect.innerHTML = '<option value="">FAD: Todos</option>';
+                fadSorted.forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = val;
+                    filterFadSelect.appendChild(opt);
+                });
+                if (filtroFad) filterFadSelect.value = filtroFad;
+                else filterFadSelect.value = '';
+            }
+
+            // ================================================================
+            //  APLICAR FILTROS (sin límite de registros)
+            // ================================================================
+            function aplicarFiltros() {
+                let filtrados = [...allRegistros];
+
+                if (filtroFiniquito) {
+                    filtrados = filtrados.filter(r => r.finiquito === filtroFiniquito);
+                }
+                if (filtroFad) {
+                    filtrados = filtrados.filter(r => r.fad === filtroFad);
+                }
+                if (globalSearch.trim() !== '') {
+                    const searchLower = globalSearch.trim().toLowerCase();
+                    filtrados = filtrados.filter(r => {
+                        for (let key in r) {
+                            if (r.hasOwnProperty(key)) {
+                                let val = r[key];
+                                if (val !== undefined && val !== null) {
+                                    if (String(val).toLowerCase().includes(searchLower)) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        return false;
+                    });
+                }
+
+                registrosFiltrados = filtrados;
+                renderTabla(filtrados); // Sin límite
+                renderMetricas(filtrados);
+                renderGraficos(filtrados);
+                actualizarContadores(filtrados);
+            }
+
+            function actualizarContadores(filtrados) {
+                const total = allRegistros.length;
+                const mostrados = filtrados.length;
+                totalRegistrosBadge.textContent = ` ${total}`;
+                rowCount.textContent = `${mostrados} registros`;
+            }
+
+            function limpiarFiltros() {
+                filtroFiniquito = '';
+                filtroFad = '';
+                globalSearch = '';
+                searchGlobalInput.value = '';
+                filterFiniquitoSelect.value = '';
+                filterFadSelect.value = '';
+                aplicarFiltros();
+            }
+
+            // ================================================================
+            //  MÉTRICAS
+            // ================================================================
+            function renderMetricas(registros) {
+                const total = registros.length;
+                if (total === 0) {
+                    totalBajasEl.textContent = '0';
+                    pctFiniquitoEl.textContent = '0%';
+                    subFiniquitoEl.textContent = '0 / 0';
+                    pctFadEl.textContent = '0%';
+                    subFadEl.textContent = '0 / 0';
+                    pctCierreEl.textContent = '0%';
+                    subCierreEl.textContent = '0 / 0';
+                    pctDispersarEl.textContent = '0%';
+                    subDispersarEl.textContent = '0 / 0';
+                    return;
+                }
+
+                let finiqFirm = 0,
+                    fadFirm = 0,
+                    cierre = 0,
+                    dispersar = 0;
+
+                registros.forEach(r => {
+                    if (esFirmado(r.finiquito)) finiqFirm++;
+                    if (esFirmado(r.fad)) fadFirm++;
+                    if (r.estatusProceso === 'CIERRE DE PROCESO') cierre++;
+                    if (r.estatusPago === 'DISPERSAR') dispersar++;
+                });
+
+                const pct = (n) => total > 0 ? Math.round((n / total) * 100) : 0;
+
+                totalBajasEl.textContent = total;
+                pctFiniquitoEl.textContent = pct(finiqFirm) + '%';
+                subFiniquitoEl.textContent = `${finiqFirm} / ${total}`;
+                pctFadEl.textContent = pct(fadFirm) + '%';
+                subFadEl.textContent = `${fadFirm} / ${total}`;
+                pctCierreEl.textContent = pct(cierre) + '%';
+                subCierreEl.textContent = `${cierre} / ${total}`;
+                pctDispersarEl.textContent = pct(dispersar) + '%';
+                subDispersarEl.textContent = `${dispersar} / ${total}`;
+            }
+
+            // ================================================================
+            //  TABLA (TODOS LOS REGISTROS, SIN LÍMITE)
+            // ================================================================
+            function renderTabla(registros) {
+                const tbody = tableBody;
+                tbody.innerHTML = '';
+                if (registros.length === 0) {
+                    tbody.innerHTML =
+                        `<tr><td colspan="19" style="text-align:center; padding:30px; color:#6b7a8e;">No hay registros que coincidan con los filtros.</td></tr>`;
+                    return;
+                }
+
+                // Mostrar TODOS los registros (sin límite)
+                registros.forEach((r, idx) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${idx + 1}</td>
+                        <td>${r.fecha || '—'}</td>
+                        <td><span class="badge ${esFirmado(r.finiquito) ? 'badge-success' : 'badge-warning'}">${r.finiquito || '—'}</span></td>
+                        <td><span class="badge ${esFirmado(r.fad) ? 'badge-success' : 'badge-warning'}">${r.fad || '—'}</span></td>
+                        <td>${r.motivo || '—'}</td>
+                        <td>${r.area || '—'}</td>
+                        <td>${r.puesto || '—'}</td>
+                        <td><span title="${r.nombre}">${r.nombre}</span></td>
+                        <td class="col-correo">${r.correo || '—'}</td>
+                        <td class="col-telefono">${r.telefono || '—'}</td>
+                        <td class="col-zona">${r.zona || '—'}</td>
+                        <td><span title="${r.comentarios}">${r.comentarios ? r.comentarios.substring(0, 50) + (r.comentarios.length > 50 ? '…' : '') : '—'}</span></td>
+                        <td>${r.adeudos || '—'}</td>
+                        <td class="col-supervisor">${r.supervisor || '—'}</td>
+                        <td><span class="badge ${r.estatusProceso === 'CIERRE DE PROCESO' ? 'badge-success' : 'badge-danger'}">${r.estatusProceso}</span></td>
+                        <td><span class="badge ${r.estatusCierre === 'PAGADO' ? 'badge-success' : 'badge-warning'}">${r.estatusCierre}</span></td>
+                        <td>${r.otrasFechasPago || '—'}</td>
+                        <td><span class="badge ${r.estatusPago === 'DISPERSAR' ? 'badge-success' : 'badge-secondary'}">${r.estatusPago || '—'}</span></td>
+                        <td>${r.otrasFechasDisp || '—'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // ================================================================
+            //  GRÁFICOS
+            // ================================================================
+            function renderGraficos(registros) {
+                // DONA
+                const cierreMap = {};
+                registros.forEach(r => {
+                    const key = r.estatusProceso || 'Desconocido';
+                    cierreMap[key] = (cierreMap[key] || 0) + 1;
+                });
+                const labels1 = Object.keys(cierreMap);
+                const data1 = Object.values(cierreMap);
+                const total1 = data1.reduce((a, b) => a + b, 0);
+                const colores1 = ['#F47920', '#0057A0', '#6c757d', '#28a745', '#dc3545', '#ffc107', '#6f42c1'];
+
+                donaLegend.innerHTML = '';
+                if (registros.length === 0) {
+                    donaLegend.innerHTML = '<div style="color:#6b7a8e; font-size:12px; padding:2px 0;">Sin datos</div>';
+                } else {
+                    labels1.forEach((label, i) => {
+                        const val = data1[i];
+                        const pct = total1 > 0 ? Math.round((val / total1) * 100) : 0;
+                        const div = document.createElement('div');
+                        div.className = 'dona-legend-item';
+                        div.innerHTML = `
+                            <span class="dona-legend-color" style="background:${colores1[i % colores1.length]}"></span>
+                            <span class="dona-legend-label">${label}</span>
+                            <span class="dona-legend-value">${val}</span>
+                            <span class="dona-legend-pct">${pct}%</span>
+                        `;
+                        donaLegend.appendChild(div);
+                    });
+                }
+
+                if (chartCierre) chartCierre.destroy();
+                const ctx1 = document.getElementById('chartCierre').getContext('2d');
+                chartCierre = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels1,
+                        datasets: [{ data: data1, backgroundColor: colores1.slice(0, labels1.length), borderWidth: 2,
+                            borderColor: '#fff' }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, datalabels: { display: false } },
+                        cutout: '55%'
+                    },
+                    plugins: [ChartDataLabels]
+                });
+
+                // BARRAS
+                let finiqF = 0,
+                    finiqN = 0,
+                    fadF = 0,
+                    fadN = 0;
+                registros.forEach(r => {
+                    if (esFirmado(r.finiquito)) finiqF++;
+                    else finiqN++;
+                    if (esFirmado(r.fad)) fadF++;
+                    else fadN++;
+                });
+                if (chartFirmas) chartFirmas.destroy();
+                const ctx2 = document.getElementById('chartFirmas').getContext('2d');
+                chartFirmas = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Estatus Finiquito', 'Renuncia FAD'],
+                        datasets: [
+                            { label: 'Firmado', data: [finiqF, fadF], backgroundColor: '#28a745',
+                            borderRadius: 4 },
+                            { label: 'No Firmado', data: [finiqN, fadN], backgroundColor: '#dc3545',
+                            borderRadius: 4 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+                            datalabels: {
+                                color: '#1e2a3a',
+                                font: { weight: 'bold', size: 11 },
+                                anchor: 'end',
+                                align: 'end',
+                                formatter: (value) => value
+                            }
+                        },
+                        scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            }
+
+            // ================================================================
+            //  EVENTOS DE FILTROS
+            // ================================================================
+            searchGlobalInput.addEventListener('input', function() {
+                globalSearch = this.value;
+                aplicarFiltros();
+            });
+
+            filterFiniquitoSelect.addEventListener('change', function() {
+                filtroFiniquito = this.value;
+                aplicarFiltros();
+            });
+
+            filterFadSelect.addEventListener('change', function() {
+                filtroFad = this.value;
+                aplicarFiltros();
+            });
+
+            btnClearAll.addEventListener('click', limpiarFiltros);
+
+            // ================================================================
+            //  EXPORTACIONES
+            // ================================================================
+            function exportarImagen() {
+                const overlay = loadingOverlay;
+                overlay.classList.add('show');
+                const element = document.getElementById('dashboardContent');
+                html2canvas(element, {
+                    scale: 1.8,
+                    useCORS: true,
+                    backgroundColor: '#f0f3f7',
+                    allowTaint: true,
+                    logging: false,
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'dashboard_bajas_maxikash.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    overlay.classList.remove('show');
+                }).catch(err => {
+                    console.error('Error al exportar imagen:', err);
+                    alert('Error al generar la imagen. Intenta de nuevo.');
+                    overlay.classList.remove('show');
+                });
+            }
+
+            function exportarPDF() {
+                const overlay = loadingOverlay;
+                overlay.classList.add('show');
+                const element = document.getElementById('dashboardContent');
+                html2canvas(element, {
+                    scale: 1.5,
+                    useCORS: true,
+                    backgroundColor: '#f0f3f7',
+                    allowTaint: true,
+                    logging: false,
+                }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('l', 'mm', 'a3');
+                    const imgWidth = 420;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    pdf.save('dashboard_bajas_maxikash.pdf');
+                    overlay.classList.remove('show');
+                }).catch(err => {
+                    console.error('Error al exportar PDF:', err);
+                    alert('Error al generar el PDF. Intenta de nuevo.');
+                    overlay.classList.remove('show');
+                });
+            }
+
+            document.getElementById('btnExportImage').addEventListener('click', exportarImagen);
+            document.getElementById('btnExportPDF').addEventListener('click', exportarPDF);
+
+            // ================================================================
+            //  CARGA DE ARCHIVO
+            // ================================================================
+            function cargarArchivo(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const registros = procesarExcel(workbook);
+                        allRegistros = registros;
+                        filtroFiniquito = '';
+                        filtroFad = '';
+                        globalSearch = '';
+                        searchGlobalInput.value = '';
+                        populateFilters();
+                        aplicarFiltros();
+                        fileStatus.innerHTML =
+                            `<i class="fas fa-check-circle" style="color:#28a745;"></i> ${file.name} (${registros.length} registros)`;
+                        dropZone.style.borderColor = '#28a745';
+                    } catch (err) {
+                        alert('Error al procesar el archivo:\n' + err.message);
+                        console.error(err);
+                        fileStatus.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#dc3545;"></i> Error: ${err.message}`;
+                    }
+                };
+                reader.onerror = function() {
+                    alert('Error al leer el archivo.');
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            // Drag & Drop
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault();
+                dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', (e) => { e.preventDefault();
+                dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const f = files[0];
+                    const ext = f.name.split('.').pop().toLowerCase();
+                    if (ext === 'xlsx' || ext === 'xls') {
+                        cargarArchivo(f);
+                    } else {
+                        alert('Solo se aceptan archivos .xlsx o .xls');
+                    }
+                }
+            });
+
+            dropZone.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'BUTTON' && e.target.id !== 'btnCargar') {
+                    fileInput.click();
+                }
+            });
+            btnCargar.addEventListener('click', (e) => { e.stopPropagation();
+                fileInput.click(); });
+            fileInput.addEventListener('change', (e) => {
+                if (fileInput.files.length > 0) {
+                    cargarArchivo(fileInput.files[0]);
+                }
+                fileInput.value = '';
+            });
+
+            // ================================================================
+            //  INICIO
+            // ================================================================
+            allRegistros = [];
+            aplicarFiltros();
+            document.getElementById('tableBody').innerHTML =
+                `<tr><td colspan="19" style="text-align:center; padding:30px; color:#6b7a8e;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:28px; display:block; margin-bottom:8px;"></i>
+                    Carga un archivo Excel para comenzar
+                </td></tr>`;
+            populateFilters();
+
+            console.log('Dashboard de Bajas Maxikash listo. Arrastra tu archivo Excel.');
+        })();
+    </script>
+
+</body>
+</html>

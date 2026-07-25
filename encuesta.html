@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevista de Salida - Maxikash</title>
+    <style>
+        :root {
+            --blue-primary: #0046be;
+            --blue-dark: #00328a;
+            --green-accent: #c2d500;
+            --text-color: #2b2b2b;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 6px solid var(--blue-primary);
+        }
+
+        header { text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 25px; margin-bottom: 30px; }
+        header img { max-width: 220px; height: auto; margin-bottom: 15px; }
+        .subtitle-dept { font-size: 0.9rem; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        h1 { color: var(--blue-primary); font-size: 1.8rem; margin-top: 5px; }
+
+        .intro-text {
+            background-color: #f0f4fb;
+            border-left: 4px solid var(--blue-primary);
+            padding: 15px 20px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        section { margin-bottom: 35px; }
+        h2 { font-size: 1.2rem; color: var(--blue-primary); margin-bottom: 15px; border-bottom: 2px solid var(--green-accent); padding-bottom: 5px; display: inline-block; }
+
+        .grid-data { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: span 2; }
+        label { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #444; }
+
+        input[type="text"], input[type="date"], textarea, select {
+            padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; transition: all 0.3s ease;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue-primary); box-shadow: 0 0 0 3px rgba(0, 70, 190, 0.15); }
+
+        .rating-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .rating-table th, .rating-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .rating-table th { background-color: var(--blue-primary); color: white; font-size: 0.9rem; text-transform: uppercase; }
+        .rating-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .rating-table select { width: 80px; text-align: center; font-weight: bold; }
+
+        .checkbox-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+        .checkbox-item input[type="radio"] { accent-color: var(--blue-primary); width: 18px; height: 18px; }
+
+        .signature-section { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 40px; padding-top: 20px; border-top: 1px dashed var(--border-color); }
+
+        .btn-submit {
+            background-color: var(--blue-primary); color: white; border: none; padding: 14px 28px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 20px; transition: background-color 0.3s ease;
+        }
+        .btn-submit:hover { background-color: var(--blue-dark); }
+        .btn-submit:disabled { background-color: #a0a0a0; cursor: not-allowed; }
+
+        /* Mensaje de Éxito al Finalizar */
+        #success-screen {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+        }
+        #success-screen .icon-check {
+            width: 80px;
+            height: 80px;
+            background-color: var(--green-accent);
+            color: var(--blue-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            font-weight: bold;
+            margin: 0 auto 20px auto;
+        }
+        #success-screen h2 { border: none; font-size: 2rem; color: var(--blue-primary); margin-bottom: 15px; }
+        #success-screen p { font-size: 1.1rem; color: #555; max-width: 600px; margin: 0 auto; }
+
+        @media (max-width: 600px) {
+            .grid-data, .signature-section { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <img src="logo.png" alt="Maxikash Logo">
+        <div class="subtitle-dept">Administración y Finanzas - Recursos Humanos</div>
+        <h1>Entrevista de Salida</h1>
+    </header>
+
+    <!-- FORMULARIO PRINCIPAL -->
+    <div id="survey-form-container">
+        <div class="intro-text">
+            Para <strong>MAXIKASH</strong> es muy importante conocer tu experiencia durante el tiempo laborado, así podemos mejorar nuestras condiciones laborales y hacer de nuestra compañía un mejor lugar de trabajo. Contesta las siguientes preguntas con honestidad, la información es confidencial y solo será de uso para Recursos Humanos.
+        </div>
+
+        <form id="exitForm">
+            <!-- 1. Datos Generales -->
+            <section>
+                <h2>1. Información General</h2>
+                <div class="grid-data">
+                    <div class="form-group"><label for="nombre">Nombre del Colaborador:</label><input type="text" id="nombre" name="nombre" required></div>
+                    <div class="form-group"><label for="area">Área:</label><input type="text" id="area" name="area" required></div>
+                    <div class="form-group"><label for="jefe">Jefe Directo:</label><input type="text" id="jefe" name="jefe" required></div>
+                    <div class="form-group"><label for="puesto">Puesto:</label><input type="text" id="puesto" name="puesto" required></div>
+                    <div class="form-group full-width"><label for="fecha_salida">Fecha de Salida:</label><input type="date" id="fecha_salida" name="fecha_salida" required></div>
+                </div>
+            </section>
+
+            <!-- 2. Evaluación de Aspectos -->
+            <section>
+                <h2>2. Evaluación de Aspectos Laborales</h2>
+                <p style="font-size: 0.9rem; margin-bottom: 15px; color: #555;">Indica qué tan satisfecho estabas con los siguientes aspectos del 1 al 10 (10 es la calificación más alta):</p>
+                <table class="rating-table">
+                    <thead><tr><th>Aspectos</th><th style="width: 100px; text-align: center;">Calificación</th></tr></thead>
+                    <tbody>
+                        <tr><td>1. ¿Contabas con las herramientas necesarias para hacer tu trabajo?</td><td style="text-align: center;"><select name="calif_1" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>2. ¿Las relaciones con tus compañeros de trabajo fueron cordiales y respetuosas?</td><td style="text-align: center;"><select name="calif_2" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>3. ¿Qué tan satisfecho te encuentras por la relación que se mantuvo con tu jefe directo?</td><td style="text-align: center;"><select name="calif_3" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>4. ¿Cómo calificas los beneficios que te ofrecía Maxikash, independiente a tu sueldo?</td><td style="text-align: center;"><select name="calif_4" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>5. ¿Qué tan satisfecho estabas con tu sueldo percibido?</td><td style="text-align: center;"><select name="calif_5" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>6. ¿Qué tan satisfecho estabas con tu horario laboral?</td><td style="text-align: center;"><select name="calif_6" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>7. ¿Cómo calificarías el equilibrio entre tu vida laboral y personal durante tu tiempo en la empresa?</td><td style="text-align: center;"><select name="calif_7" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                        <tr><td>8. ¿Contaste con el apoyo y la capacitación necesarios para realizar tu trabajo?</td><td style="text-align: center;"><select name="calif_8" required><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 3. Liderazgo y Motivos -->
+            <section>
+                <h2>3. Liderazgo y Motivos de Salida</h2>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="opinion_jefe">En este cuadro cuéntanos con tus palabras la imagen que tienes de tu jefe inmediato y cómo consideras que es la relación de él con el personal a su cargo:</label>
+                    <textarea id="opinion_jefe" name="opinion_jefe" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>¿Qué factor consideras que influyó más en tu decisión de dejar la empresa?</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item"><input type="radio" name="motivo_salida" value="Falta de oportunidades de crecimiento" required> Falta de oportunidades de crecimiento</label>
+                        <label class="checkbox-item"><input type="radio" name="motivo_salida" value="Relaciones laborales insatisfactorias"> Relaciones laborales insatisfactorias</label>
+                        <label class="checkbox-item"><input type="radio" name="motivo_salida" value="Falta de equilibrio entre vida laboral y personal"> Falta de equilibrio entre vida laboral y personal</label>
+                        <label class="checkbox-item"><input type="radio" name="motivo_salida" value="Otro"> Otro</label>
+                    </div>
+                    <input type="text" name="motivo_otro" placeholder="Si elegiste 'Otro', especifica aquí..." style="margin-top: 10px;">
+                </div>
+            </section>
+
+            <!-- 4. Experiencia General -->
+            <section>
+                <h2>4. Experiencia General</h2>
+                <div class="form-group" style="margin-bottom: 15px;"><label for="lo_mas_gusto">1. Menciona ¿Qué es lo que más te gustaba de tu trabajo?</label><textarea id="lo_mas_gusto" name="lo_mas_gusto" rows="2" required></textarea></div>
+                <div class="form-group" style="margin-bottom: 15px;"><label for="lo_menos_gusto">2. Menciona ¿Qué es lo que menos te gustaba de tu trabajo?</label><textarea id="lo_menos_gusto" name="lo_menos_gusto" rows="2" required></textarea></div>
+                <div class="form-group" style="margin-bottom: 15px;"><label for="retroalimentacion">3. ¿Recibiste retroalimentación y evaluaciones de desempeño de manera regular y constructiva?</label><textarea id="retroalimentacion" name="retroalimentacion" rows="2" required></textarea></div>
+                <div class="form-group" style="margin-bottom: 15px;"><label for="apoyo_rrhh">4. ¿Recibiste suficiente apoyo del equipo de RRHH para manejar el estrés y la presión laboral?</label><textarea id="apoyo_rrhh" name="apoyo_rrhh" rows="2" required></textarea></div>
+                <div class="form-group" style="margin-bottom: 15px;"><label for="cambio_empresa">5. Si pudieras cambiar algo dentro de la empresa, ¿Qué sería?</label><textarea id="cambio_empresa" name="cambio_empresa" rows="2" required></textarea></div>
+            </section>
+
+            <!-- Firma -->
+            <section class="signature-section">
+                <div class="form-group"><label for="firma_nombre">Nombre Completo y firma del colaborador:</label><input type="text" id="firma_nombre" name="firma_nombre" placeholder="Nombre completo" required></div>
+                <div class="form-group"><label for="fecha_firma">Fecha:</label><input type="date" id="fecha_firma" name="fecha_firma" required></div>
+            </section>
+
+            <button type="submit" id="btnSubmit" class="btn-submit">Enviar Encuesta</button>
+        </form>
+    </div>
+
+    <!-- PANTALLA DE AGRADECIMIENTO AL FINALIZAR -->
+    <div id="success-screen">
+        <div class="icon-check">✓</div>
+        <h2>¡Muchas Gracias!</h2>
+        <p>Tus respuestas han sido registradas con éxito y de manera confidencial.</p>
+        <p style="margin-top: 15px; font-size: 0.95rem; color: #777;">En <strong>MAXIKASH</strong> valoramos profundamente tu tiempo e información para seguir construyendo un mejor entorno laboral. Te deseamos el mayor de los éxitos en tus futuros proyectos.</p>
+    </div>
+</div>
+
+<script>
+    // Coloca aquí la URL de tu Google Apps Script Desplegado:
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzIl42NCQ6Aly9yw6hghBj6RcsOmzgSjh-LtAyt2Mz-iTmC_CSYTBpb5bD_iRb5MsXw/exec';
+
+    document.getElementById('exitForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerText = 'Enviando respuestas...';
+
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => { data[key] = value; });
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Para evitar bloqueos CORS con Google Apps Script
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            // Ocultar formulario y mostrar mensaje de agradecimiento
+            document.getElementById('survey-form-container').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .catch(error => {
+            alert('Ocurrió un error al enviar la encuesta. Por favor, intenta de nuevo.');
+            btn.disabled = false;
+            btn.innerText = 'Enviar Encuesta';
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Proyectos Maxikash - Capital Humano</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --maxikash-blue: #004ac1;
+            --maxikash-yellow: #d8e522;
+            --maxikash-green: #2ecc71;
+            --text-color: #333;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- Header y Logo --- */
+        header {
+            width: 100%;
+            background-color: var(--maxikash-blue);
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Botón de Inicio (Casita) */
+        .home-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .home-btn:hover {
+            background-color: var(--maxikash-yellow);
+            border-color: var(--maxikash-yellow);
+            color: var(--maxikash-blue);
+        }
+
+        .home-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .logo-container {
+            display: inline-block;
+            position: relative;
+        }
+
+        .logo-image {
+            height: 55px;
+            width: auto;
+            display: block;
+            margin: 0 auto;
+            animation: logoPulse 2.5s infinite ease-in-out;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px var(--maxikash-yellow);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .logo-container:hover::before {
+            opacity: 1;
+            animation: logoGlow 1.5s infinite alternate;
+        }
+
+        /* --- Título --- */
+        h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        h2.subtitle {
+            color: var(--maxikash-yellow);
+            font-size: 1rem;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        /* --- Banner de Bienvenida con Partículas --- */
+        .welcome-banner {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(135deg, #002e7a 0%, #004ac1 100%);
+            border-radius: 16px;
+            padding: 40px 30px;
+            margin-bottom: 35px;
+            box-sizing: border-box;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 74, 193, 0.2);
+            color: white;
+            text-align: center;
+        }
+
+        #particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-content h2 {
+            font-size: 2rem;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .welcome-content h2 span {
+            color: var(--maxikash-yellow);
+        }
+
+        .welcome-content p {
+            font-size: 1rem;
+            margin: 0;
+            color: #e0e8f7;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* --- Grid de Proyectos --- */
+        .main-container {
+            width: 90%;
+            max-width: 1200px;
+            padding: 30px 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* --- Tarjetas de Proyecto --- */
+        .project-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+            border-color: var(--maxikash-yellow);
+        }
+
+        .project-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background-color: var(--maxikash-blue);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: var(--maxikash-blue);
+        }
+
+        .project-description {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.4;
+            margin: 0 0 20px 0;
+        }
+
+        .go-button {
+            background-color: var(--maxikash-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            align-self: flex-start;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .project-card:hover .go-button {
+            background-color: var(--maxikash-yellow);
+            color: var(--maxikash-blue);
+        }
+
+        /* --- Visor de Proyecto (Iframe integrador) --- */
+        .viewer-container {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 80vh;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 2px solid var(--maxikash-blue);
+        }
+
+        .viewer-header {
+            background-color: #eef2f8;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .viewer-title {
+            font-weight: 600;
+            color: var(--maxikash-blue);
+        }
+
+        .close-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background-color: #c0392b;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- Panel de Links (Para la tarjeta Misceláneos) --- */
+        .links-container {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            box-sizing: border-box;
+            border: 2px solid var(--maxikash-blue);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .sheet-link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            padding: 14px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .sheet-link-btn:hover {
+            background-color: var(--maxikash-blue);
+            color: white;
+            border-color: var(--maxikash-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 74, 193, 0.2);
+        }
+
+        .sheet-link-btn span.icon {
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            width: 100%;
+            background-color: #333;
+            color: #aaa;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.85rem;
+            margin-top: auto;
+        }
+
+        footer p {
+            margin: 4px 0;
+        }
+
+        .developer-credit {
+            color: var(--maxikash-green);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 6px !important;
+        }
+
+        /* --- Animaciones Keyframes --- */
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        @keyframes logoGlow {
+            from {
+                box-shadow: 0 0 10px var(--maxikash-yellow), 
+                            0 0 20px var(--maxikash-yellow);
+            }
+            to {
+                box-shadow: 0 0 20px var(--maxikash-yellow), 
+                            0 0 30px var(--maxikash-yellow),
+                            0 0 40px var(--maxikash-yellow);
+            }
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.4rem; }
+            .logo-image { height: 45px; }
+            .projects-grid, .links-grid { grid-template-columns: 1fr; }
+            .home-btn {
+                position: static;
+                transform: none;
+                margin-bottom: 10px;
+            }
+            .welcome-content h2 { font-size: 1.5rem; }
+            .welcome-content p { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <!-- Botón Casita (Regresar al menú inicio) -->
+            <button class="home-btn" id="homeBtn" title="Regresar al inicio / Menú principal">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+            </button>
+
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo Maxikash" class="logo-image">
+            </div>
+            <h1>Portal de Herramientas Operativas</h1>
+            <h2 class="subtitle">Capital Humano - Plataforma Centralizada</h2>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- INTRO DE BIENVENIDA CON PARTICULAS -->
+        <div class="welcome-banner" id="welcomeBanner">
+            <canvas id="particles-canvas"></canvas>
+            <div class="welcome-content">
+                <h2>¡Bienvenido al Portal de <span>Capital Humano</span>!</h2>
+                <p>Gestiona, monitorea y consulta todas las herramientas e indicadores operativos de la organización desde un solo lugar de manera rápida, eficiente e intuitiva.</p>
+            </div>
+        </div>
+
+        <!-- Rejilla con los módulos -->
+        <div class="projects-grid" id="projectsGrid">
+
+            <!-- PROYECTO 1 -->
+            <div class="project-card" onclick="openProject('vacaciones.html', 'Registro Vacaciones')">
+                <div>
+                    <h3 class="project-title">1. Registro Vacaciones</h3>
+                    <p class="project-description">Gestión, control de días disponibles y solicitudes de periodos vacacionales del personal.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 2 -->
+            <div class="project-card" onclick="openProject('Registro incapacidades.html', 'Registro Incapacidades')">
+                <div>
+                    <h3 class="project-title">2. Registro Incapacidades</h3>
+                    <p class="project-description">Captura, seguimiento médico y control de folios de incapacidades del equipo.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 3 -->
+            <div class="project-card" onclick="openProject('universidad.html', 'Universidad')">
+                <div>
+                    <h3 class="project-title">3. Universidad</h3>
+                    <p class="project-description">Plataforma de capacitación interna, avance de cursos y desarrollo profesional.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 4 -->
+            <div class="project-card" onclick="openProject('PUESTOS.html', 'Matriz Puestos')">
+                <div>
+                    <h3 class="project-title">4. Matriz Puestos</h3>
+                    <p class="project-description">Estructura organizacional, perfiles de puesto y competencias requeridas por área.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 5 -->
+            <div class="project-card" onclick="openProject('encuesta.html', 'Encuesta de Salida')">
+                <div>
+                    <h3 class="project-title">5. Encuesta de Salida</h3>
+                    <p class="project-description">Formulario y recolección de métricas para el análisis de motivos de baja y rotación.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 6 -->
+            <div class="project-card" onclick="openProject('ACTUALIZACION EXPEDIENTES 2026.html', 'Carga Expedientes Sparta')">
+                <div>
+                    <h3 class="project-title">6. Carga Expedientes Sparta</h3>
+                    <p class="project-description">Módulo para la carga y actualización de la documentación digital en el sistema Sparta.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 7 -->
+            <div class="project-card" onclick="openProject('Cierre Proceso.html', 'Cierre de Proceso')">
+                <div>
+                    <h3 class="project-title">7. Cierre de Proceso</h3>
+                    <p class="project-description">Verificación y validación de actividades requeridas para la conclusión periódica de procesos.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 8 -->
+            <div class="project-card" onclick="openProject('onboarding.html', 'Onboarding')">
+                <div>
+                    <h3 class="project-title">8. Onboarding</h3>
+                    <p class="project-description">Flujo de integración, bienvenida y seguimiento inicial para colaboradores de nuevo ingreso.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 9 -->
+            <div class="project-card" onclick="openProject('Registro candidatos.html', 'Registro Candidatos Entrevistas')">
+                <div>
+                    <h3 class="project-title">9. Registro Candidatos</h3>
+                    <p class="project-description">Control, seguimiento de entrevistas y estatus de candidatos en proceso de selección.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- PROYECTO 10 (Misceláneos) -->
+            <div class="project-card" onclick="openLinksPanel()">
+                <div>
+                    <h3 class="project-title">10. Misceláneos</h3>
+                    <p class="project-description">Acceso directo en pestañas externas a Google Sheets, Forms, Docs, Drive y Sparta Ledger.</p>
+                </div>
+                <button class="go-button">Ver Links</button>
+            </div>
+
+        </div>
+
+        <!-- Contenedor desplegable integrado para cargar los proyectos HTML -->
+        <div class="viewer-container" id="viewerContainer">
+            <div class="viewer-header">
+                <span class="viewer-title" id="viewerTitle">Visualizador de Proyecto</span>
+                <button class="close-btn" onclick="showHome()">Cerrar / Volver</button>
+            </div>
+            <iframe id="projectIframe" src="" title="Contenido del Proyecto"></iframe>
+        </div>
+
+        <!-- Panel del Módulo 10: Misceláneos (Enlaces Externos) -->
+        <div class="links-container" id="linksContainer">
+            <div class="viewer-header" style="background: none; padding: 0 0 15px 0; border-bottom: 2px solid var(--maxikash-yellow);">
+                <span class="viewer-title" style="font-size: 1.3rem;">Misceláneos: Hojas de Control, Formularios y Carpetas</span>
+                <button class="close-btn" onclick="showHome()">Cerrar / Volver</button>
+            </div>
+            <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">Haz clic en cualquiera de las siguientes opciones para abrir el documento directamente en una nueva pestaña:</p>
+            
+            <div class="links-grid">
+                <a href="https://docs.google.com/spreadsheets/d/1bUyQLIID3d1KFDyjUZk-xDX0FtyqdwmX/edit?gid=1414933246#gid=1414933246" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Registro Contratos <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1qbktroajyPsb-ztPlKLhLCzeKLxS6KHS/edit?gid=1729201634#gid=1729201634" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Ingresos <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1bv_Ww9wx0r8iIk-vw8IvaEi2SRJpw8lG/edit?pli=1&gid=1218902246#gid=1218902246" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Control de Empleados 2026 - HC <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1mSHHkinHUn0nWAaqRVDHwCtG4FjqpRlv1GoIxtelmp4/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Control Vacaciones <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1ApJ0KesfWiuQwATDQBxYmunEaMlKnGu134djAJ2fzQ8/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Control Incapacidades <span class="icon">📊</span>
+                </a>
+                <a href="https://drive.google.com/drive/folders/1R_AfbnbkwdKZzJjUgC0VcgeMR1oa9gpk?usp=drive_link" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Drive Incapacidades IMSS <span class="icon">📁</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1U_HF0_ks6kZCKeDqsvq7SmXYBRBTwSpEJowDs3nalak/edit?gid=177028598#gid=177028598" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Registro Encuesta de Salida <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1E8lJHHZdZvTzK50WsgsGCM-tBAElSMPi/edit?gid=198438100#gid=198438100" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Checklist Contrataciones <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/18qYyPZb0OsptFdC4YBbOnUhaFmV5xS4R4vFVOsdtZCs/edit?gid=1718338670#gid=1718338670" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    MasterData Compliance <span class="icon">📊</span>
+                </a>
+                <a href="https://drive.google.com/drive/folders/1Eo3aiSC7OCU-QzEMPmTtNXFyIvyLGVP6?usp=drive_link" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Drive Master Data Contratos <span class="icon">📁</span>
+                </a>
+                <a href="https://docs.google.com/document/d/1YPjoPevBB0HTc0hrpNKQ7WsDd3dJJ_K2/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Formato Renuncia <span class="icon">📄</span>
+                </a>
+                <a href="https://docs.google.com/document/d/1h5YVMxTyAAbSvY5ymeNhF0-5Wh7H7Vj-/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Constancia Laboral <span class="icon">📄</span>
+                </a>
+                <a href="http://34.51.95.211/Inicio" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Sparta Ledger <span class="icon">🌐</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1JG0dilxKlseQkgHBb29mIhYYLkZSQKXd6pjOmMp29JU/edit?gid=1801488679#gid=1801488679" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Campañas MKT - RRHH <span class="icon">📊</span>
+                </a>
+                <a href="https://docs.google.com/forms/d/1Q2BJtKRIy71yNM0t7zn24bkdAYvzSZUII82FSIf3xKs/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Formulario Vacantes Corporativo <span class="icon">📝</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1IoD-CWt6O-zAgAFpIb9hMwtiaMXN-Y_D6Ec9MtlepQI/edit?resourcekey&usp=forms_web_b&urp=linked#gid=645515667" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                    Control Vacantes Maxicorpo <span class="icon">📊</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Maxikash - Todos los derechos reservados.</p>
+        <p>Departamento de Capital Humano</p>
+        <p class="developer-credit">Desarrollado por AsherOwen 🦖</p>
+    </footer>
+
+    <script>
+        const projectsGrid = document.getElementById('projectsGrid');
+        const viewerContainer = document.getElementById('viewerContainer');
+        const linksContainer = document.getElementById('linksContainer');
+        const welcomeBanner = document.getElementById('welcomeBanner');
+        const projectIframe = document.getElementById('projectIframe');
+        const viewerTitle = document.getElementById('viewerTitle');
+        const homeBtn = document.getElementById('homeBtn');
+
+        // Función para abrir proyectos en la misma página
+        function openProject(fileUrl, title) {
+            linksContainer.style.display = 'none';
+            welcomeBanner.style.display = 'none';
+            projectIframe.src = fileUrl;
+            viewerTitle.textContent = title;
+            projectsGrid.style.display = 'none';
+            viewerContainer.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para abrir el panel de Misceláneos
+        function openLinksPanel() {
+            projectIframe.src = '';
+            welcomeBanner.style.display = 'none';
+            viewerContainer.style.display = 'none';
+            projectsGrid.style.display = 'none';
+            linksContainer.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Función para regresar al menú principal
+        function showHome() {
+            projectIframe.src = '';
+            viewerContainer.style.display = 'none';
+            linksContainer.style.display = 'none';
+            welcomeBanner.style.display = 'block';
+            projectsGrid.style.display = 'grid';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        homeBtn.addEventListener('click', showHome);
+
+        /* --- SCRIPT DE PARTICULAS (AZUL Y VERDE CORPORATIVO) --- */
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = welcomeBanner.offsetWidth;
+            canvas.height = welcomeBanner.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particles = [];
+        const particleCount = 45;
+        // Colores corporativos: Azules, Verdes y toque de Amarillo
+        const colors = ['#2ecc71', '#004ac1', '#3498db', '#d8e522', '#1abc9c'];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 1.2;
+                this.speedY = (Math.random() - 0.5) * 1.2;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.alpha = Math.random() * 0.6 + 0.3;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function connectParticles() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 90) {
+                        ctx.save();
+                        ctx.globalAlpha = (1 - distance / 90) * 0.25;
+                        ctx.strokeStyle = '#2ecc71';
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            connectParticles();
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-900 text-slate-100 scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxikash - Portal de Onboarding Premium</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#004fd3',      /* Azul Rey Oficial */
+                            blueDeep: '#081c4b',  /* Azul Oscuro Profundo */
+                            blueLight: '#f0f5ff', 
+                            green: '#c3d64c',     /* Verde Lima Oficial */
+                            darkBg: '#090d16',    /* Fondo General Ultra Dark */
+                            cardBg: '#111827'     /* Fondo de Tarjetas */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animación de Borde de Luz Verde que Recorre */
+        @keyframes borderLoop {
+            0% { border-color: #004fd3; box-shadow: 0 0 10px rgba(195, 214, 76, 0.2); }
+            50% { border-color: #c3d64c; box-shadow: 0 0 25px rgba(195, 214, 76, 0.6); }
+            100% { border-color: #004fd3; box-shadow: 0 0 10px rgba(195, 214, 76, 0.2); }
+        }
+
+        .luz-verde-activa {
+            border: 2.5px solid #004fd3;
+            animation: borderLoop 3s infinite linear;
+        }
+
+        /* Hover dinámico con los colores de la marca */
+        .card-glow:hover {
+            box-shadow: 0 10px 30px -10px rgba(195, 214, 76, 0.3);
+            transform: translateY(-2px);
+            border-color: #c3d64c;
+        }
+
+        /* Card de Módulo Activo */
+        .active-module-card {
+            border-color: #c3d64c !important;
+            background-color: #081c4b !important;
+            box-shadow: 0 0 15px rgba(195, 214, 76, 0.4);
+        }
+
+        /* Scrollbar Personalizado */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #004fd3;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c3d64c;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased bg-brand-darkBg flex overflow-hidden">
+
+    <!-- IMAGEN 1: PANTALLA DE INTRODUCCIÓN OBLIGATORIA (CON VIDEO "bienvenido") -->
+    <div id="intro-screen" class="fixed inset-0 z-50 bg-brand-darkBg flex flex-col items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-2xl w-full text-center space-y-6">
+            <!-- Logo corporativo -->
+            <div class="flex justify-center">
+                <img src="logo.png" alt="Maxikash Logo" class="h-14 w-auto object-contain">
+            </div>
+            
+            <div class="space-y-2">
+                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                    ¡Te damos la bienvenida a <span class="text-brand-green">Maxikash!</span>
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
+                    Por favor, visualiza este video institucional antes de ingresar a tu panel de onboarding.
+                </p>
+            </div>
+
+            <!-- Contenedor del video "bienvenido.mp4" -->
+            <div class="bg-slate-955 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl p-1.5 bg-gradient-to-b from-slate-900 to-slate-955">
+                <div class="px-4 py-2 bg-slate-900/60 border-b border-slate-800 text-left">
+                    <span class="text-[10px] font-black text-brand-green tracking-widest uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-film"></i> Video de Introducción Institucional
+                    </span>
+                </div>
+                <div class="relative aspect-video bg-black rounded-xl overflow-hidden">
+                    <!-- Sin autoplay, reproducción manual mediante click -->
+                    <video id="intro-video" class="w-full h-full" controls poster="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80">
+                        <source src="bienvenido.mp4" type="video/mp4">
+                        Tu navegador no soporta el formato de video.
+                    </video>
+                </div>
+            </div>
+
+            <!-- Botón de Entrada -->
+            <div class="pt-2">
+                <button onclick="enterPortal()" class="bg-brand-blue hover:bg-brand-blue/90 text-white font-extrabold text-xs px-8 py-3.5 rounded-xl tracking-wider uppercase transition shadow-lg flex items-center justify-center gap-2 mx-auto border border-brand-blue/20 hover:border-brand-green/40">
+                    <i class="fa-solid fa-arrow-right-to-bracket text-brand-green"></i> Ingresar al Portal
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- CONTENIDO GENERAL DEL PORTAL (Oculto hasta dar clic en Ingresar) -->
+    
+    <!-- MENÚ LATERAL IZQUIERDO DE NAVEGACIÓN -->
+    <aside id="aside-sidebar" class="w-64 bg-slate-955 border-r border-slate-800 flex flex-col justify-between shrink-0 hidden lg:flex opacity-0 transition-opacity duration-500">
+        <div>
+            <!-- Contenedor del Logotipo -->
+            <div class="h-20 flex items-center justify-center border-b border-slate-800/80 px-6 bg-slate-950">
+                <img src="logo.png" alt="Maxikash Logo" class="h-10 w-auto object-contain">
+            </div>
+
+            <!-- Navegación -->
+            <nav class="p-4 space-y-2.5">
+                <a href="#inicio" class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-brand-blue text-white font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-house text-brand-green"></i>
+                    <span>INICIO</span>
+                </a>
+                <a href="#reproductor" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-play-circle text-brand-blue"></i>
+                    <span>REPRODUCTOR</span>
+                </a>
+                <a href="#roadmap" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-route text-brand-green"></i>
+                    <span>RUTA DE INTEGRACIÓN</span>
+                </a>
+                <a href="#identidad" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-seedling text-brand-green"></i>
+                    <span>CULTURA Y VALORES</span>
+                </a>
+                <a href="#evaluacion" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-graduation-cap text-brand-blue"></i>
+                    <span>EVALUACIÓN</span>
+                </a>
+                <a href="#glosario-sec" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-book text-brand-green"></i>
+                    <span>GLOSARIO</span>
+                </a>
+                <a href="#soporte" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-id-card text-brand-blue"></i>
+                    <span>SOPORTE</span>
+                </a>
+                <a href="#documentos" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-900 font-semibold text-xs tracking-wider transition">
+                    <i class="fa-solid fa-file-invoice-dollar text-brand-green"></i>
+                    <span>DOCUMENTOS & FAQ</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL DERECHO -->
+    <div class="flex-grow flex flex-col h-full overflow-y-auto hidden" id="main-portal-container">
+        
+        <!-- BANNER DE BIENVENIDA -->
+        <div class="sticky top-0 z-40 bg-gradient-to-r from-brand-blueDeep to-slate-955 border-b border-slate-800 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl backdrop-blur-md">
+            <div class="flex items-center space-x-4">
+                <div class="p-2.5 bg-brand-blue/10 rounded-xl border border-brand-blue/30 lg:hidden">
+                    <img src="logo.png" alt="Maxikash" class="h-8 w-auto">
+                </div>
+                <div>
+                    <h1 class="text-lg font-black tracking-tight text-white flex items-center gap-2">
+                        Portal de Onboarding <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-brand-green/20 text-brand-green border border-brand-green/30">Inducción 2026</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Te damos la bienvenida a tu nuevo camino profesional en Maxikash.</p>
+                </div>
+            </div>
+
+            <!-- Progreso de Inducción -->
+            <div class="flex items-center space-x-4 bg-slate-900/90 rounded-full px-5 py-2 border border-slate-800">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Progreso</span>
+                <div class="w-24 sm:w-36 bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar-header" class="bg-brand-green h-full w-0 transition-all duration-500 shadow-[0_0_8px_#c3d64c]"></div>
+                </div>
+                <span id="progress-text-header" class="text-xs font-black text-brand-green">0%</span>
+            </div>
+        </div>
+
+        <!-- CONTENIDO FLUIDO DEL PORTAL -->
+        <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10" id="inicio">
+
+            <!-- IMAGEN 2: BIENVENIDA OFICIAL (CON VIDEO "bienvenida.mp4" E INSTRUCCIONES ABAJO) -->
+            <section class="bg-gradient-to-br from-brand-blueDeep/50 to-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-brand-green/5 rounded-full blur-3xl"></div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Columna Izquierda: Texto de Bienvenida -->
+                    <div class="lg:col-span-6 space-y-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-brand-blue/20 text-brand-green rounded-xl flex items-center justify-center text-2xl shrink-0 border border-brand-green/20 shadow-[0_0_15px_rgba(195,214,76,0.2)]">
+                                <i class="fa-solid fa-hand-sparkles"></i>
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">¡Hola, bienvenid@ a Maxikash!</h2>
+                        </div>
+                        <div class="text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3 font-medium">
+                            <p>
+                                Hoy comienza una nueva etapa profesional y nos emociona que formes parte de este gran equipo. En Maxikash 
+                                creemos en las personas con iniciativa, compromiso y ganas de superarse, que buscan aportar nuevas ideas, 
+                                asumir retos y crecer junto con la compañía.
+                            </p>
+                            <p>
+                                Por ello, este kit fue creado para servirte como guía durante tu proceso de integración, brindarte información 
+                                relevante y ayudarte a conocer mejor nuestra cultura, valores y forma de trabajo.
+                            </p>
+                            <p class="text-brand-green font-semibold">
+                                ¡Te invitamos a revisar los módulos interactivos aquí abajo!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Video Institucional "bienvenida.mp4" sin reproducción automática -->
+                    <div class="lg:col-span-6 w-full">
+                        <div class="bg-slate-955 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+                            <div class="px-4 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                                <span class="text-[10px] font-black text-brand-green tracking-widest uppercase flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-play"></i> Video Institucional de Bienvenida
+                                </span>
+                            </div>
+                            <div class="relative aspect-video bg-black">
+                                <video id="welcome-video-player" class="w-full h-full" controls poster="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80">
+                                    <source src="bienvenida.mp4" type="video/mp4">
+                                    Tu navegador no soporta el video.
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parte Inferior: Caja de Instrucciones alineada horizontalmente -->
+                <div class="bg-slate-900/60 p-4 sm:p-5 rounded-xl border border-slate-800/80 mt-2">
+                    <h4 class="text-xs font-black text-brand-green uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i> Instrucciones para completar tu Inducción
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+                        <div class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-circle-play text-brand-blue text-sm shrink-0 mt-0.5"></i>
+                            <span><strong>Paso 1:</strong> Visualiza el video institucional superior y los 9 módulos temáticos situados justo abajo.</span>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-circle-check text-brand-green text-sm shrink-0 mt-0.5"></i>
+                            <span><strong>Paso 2:</strong> Al concluir cada video, márcalo como completado para actualizar tu barra de progreso en tiempo real.</span>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-graduation-cap text-purple-400 text-sm shrink-0 mt-0.5"></i>
+                            <span><strong>Paso 3:</strong> Responde de forma correcta el Quiz final para desbloquear y descargar tu Diploma Digital corporativo.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- IMAGEN 3: REPRODUCTOR DINÁMICO SIN REPRODUCCIÓN AUTOMÁTICA -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" id="reproductor">
+                
+                <!-- REPRODUCTOR DE VIDEO PRINCIPAL (Izquierda) -->
+                <section class="lg:col-span-8 bg-slate-955 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between shadow-2xl luz-verde-activa">
+                    <div class="px-6 py-4.5 bg-slate-900/60 border-b border-slate-800/80 flex items-center justify-between">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="w-3 h-3 bg-brand-green rounded-full"></span>
+                            <h2 id="now-playing-title" class="font-extrabold text-xs sm:text-sm tracking-wider text-slate-200 uppercase">MÓDULO 1: LEGACYAPP</h2>
+                        </div>
+                        <span class="text-[10px] bg-brand-blue/20 text-white border border-brand-blue/40 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-video mr-1 text-brand-green"></i> En reproducción
+                        </span>
+                    </div>
+
+                    <div class="relative aspect-video bg-black flex items-center justify-center">
+                        <!-- Removido cualquier tipo de trigger play automático para que dependa del click directo en los controles -->
+                        <video id="main-video-player" class="w-full h-full" controls poster="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80">
+                            <source id="video-source" src="legacyapp.mp4" type="video/mp4">
+                        </video>
+                        <div id="video-overlay" class="absolute inset-0 bg-brand-darkBg/95 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300 pointer-events-none hidden">
+                            <div class="w-16 h-16 rounded-full bg-brand-green/20 text-brand-green flex items-center justify-center text-3xl mb-4 border border-brand-green/40 shadow-[0_0_15px_#c3d64c]">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <h4 class="text-xl font-black text-white">¡Módulo completado con éxito!</h4>
+                            <p class="text-xs text-slate-400 mt-2 max-w-sm">Tu progreso se ha actualizado. Selecciona el siguiente módulo a la derecha.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 sm:p-5 bg-slate-900/30 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-[11px] text-slate-400 flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-info text-brand-green text-sm"></i>
+                            <span>Al terminar de ver el video de este módulo, haz clic en marcar como completado.</span>
+                        </div>
+                        <button id="btn-complete-active" onclick="markActiveAsComplete()" class="w-full sm:w-auto bg-brand-blue hover:bg-brand-blue/90 text-white font-extrabold text-xs px-6 py-3.5 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 shrink-0 border border-brand-blue/20 hover:border-brand-green/40">
+                            <i class="fa-solid fa-circle-check text-brand-green"></i> Marcar como Completado
+                        </button>
+                    </div>
+                </section>
+
+                <!-- LISTADO DE MÓDULOS VERTICAL (Derecha) -->
+                <section class="lg:col-span-4 bg-slate-955 border border-slate-800 rounded-2xl p-4 shadow-2xl flex flex-col justify-between text-slate-100">
+                    <div class="mb-3 pb-2 border-b border-slate-800/80 flex items-center justify-between">
+                        <h3 class="font-extrabold text-xs text-slate-400 uppercase tracking-wider">Contenido del Onboarding</h3>
+                        <span class="text-[10px] font-bold text-brand-green bg-brand-green/10 border border-brand-green/30 px-2 py-0.5 rounded-full">9 MÓDULOS</span>
+                    </div>
+                    
+                    <div class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+                        
+                        <!-- Módulo 1 -->
+                        <div id="module-card-1" onclick="changeVideo(1)" class="active-module-card p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-play"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">LegacyApp</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-1" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 2 -->
+                        <div id="module-card-2" onclick="changeVideo(2)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-mobile-screen-button"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">1. Asistencia</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-2" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 3 -->
+                        <div id="module-card-3" onclick="changeVideo(3)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-money-bill-transfer"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">2. Pago de Nómina</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-3" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 4 -->
+                        <div id="module-card-4" onclick="changeVideo(4)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-chart-line"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">3. Bonos e Incentivos</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-4" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 5 -->
+                        <div id="module-card-5" onclick="changeVideo(5)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">4. Recibos de Nómina</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-5" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 6 -->
+                        <div id="module-card-6" onclick="changeVideo(6)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-arrows-rotate"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">5. Cambio de Cuenta</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-6" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 7 -->
+                        <div id="module-card-7" onclick="changeVideo(7)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-kit-medical"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">6. Incidencias Médicas</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-7" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 8 -->
+                        <div id="module-card-8" onclick="changeVideo(8)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-award"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">7. Nuestros Valores</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-8" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                        <!-- Módulo 9 -->
+                        <div id="module-card-9" onclick="changeVideo(9)" class="p-3 border border-slate-800 bg-slate-900/50 rounded-xl cursor-pointer hover:border-brand-green/40 transition flex items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-green flex items-center justify-center text-xs shrink-0 border border-brand-blue/10"><i class="fa-solid fa-rocket"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-xs text-white leading-snug">8. Nuestra Cultura</h4>
+                                </div>
+                            </div>
+                            <span id="badge-video-9" class="text-[9px] font-black bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded shrink-0">Pendiente</span>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+
+            <!-- ROADMAP DE INTEGRACIÓN TEMPORAL (Ruta del Éxito) -->
+            <section class="bg-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6" id="roadmap">
+                <div class="border-b border-slate-800/80 pb-4 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-route text-brand-green"></i> Tu Ruta de Integración de 30 Días
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Sigue esta planeación paso a paso para asegurar un inicio espectacular en la compañía.</p>
+                    </div>
+                    <span class="text-[10px] font-bold text-brand-blue bg-brand-blue/10 px-3 py-1 rounded-full uppercase tracking-widest border border-brand-blue/20">Roadmap</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                    <!-- Día 1 -->
+                    <div class="p-5 bg-slate-900 border border-slate-800 rounded-xl relative hover:border-brand-green/30 transition">
+                        <div class="absolute -top-3 left-4 bg-brand-green text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-full uppercase">Día 1: Configuración</div>
+                        <ul class="space-y-3 mt-4 text-xs text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Completa el portal de Onboarding (9 Videos y Quiz).</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Configuración de cuentas y herramientas internas de trabajo.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Presentación oficial con tu líder directo de área.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Semana 1 -->
+                    <div class="p-5 bg-slate-900 border border-slate-800 rounded-xl relative hover:border-brand-green/30 transition">
+                        <div class="absolute -top-3 left-4 bg-brand-blue text-white font-black text-[10px] px-2.5 py-1 rounded-full uppercase">Semana 1: Adaptación</div>
+                        <ul class="space-y-3 mt-4 text-xs text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Sesiones de sombra (shadowing) con miembros del equipo.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Comprensión de objetivos semanales y métricas individuales.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Primera sesión de preguntas de control con tu supervisor.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Mes 1 -->
+                    <div class="p-5 bg-slate-900 border border-slate-800 rounded-xl relative hover:border-brand-green/30 transition">
+                        <div class="absolute -top-3 left-4 bg-purple-600 text-white font-black text-[10px] px-2.5 py-1 rounded-full uppercase">Mes 1: Autonomía</div>
+                        <ul class="space-y-3 mt-4 text-xs text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Ejecución totalmente autónoma de tus funciones diarias.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Evaluación de retroalimentación de los primeros 30 días.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-brand-blue mt-0.5"></i>
+                                <span>Alineación estratégica para los KPI del siguiente trimestre.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: IDENTIDAD Y CULTURA CORPORATIVA -->
+            <section class="space-y-8" id="identidad">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Misión -->
+                    <div class="bg-gradient-to-br from-brand-blueDeep to-slate-955 border border-brand-blue/30 rounded-2xl p-6 shadow-xl flex flex-col justify-between hover:border-brand-green/40 transition duration-300">
+                        <div>
+                            <div class="w-12 h-12 bg-brand-blue text-white rounded-xl flex items-center justify-center text-xl mb-4 border border-brand-green/20 shadow-[0_0_12px_rgba(0,79,211,0.4)]">
+                                <i class="fa-solid fa-bullseye text-brand-green"></i>
+                            </div>
+                            <h3 class="text-xs font-black uppercase tracking-widest text-brand-green mb-2">Misión</h3>
+                            <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                                Impulsar el crecimiento financiero de nuestros clientes mediante soluciones innovadoras, accesibles y eficientes, respaldadas por tecnología, cercanía y un equipo comprometido con generar valor en cada proceso.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Visión -->
+                    <div class="bg-gradient-to-br from-brand-blueDeep to-slate-955 border border-brand-blue/30 rounded-2xl p-6 shadow-xl flex flex-col justify-between hover:border-brand-green/40 transition duration-300">
+                        <div>
+                            <div class="w-12 h-12 bg-brand-blue text-white rounded-xl flex items-center justify-center text-xl mb-4 border border-brand-green/20 shadow-[0_0_12px_rgba(0,79,211,0.4)]">
+                                <i class="fa-solid fa-eye text-brand-green"></i>
+                            </div>
+                            <h3 class="text-xs font-black uppercase tracking-widest text-brand-green mb-2">Visión</h3>
+                            <p class="text-sm text-slate-300 font-medium leading-relaxed">
+                                Ser una fintech referente en Latinoamérica, reconocida por transformar la experiencia financiera a través de innovación, expansión estratégica y excelencia operativa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nuestros Valores -->
+                <div class="bg-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+                    <div class="border-b border-slate-800/80 pb-4 flex items-center justify-between">
+                        <div>
+                            <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                                <i class="fa-solid fa-heart text-brand-green"></i> Nuestros Valores
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">Los principios fundamentales alneados a nuestra cultura corporativa.</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-brand-green bg-brand-green/10 px-3 py-1 rounded-full uppercase tracking-widest border border-brand-green/20">Identidad</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Innovación -->
+                        <div class="p-5 bg-slate-900 border border-slate-800 rounded-xl card-glow transition duration-300">
+                            <span class="text-xs font-black text-white bg-brand-blue/40 px-2.5 py-1 rounded-md inline-block mb-3 border border-brand-blue/40">
+                                <i class="fa-solid fa-lightbulb text-brand-green mr-1.5"></i> Innovación
+                            </span>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Constantemente buscamos nuevas e ingeniosas soluciones tecnológicas para mejorar las finanzas de nuestros clientes y eficientar nuestros flujos internos.
+                            </p>
+                        </div>
+
+                        <!-- Cercanía -->
+                        <div class="p-5 bg-slate-900 border border-slate-800 rounded-xl card-glow transition duration-300">
+                            <span class="text-xs font-black text-white bg-brand-blue/40 px-2.5 py-1 rounded-md inline-block mb-3 border border-brand-blue/40">
+                                <i class="fa-solid fa-users text-brand-green mr-1.5"></i> Cercanía
+                            </span>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Creemos en el factor humano. Nos comunicamos de manera directa, transparente y empática tanto de forma interna como con cada uno de nuestros usuarios.
+                            </p>
+                        </div>
+
+                        <!-- Disciplina -->
+                        <div class="p-5 bg-slate-900 border border-slate-800 rounded-xl card-glow transition duration-300">
+                            <span class="text-xs font-black text-white bg-brand-blue/40 px-2.5 py-1 rounded-md inline-block mb-3 border border-brand-blue/40">
+                                <i class="fa-solid fa-scale-balanced text-brand-green mr-1.5"></i> Disciplina
+                            </span>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                El orden, compromiso diario y apego a nuestras políticas operativas garantizan el éxito financiero de Maxikash y nuestro crecimiento profesional.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXAMEN / QUIZ DE EVALUACIÓN INTERACTIVO -->
+            <section class="bg-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6" id="evaluacion">
+                <div class="border-b border-slate-800/80 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-brand-blue"></i> Quiz de Inducción Corporativo
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Evalúa lo aprendido en los videos y desbloquea tu Diploma Digital de Inducción de forma inmediata.</p>
+                    </div>
+                    <span class="text-[10px] font-bold text-brand-green bg-brand-green/10 px-3 py-1 rounded-full uppercase tracking-widest border border-brand-green/20">Evaluación</span>
+                </div>
+
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Pregunta 1 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <p class="text-xs font-black text-slate-200">1. ¿Qué comprobante médico es legalmente válido y aceptado para justificar una incapacidad en Maxikash?</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q1" value="incorrect" class="accent-brand-blue">
+                                <span>Receta médica de una farmacia privada de conveniencia</span>
+                            </label>
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q1" value="correct" class="accent-brand-blue">
+                                <span>Incapacidad oficial emitida directamente por el IMSS</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 2 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <p class="text-xs font-black text-slate-200">2. ¿A qué área se debe dirigir la solicitud formal en caso de requerir un Cambio de Cuenta de Nómina?</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q2" value="correct" class="accent-brand-blue">
+                                <span>Área de Nóminas, adjuntando el formato firmado y estado de cuenta</span>
+                            </label>
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q2" value="incorrect" class="accent-brand-blue">
+                                <span>Únicamente al departamento de Soporte Técnico</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 3 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <p class="text-xs font-black text-slate-200">3. ¿Cómo ejerce un colaborador de Maxikash sus Derechos ARCO para la protección de sus Datos Personales?</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q3" value="correct" class="accent-brand-blue">
+                                <span>Enviando una solicitud formal al correo del departamento Jurídico</span>
+                            </label>
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q3" value="incorrect" class="accent-brand-blue">
+                                <span>Por medio de una llamada telefónica informal al área de Nóminas</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 4 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <p class="text-xs font-black text-slate-200">4. ¿Cuáles son los tres valores fundamentales que guían a Maxikash?</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q4" value="incorrect" class="accent-brand-blue">
+                                <span>Responsabilidad, Calidad y Liderazgo</span>
+                            </label>
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q4" value="correct" class="accent-brand-blue">
+                                <span>Innovación, Cercanía y Disciplina</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Pregunta 5 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <p class="text-xs font-black text-slate-200">5. ¿Cómo se distribuyen tus recibos de nómina digitales?</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q5" value="correct" class="accent-brand-blue">
+                                <span>Se envían automáticamente al correo personal registrado del colaborador</span>
+                            </label>
+                            <label class="flex items-center gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800 hover:border-brand-blue/50 cursor-pointer">
+                                <input type="radio" name="q5" value="incorrect" class="accent-brand-blue">
+                                <span>Se entregan impresos únicamente los días 15 de cada mes</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Campo del Nombre para el Diploma -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                        <p class="text-xs font-black text-slate-200">Por favor, escribe tu nombre completo para la generación del diploma:</p>
+                        <input type="text" id="user-full-name" placeholder="Ej. Juan Pérez López" class="w-full bg-slate-950 border border-slate-800 focus:border-brand-green rounded-xl py-3 px-4 text-xs text-slate-200 outline-none transition">
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <button onclick="evaluateQuiz()" class="w-full sm:w-auto bg-brand-blue hover:bg-brand-blue/90 text-white font-extrabold text-xs px-8 py-3.5 rounded-xl tracking-wider uppercase transition border border-brand-blue/20 hover:border-brand-green/40">
+                            Enviar y Evaluar Respuestas
+                        </button>
+                        <span id="quiz-error-msg" class="text-xs text-red-500 font-bold hidden">Por favor, responde todas las preguntas y escribe tu nombre.</span>
+                    </div>
+                </div>
+
+                <!-- Contenedor del Diploma Desbloqueable -->
+                <div id="diploma-box" class="hidden p-6 bg-gradient-to-br from-slate-955 to-slate-900 border-2 border-brand-green/50 rounded-2xl text-center space-y-6 max-w-2xl mx-auto shadow-2xl relative overflow-hidden">
+                    <div class="absolute -right-16 -top-16 w-36 h-36 bg-brand-green/10 rounded-full blur-2xl"></div>
+                    <div class="absolute -left-16 -bottom-16 w-36 h-36 bg-brand-blue/20 rounded-full blur-2xl"></div>
+
+                    <div class="text-brand-green text-5xl animate-bounce"><i class="fa-solid fa-award"></i></div>
+                    
+                    <div class="space-y-2">
+                        <h4 class="text-2xl font-black text-white uppercase tracking-tight">DIPLOMA DE INDUCCIÓN</h4>
+                        <p class="text-xs text-brand-green font-bold tracking-widest uppercase">OTORGADO CON HONORES POR MAXIKASH MÉXICO</p>
+                    </div>
+
+                    <p class="text-xs text-slate-400">Se otorga con orgullo el presente reconocimiento a:</p>
+                    
+                    <p id="diploma-user-name" class="text-xl font-extrabold text-white tracking-wide border-b border-slate-800 pb-2 max-w-md mx-auto"></p>
+
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+                        Por haber acreditado exitosamente la inducción corporativa sobre políticas de asistencia, nómina, cultura y normativas vigentes del ejercicio 2026.
+                    </p>
+
+                    <div class="pt-4 flex flex-col sm:flex-row justify-center gap-8 items-center text-[10px] text-slate-500 font-bold">
+                        <div>
+                            <p class="text-slate-300">Amigo Efectivo S.A. de C.V.</p>
+                            <p class="text-brand-blue">Área de Recursos Humanos</p>
+                        </div>
+                        <div class="h-8 w-px bg-slate-800 hidden sm:block"></div>
+                        <div>
+                            <p>FECHA: <span id="diploma-date" class="text-slate-300"></span></p>
+                            <p>ID: <span class="text-brand-green">MK-2026-OK</span></p>
+                        </div>
+                    </div>
+
+                    <button onclick="printDiploma()" class="bg-slate-900 hover:bg-slate-800 text-brand-green border border-brand-green/30 text-[10px] font-black px-4 py-2 rounded-lg uppercase transition">
+                        <i class="fa-solid fa-print mr-1"></i> Imprimir o Guardar Diploma
+                    </button>
+                </div>
+            </section>
+
+            <!-- SECCIÓN: QUIZ POR PUESTOS (ESPECÍFICO) -->
+            <section class="bg-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+                <div class="border-b border-slate-800/80 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-briefcase text-purple-400"></i> Quiz por Puestos (Específico)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Sección asignada para las evaluaciones específicas según el puesto comercial, operativo o administrativo.</p>
+                    </div>
+                    <span class="text-[10px] font-bold text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full uppercase tracking-widest border border-purple-500/20">Especializado</span>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 text-center space-y-4">
+                    <p class="text-xs text-slate-300 max-w-xl mx-auto leading-relaxed">
+                        Los cuestionarios especializados por departamento están listos. Haz clic abajo para ingresar al sistema de evaluación externa de 27 puestos.
+                    </p>
+                    <div class="pt-2">
+                        <a href="quiz-puestos.html" class="inline-flex items-center justify-center gap-2 bg-brand-blue hover:bg-brand-blue/90 text-white font-extrabold text-xs px-8 py-3.5 rounded-xl tracking-wider uppercase transition border border-brand-blue/20 hover:border-brand-green/40 shadow-lg">
+                            <i class="fa-solid fa-arrow-right-to-bracket text-brand-green"></i> Iniciar Quiz de Puestos
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GLOSARIO INTERACTIVO FINTECH -->
+            <section class="bg-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6" id="glosario-sec">
+                <div class="border-b border-slate-800/80 pb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-book text-brand-green"></i> Glosario de Términos Maxikash
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Busca y domina el lenguaje operativo, legal y financiero que usamos en el día a día.</p>
+                    </div>
+                    <!-- Buscador -->
+                    <div class="relative w-full sm:w-64">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" id="glosario-search" onkeyup="filterGlosario()" placeholder="Buscar término..." class="w-full bg-slate-900 border border-slate-800 focus:border-brand-green rounded-lg py-2 pl-9 pr-4 text-xs text-slate-200 outline-none transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="glosario-container">
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-brand-green/30 transition glosario-item">
+                        <h4 class="font-black text-brand-green text-xs uppercase term-title">LFPDPPP</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Marco regulatorio que rige la protección de tus datos dentro de Maxikash.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-brand-green/30 transition glosario-item">
+                        <h4 class="font-black text-brand-green text-xs uppercase term-title">Derechos ARCO</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Derechos constitucionales para el acceso, rectificación, cancelación y oposición respecto al manejo de tus datos de carácter personal y sensible.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-brand-green/30 transition glosario-item">
+                        <h4 class="font-black text-brand-green text-xs uppercase term-title">CLABE Interbancaria</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Clave Bancaria Estandarizada de 18 dígitos que se utiliza para dispersar de manera segura y directa tus pagos quincenales de nómina.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-brand-green/30 transition glosario-item">
+                        <h4 class="font-black text-brand-green text-xs uppercase term-title">IMSS</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Instituto Mexicano del Seguro Social. Única institución de salud pública cuyas incapacidades físicas o médicas son legalmente válidas para justificantes.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-brand-green/30 transition glosario-item">
+                        <h4 class="font-black text-brand-green text-xs uppercase term-title">Fintech</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Tecnología Financiera. Sector industrial tecnológico en el cual opera Maxikash, facilitando transacciones mediante herramientas digitales avanzadas.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl hover:border-brand-green/30 transition glosario-item">
+                        <h4 class="font-black text-brand-green text-xs uppercase term-title">Timbrado de Nómina</h4>
+                        <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">Certificación fiscal digital que realiza la empresa ante el SAT para avalar que tus ingresos y retenciones están totalmente reportados ante la ley.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DIRECTORIO DE CONTACTO OFICIAL -->
+            <section class="bg-slate-955 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6" id="soporte">
+                <div>
+                    <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-address-book text-brand-green"></i> Directorio de Atención y Soporte
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">¿Tienes dudas o necesitas reportar una incidencia? Comunícate con el área correspondiente.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    
+                    <!-- RRHH Corporativo -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between hover:border-brand-blue/60 transition">
+                        <div>
+                            <span class="text-[9px] font-black text-brand-green uppercase bg-brand-green/10 px-2 py-0.5 rounded border border-brand-green/20">RRHH Corporativo</span>
+                            <h4 class="font-bold text-white text-xs mt-2">Nathaly / Elvira</h4>
+                        </div>
+                        <a href="https://wa.me/525618167733" target="_blank" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-brands fa-whatsapp text-xs"></i> +52 56 1816 7733
+                        </a>
+                    </div>
+
+                    <!-- RRHH Cobranza -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between hover:border-brand-blue/60 transition">
+                        <div>
+                            <span class="text-[9px] font-black text-brand-green uppercase bg-brand-green/10 px-2 py-0.5 rounded border border-brand-green/20">RRHH Cobranza</span>
+                            <h4 class="font-bold text-white text-xs mt-2">Owen Ruiz</h4>
+                        </div>
+                        <a href="https://wa.me/525657707341" target="_blank" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-brands fa-whatsapp text-xs"></i> +52 56 5770 7341
+                        </a>
+                    </div>
+
+                    <!-- Subdirección RRHH -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between hover:border-brand-blue/60 transition">
+                        <div>
+                            <span class="text-[9px] font-black text-purple-400 uppercase bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Subdirección RRHH</span>
+                            <h4 class="font-bold text-white text-xs mt-2">Jorge del Angel</h4>
+                        </div>
+                        <a href="https://wa.me/525534195498" target="_blank" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-brands fa-whatsapp text-xs"></i> +52 55 3419 5498
+                        </a>
+                    </div>
+
+                    <!-- Nóminas -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between hover:border-brand-blue/60 transition">
+                        <div>
+                            <span class="text-[9px] font-black text-amber-400 uppercase bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">Nóminas</span>
+                            <h4 class="font-bold text-white text-xs mt-2">Allan / Christian</h4>
+                        </div>
+                        <a href="https://wa.me/525540653300" target="_blank" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-brands fa-whatsapp text-xs"></i> +52 55 4065 3300
+                        </a>
+                    </div>
+
+                    <!-- Área Legal -->
+                    <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between hover:border-brand-blue/60 transition">
+                        <div>
+                            <span class="text-[9px] font-black text-red-400 uppercase bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">Área Legal</span>
+                            <h4 class="font-bold text-white text-xs mt-2">Jurídico</h4>
+                        </div>
+                        <a href="mailto:juridico@maxikash.mx" class="mt-4 w-full bg-brand-blue hover:bg-brand-blue/80 text-white font-extrabold text-[10px] py-2 px-3 rounded-lg flex items-center justify-center gap-1.5 transition border border-brand-blue/40">
+                            <i class="fa-solid fa-envelope text-xs"></i> Enviar Correo
+                        </a>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE DESCARGAS Y FAQ -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="documentos">
+                
+                <!-- Descargas de Documentación Oficial -->
+                <div class="bg-slate-955 border border-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-extrabold text-base text-white mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-download text-brand-green"></i> Documentación de Soporte
+                        </h3>
+                        <p class="text-xs text-slate-400 mb-6">Descarga las guías oficiales para resolver dudas administrativas en cualquier momento.</p>
+                        
+                        <div class="space-y-3">
+                            <a href="Guia legacyapp.pdf" download="Guia legacyapp.pdf" class="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800 hover:border-brand-green/30 transition">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-red-500 text-lg"><i class="fa-solid fa-file-pdf"></i></span>
+                                    <div>
+                                        <span class="block text-xs font-bold text-slate-200">Manual de Registro en App</span>
+                                        <span class="text-[10px] text-slate-500">PDF explicativo paso a paso (Guia legacyapp)</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-arrow-down-long text-xs text-slate-500"></i>
+                            </a>
+
+                            <a href="calendario_pagos_2026.pdf" download="calendario_pagos_2026.pdf" class="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800 hover:border-brand-green/30 transition">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-brand-green text-lg"><i class="fa-solid fa-calendar-days"></i></span>
+                                    <div>
+                                        <span class="block text-xs font-bold text-slate-200">Calendario de Pagos 2026</span>
+                                        <span class="text-[10px] text-slate-500">Fechas oficiales de dispersión</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-arrow-down-long text-xs text-slate-500"></i>
+                            </a>
+
+                            <a href="formato_cambio_clabe.pdf" download="formato_cambio_clabe.pdf" class="flex items-center justify-between p-3 bg-slate-900 rounded-xl border border-slate-800 hover:border-brand-green/30 transition">
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-emerald-500 text-lg"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                                    <div>
+                                        <span class="block text-xs font-bold text-slate-200">Formato Cambio de CLABE</span>
+                                        <span class="text-[10px] text-slate-500">Documento obligatorio para nómina</span>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-arrow-down-long text-xs text-slate-500"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preguntas Frecuentes Interactivas -->
+                <div class="bg-slate-955 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+                    <h3 class="font-extrabold text-base text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-brand-green"></i> Preguntas Frecuentes
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-6">Respuestas directas y rápidas a tus principales inquietudes.</p>
+
+                    <div class="space-y-3">
+                        <div class="bg-slate-900 border border-brand-green/30 rounded-xl overflow-hidden shadow-md">
+                            <button onclick="toggleFaq(4)" class="w-full flex justify-between items-center p-3.5 text-left bg-brand-blueDeep/40">
+                                <span class="text-xs font-bold text-brand-green flex items-center gap-2">
+                                    <i class="fa-solid fa-shield-halved"></i> ¿Cómo se protegen mis Datos Personales? (LFPDPPP)
+                                </span>
+                                <i id="faq-icon-4" class="fa-solid fa-chevron-down text-[10px] text-brand-green transition-transform"></i>
+                            </button>
+                            <div id="faq-ans-4" class="hidden p-4 bg-slate-955 text-[11px] text-slate-300 border-t border-slate-800 leading-relaxed space-y-2">
+                                <p><strong>Aviso de Privacidad Simplificado - Colaboradores</strong></p>
+                                <p><strong>Amigo Efectivo S.A. de C.V. (Maxikash México)</strong>, con domicilio oficial para oír y recibir notificaciones, es el responsable del tratamiento de los datos personales y sensibles que recopila con motivo de tu proceso de inducción y relación laboral.</p>
+                                <p>Tus datos son tratados bajo estrictas medidas de seguridad físicas y digitales conforme a la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong> con las siguientes finalidades principales:</p>
+                                <ul class="list-disc pl-4 space-y-1 text-slate-400">
+                                    <li>Validación de identidad, documentos escolares y trayectoria profesional.</li>
+                                    <li>Alta ante el Instituto Mexicano del Seguro Social (IMSS) e INFONAVIT.</li>
+                                    <li>Gestión de pagos de nómina, bonos, dispersión de fondos y apertura de cuentas de nómina.</li>
+                                </ul>
+                                <p class="pt-1 text-slate-400">Podrás ejercer tus derechos de Acceso, Rectificación, Cancelación u Oposición (<strong>Derechos ARCO</strong>) enviando un correo al área regulada correspondiente: <a href="mailto:juridico@maxikash.mx" class="text-brand-green underline hover:text-white">juridico@maxikash.mx</a>.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                            <button onclick="toggleFaq(1)" class="w-full flex justify-between items-center p-3.5 text-left">
+                                <span class="text-xs font-bold text-slate-300">¿Qué justificantes médicos se aceptan para nómina?</span>
+                                <i id="faq-icon-1" class="fa-solid fa-chevron-down text-[10px] text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="faq-ans-1" class="hidden p-3.5 bg-slate-950 text-[11px] text-slate-400 border-t border-slate-800 leading-relaxed">
+                                Únicamente se validan justificantes oficiales emitidos por el IMSS. No se aceptan recetas o comprobantes de médicos privados o farmacias de conveniencia.
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                            <button onclick="toggleFaq(2)" class="w-full flex justify-between items-center p-3.5 text-left">
+                                <span class="text-xs font-bold text-slate-300">¿Cómo reporto una incapacidad médica?</span>
+                                <i id="faq-icon-2" class="fa-solid fa-chevron-down text-[10px] text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="faq-ans-2" class="hidden p-3.5 bg-slate-950 text-[11px] text-slate-400 border-t border-slate-800 leading-relaxed">
+                                Informa inmediatamente a tu supervisor. Después, haz llegar tu comprobante del IMSS a la extensión de Recursos Humanos que corresponda a tu área mediante el directorio de arriba.
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                            <button onclick="toggleFaq(3)" class="w-full flex justify-between items-center p-3.5 text-left">
+                                <span class="text-xs font-bold text-slate-300">¿Dónde descargo mis recibos de nómina?</span>
+                                <i id="faq-icon-3" class="fa-solid fa-chevron-down text-[10px] text-slate-500 transition-transform"></i>
+                            </button>
+                            <div id="faq-ans-3" class="hidden p-3.5 bg-slate-950 text-[11px] text-slate-400 border-t border-slate-800 leading-relaxed">
+                                Serán enviados automáticamente a tu dirección de correo electrónico personal registrada. Revisa constantemente tu bandeja de entrada y la carpeta de SPAM.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- BUZÓN DE FEEDBACK DEL ONBOARDING -->
+            <section class="bg-slate-955 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6" id="feedback-sec">
+                <div class="border-b border-slate-800/80 pb-4">
+                    <h3 class="font-extrabold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-comments text-brand-green"></i> Buzón de Retroalimentación
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Queremos ofrecerte la mejor experiencia. Califica este portal de inducción y déjanos tus comentarios.</p>
+                </div>
+
+                <div id="feedback-form-box" class="space-y-4 max-w-xl">
+                    <div class="space-y-2">
+                        <p class="text-xs font-black text-slate-200">¿Cómo calificarías la claridad de la información y la usabilidad de este portal?</p>
+                        <div class="flex gap-2">
+                            <button onclick="setFeedbackScore(1)" class="score-star-btn w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:border-brand-green transition flex items-center justify-center font-bold text-xs">1</button>
+                            <button onclick="setFeedbackScore(2)" class="score-star-btn w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:border-brand-green transition flex items-center justify-center font-bold text-xs">2</button>
+                            <button onclick="setFeedbackScore(3)" class="score-star-btn w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:border-brand-green transition flex items-center justify-center font-bold text-xs">3</button>
+                            <button onclick="setFeedbackScore(4)" class="score-star-btn w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:border-brand-green transition flex items-center justify-center font-bold text-xs">4</button>
+                            <button onclick="setFeedbackScore(5)" class="score-star-btn w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:border-brand-green transition flex items-center justify-center font-bold text-xs">5</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <p class="text-xs font-black text-slate-200">¿Qué sugerencia tienes para mejorar el proceso de bienvenida en Maxikash?</p>
+                        <textarea id="feedback-text" rows="3" placeholder="Escribe aquí tus comentarios, sugerencias o dudas..." class="w-full bg-slate-900 border border-slate-800 focus:border-brand-green rounded-xl py-3 px-4 text-xs text-slate-200 outline-none transition resize-none"></textarea>
+                    </div>
+
+                    <button onclick="submitFeedback()" class="bg-brand-green hover:bg-brand-green/90 text-slate-955 font-black text-xs px-6 py-3 rounded-xl transition">
+                        Enviar Feedback
+                    </button>
+                    <span id="feedback-success-msg" class="text-xs text-brand-green font-bold hidden ml-4"><i class="fa-solid fa-circle-check"></i> ¡Muchas gracias! Recibimos tu retroalimentación correctamente.</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- PIE DE PÁGINA -->
+        <footer class="border-t border-slate-900 bg-slate-955 py-8 mt-auto">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500 space-y-2">
+                <p class="font-semibold text-slate-400">Amigo Efectivo - Maxikash México</p>
+                <p>© Todos los derechos reservados 2026</p>
+                <div class="text-slate-800 select-none">______________________________</div>
+                <p class="text-[10px] text-slate-400">
+                    Este portal recopila información confidencial protegida por la LFPDPPP de los Estados Unidos Mexicanos. 
+                    <span class="block mt-1">Conoce más haciendo clic en el módulo de <a href="#documentos" onclick="toggleFaq(4)" class="text-brand-green underline hover:text-white">Aviso de Privacidad</a> en la sección de FAQ.</span>
+                </p>
+                <p class="text-[10px] text-brand-green/80 uppercase tracking-widest font-black pt-1">Proyecto Onboarding By Asher Owen</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        const completedVideos = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false, 7: false, 8: false, 9: false };
+        let currentActiveId = 1;
+        let selectedScore = 0;
+
+        const mainVideoPlayer = document.getElementById('main-video-player');
+        const videoSource = document.getElementById('video-source');
+        const nowPlayingTitle = document.getElementById('now-playing-title');
+        const videoOverlay = document.getElementById('video-overlay');
+
+        const modulesData = {
+            1: { title: "LegacyApp", src: "legacyapp.mp4", poster: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80" },
+            2: { title: "Asistencia", src: "asistencia.mp4", poster: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80" },
+            3: { title: "Pago de Nómina", src: "nomine.mp4", poster: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80" },
+            4: { title: "Bonos e Incentivos", src: "bonos.mp4", poster: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1200&q=80" },
+            5: { title: "Recibos de Nómina", src: "recibos_nomina.mp4", poster: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80" },
+            6: { title: "Cambio de Cuenta", src: "cambio_cuenta.mp4", poster: "https://images.unsplash.com/photo-1563013544-824ae1d704d3?auto=format&fit=crop&w=1200&q=80" },
+            7: { title: "Incidencias Médicas", src: "incidencias_medicas.mp4", poster: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80" },
+            8: { title: "Nuestros Valores", src: "Corporate_culture_video_showcasi…_202607151440_2.mp4", poster: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80" },
+            9: { title: "Nuestra Cultura", src: "nuestra_cultura.mp4", poster: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80" }
+        };
+
+        // Función para interactuar y cerrar la pantalla inicial de la primera imagen
+        function enterPortal() {
+            // Pausar el primer video "bienvenido.mp4" de introducción por si quedó reproduciéndose
+            document.getElementById('intro-video').pause();
+            
+            // Ocultar pantalla de intro y mostrar el portal real
+            document.getElementById('intro-screen').classList.add('hidden');
+            
+            const sidebar = document.getElementById('aside-sidebar');
+            const mainContent = document.getElementById('main-portal-container');
+            
+            sidebar.classList.remove('hidden');
+            mainContent.classList.remove('hidden');
+            
+            // Efecto fluido de desvanecimiento
+            setTimeout(() => { sidebar.classList.remove('opacity-0'); }, 50);
+        }
+
+        // Selección e intercambio de videos quincenales/temáticos de los módulos
+        function changeVideo(id) {
+            currentActiveId = id;
+            const data = modulesData[id];
+            if (!data) return;
+
+            // Cambiar focos visuales en el listado de tarjetas de la derecha
+            for (let i = 1; i <= 9; i++) {
+                document.getElementById(`module-card-${i}`).classList.remove('active-module-card');
+            }
+            document.getElementById(`module-card-${id}`).classList.add('active-module-card');
+
+            // Setear la data sin iniciar el video de forma automática (.play() removido intencionalmente)
+            nowPlayingTitle.textContent = `MÓDULO ${id}: ${data.title.toUpperCase()}`;
+            mainVideoPlayer.poster = data.poster;
+            videoSource.src = data.src;
+            mainVideoPlayer.load();
+            
+            // Resetear capas de completado viejo
+            videoOverlay.classList.add('hidden');
+        }
+
+        function markActiveAsComplete() {
+            completedVideos[currentActiveId] = true;
+            const badge = document.getElementById(`badge-video-${currentActiveId}`);
+            if (badge) {
+                badge.className = "text-[9px] font-black bg-brand-green/20 text-brand-green border border-brand-green/30 px-2.5 py-0.5 rounded shrink-0";
+                badge.innerHTML = `<i class="fa-solid fa-check mr-1 animate-bounce"></i> Completo`;
+            }
+
+            videoOverlay.classList.remove('hidden');
+            setTimeout(() => { videoOverlay.classList.add('hidden'); }, 3000);
+            
+            mainVideoPlayer.pause();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const total = Object.keys(completedVideos).length;
+            const completedCount = Object.values(completedVideos).filter(Boolean).length;
+            const percentage = Math.round((completedCount / total) * 100);
+            document.getElementById('progress-text-header').textContent = `${percentage}%`;
+            document.getElementById('progress-bar-header').style.width = `${percentage}%`;
+        }
+
+        function toggleFaq(id) {
+            const answer = document.getElementById(`faq-ans-${id}`);
+            const icon = document.getElementById(`faq-icon-${id}`);
+            if (answer.classList.contains('hidden')) {
+                answer.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                answer.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        function filterGlosario() {
+            const searchVal = document.getElementById('glosario-search').value.toLowerCase();
+            const items = document.querySelectorAll('.glosario-item');
+            items.forEach(item => {
+                const title = item.querySelector('.term-title').textContent.toLowerCase();
+                item.style.display = title.includes(searchVal) ? 'block' : 'none';
+            });
+        }
+
+        function evaluateQuiz() {
+            const nameInput = document.getElementById('user-full-name').value.trim();
+            const errorMsg = document.getElementById('quiz-error-msg');
+            
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const q3 = document.querySelector('input[name="q3"]:checked');
+            const q4 = document.querySelector('input[name="q4"]:checked');
+            const q5 = document.querySelector('input[name="q5"]:checked');
+
+            if (!nameInput || !q1 || !q2 || !q3 || !q4 || !q5) {
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            errorMsg.classList.add('hidden');
+
+            let score = 0;
+            if (q1.value === "correct") score++;
+            if (q2.value === "correct") score++;
+            if (q3.value === "correct") score++;
+            if (q4.value === "correct") score++;
+            if (q5.value === "correct") score++;
+
+            if (score >= 4) {
+                document.getElementById('quiz-container').classList.add('hidden');
+                document.getElementById('diploma-user-name').textContent = nameInput.toUpperCase();
+                const today = new Date();
+                document.getElementById('diploma-date').textContent = today.toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+                document.getElementById('diploma-box').classList.remove('hidden');
+            } else {
+                alert(`Obtuviste ${score}/5 aciertos. Es necesario contar con al menos 4 respuestas correctas (80%) para obtener el diploma. ¡Inténtalo de nuevo!`);
+            }
+        }
+
+        function printDiploma() {
+            const name = document.getElementById('diploma-user-name').textContent;
+            const date = document.getElementById('diploma-date').textContent;
+            const printWindow = window.open('', '_blank', 'width=850,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Diploma Induccion Maxikash - ${name}</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+                    <style>
+                        body { font-family: 'Inter', sans-serif; background-color: #090d16; color: #f1f5f9; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    </style>
+                </head>
+                <body class="flex items-center justify-center min-h-screen p-8">
+                    <div class="p-12 border-4 border-[#c3d64c] rounded-3xl text-center space-y-6 max-w-2xl w-full bg-slate-900" style="border-color: #c3d64c;">
+                        <h4 class="text-3xl font-black text-white">DIPLOMA DE INDUCCIÓN</h4>
+                        <p class="text-xs text-[#c3d64c] font-bold tracking-widest uppercase">MAXIKASH MÉXICO</p>
+                        <p class="text-2xl font-black text-white pb-3">${name}</p>
+                        <p class="text-xs text-slate-300 leading-relaxed">Acreditó exitosamente la inducción corporativa sobre políticas de asistencia, nómina y cultura 2026.</p>
+                        <p class="text-[10px] text-slate-500 font-bold">FECHA: ${date} | ID: MK-2026-OK</p>
+                    </div>
+                    <script>
+                        window.onload = function() { window.print(); setTimeout(function() { window.close(); }, 500); };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        function setFeedbackScore(score) {
+            selectedScore = score;
+            const buttons = document.querySelectorAll('.score-star-btn');
+            buttons.forEach((btn, idx) => {
+                btn.className = idx < score 
+                    ? "score-star-btn w-10 h-10 rounded-lg bg-brand-green text-slate-955 font-black text-xs transition flex items-center justify-center"
+                    : "score-star-btn w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 hover:border-brand-green transition flex items-center justify-center font-bold text-xs";
+            });
+        }
+
+        function submitFeedback() {
+            if (selectedScore === 0) {
+                alert("Por favor, selecciona una calificación numérica del 1 al 5 antes de enviar.");
+                return;
+            }
+            document.getElementById('feedback-success-msg').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('feedback-success-msg').classList.add('hidden');
+                setFeedbackScore(0);
+                document.getElementById('feedback-text').value = "";
+            }, 4000);
+        }
+
+        // Iniciar con la carga del primer módulo (sin reproducirlo automáticamente)
+        window.onload = () => {
+            changeVideo(1);
+        };
+    </script>
+</body>
+</html>

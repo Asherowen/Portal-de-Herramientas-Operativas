@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estructural Multi-Empresa • Estructuras & Perfiles</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos de negocio -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Font para legibilidad ejecutiva -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            transition: background-color 0.3s ease;
+        }
+        /* Scrollbars elegantes y delgados */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Transición suave para cambios de tema corporativo */
+        .theme-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ESTILOS DE COLAPSADO INTELIGENTE PARA SCROLL STICKY */
+        .sticky-header-container {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #statsSection {
+            max-height: 500px;
+            opacity: 1;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        opacity 0.3s ease, 
+                        margin 0.4s ease, 
+                        padding 0.4s ease;
+        }
+        /* Clases activadas cuando el usuario hace scroll hacia abajo */
+        .scrolled-header #statsSection {
+            max-height: 0px !important;
+            opacity: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .scrolled-header #mainHeader {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        .scrolled-header #logoContainer {
+            padding: 0.4rem !important;
+        }
+        .scrolled-header #mainHeader h1 {
+            font-size: 1rem !important;
+        }
+        .scrolled-header #mainHeader p {
+            font-size: 10px !important;
+        }
+        .scrolled-header #sticky-header-container {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            background-color: #f8fafc;
+        }
+        .scrolled-header #filtersSection {
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 1.25rem !important;
+        }
+        .scrolled-header #compactStats {
+            display: flex !important;
+        }
+
+        /* Animación de rotación continua y suave para el Isotipo de MaxiKash */
+        @keyframes logo-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-logo-spin {
+            animation: logo-spin 12s linear infinite;
+        }
+
+        /* Animación de rodaje / vibración realista sobre ruedas para la motocicleta */
+        @keyframes moto-ride {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-1.5px) rotate(-1deg); }
+            50% { transform: translateY(1px) rotate(1deg); }
+            75% { transform: translateY(-0.5px) rotate(-0.5deg); }
+        }
+        .animate-moto-ride {
+            display: inline-block;
+            animation: moto-ride 0.8s ease-in-out infinite;
+        }
+
+        /* Efecto hover interactivo para el isotipo */
+        .logo-hover-effect {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .logo-hover-effect:hover {
+            transform: scale(1.12);
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-800">
+
+    <!-- CONTENEDOR ADAPTATIVO PEGADO (STICKY PANEL) -->
+    <div id="sticky-header-container" class="sticky top-0 z-40 bg-[#f8fafc] border-b border-slate-200/60 sticky-transition">
+        
+        <!-- Encabezado Principal de la Aplicación -->
+        <header id="mainHeader" class="bg-gradient-to-r from-emerald-950 to-teal-900 text-white shadow-md py-4 sm:px-6 lg:px-8 transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <!-- Contenedor del Isotipo con Efecto de Giro -->
+                    <div id="logoContainer" class="bg-white/10 p-2 rounded-2xl shadow-inner theme-transition flex items-center justify-center">
+                        <!-- El SVG del Isotipo se inyecta dinámicamente aquí -->
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight transition-all">Estructuras & Perfiles de Puestos</h1>
+                            <span id="companyBadge" class="text-[9px] bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">GRUPO</span>
+                        </div>
+                        <p id="subTitleText" class="text-xs text-emerald-300 font-semibold tracking-wider uppercase theme-transition">MAXIKASH MEXICO - AMIGO EFECTIVO</p>
+                    </div>
+                </div>
+                
+                <!-- Selector de Modelo de Negocio -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <span class="text-xs font-bold text-white/80 uppercase"><i class="fa-solid fa-building-circle-arrow-right mr-1"></i> Empresa:</span>
+                    <select id="companySelector" onchange="switchCompany(this.value)" class="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-white cursor-pointer theme-transition">
+                        <option value="MAXIKASH" class="text-slate-900 font-semibold">MAXIKASH MÉXICO - AMIGO EFECTIVO</option>
+                        <option value="FURIAMOTOS" class="text-slate-900 font-semibold">FURIAMOTOS - PENSIONAMAX</option>
+                        <option value="MAXIKASH_GT" class="text-slate-900 font-semibold">MAXIKASH GUATEMALA</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenedor de Elementos de Filtro y Stats -->
+        <div class="max-w-7xl mx-auto px-4 pt-4 pb-3 space-y-3">
+            
+            <!-- Tarjetas de Estadísticas Orgánicas (Se colapsan al hacer Scroll) -->
+            <section id="statsSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Puestos Estructurales</span>
+                        <span id="statPuestos" class="block text-2xl font-extrabold text-slate-900 mt-0.5">123</span>
+                        <span id="statLabel1" class="text-[10px] text-emerald-600 font-semibold mt-0.5 block"><i class="fa-solid fa-link mr-1"></i>Mapeo total del Excel</span>
+                    </div>
+                    <div id="statIconBg1" class="p-3 bg-emerald-50 text-emerald-600 rounded-xl theme-transition"><i class="fa-solid fa-sitemap text-xl"></i></div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Perfiles Únicos</span>
+                        <span id="statPerfiles" class="block text-2xl font-extrabold text-slate-900 mt-0.5">19</span>
+                        <span id="statLabel2" class="text-[10px] text-teal-600 font-semibold mt-0.5 block"><i class="fa-solid fa-circle-check mr-1"></i>Fichas maestras de puesto</span>
+                    </div>
+                    <div id="statIconBg2" class="p-3 bg-teal-50 text-teal-600 rounded-xl theme-transition"><i class="fa-solid fa-address-card text-xl"></i></div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Áreas Funcionales</span>
+                        <span id="statAreas" class="block text-2xl font-extrabold text-slate-900 mt-0.5">16</span>
+                        <span id="statLabel3" class="text-[10px] text-purple-600 font-semibold mt-0.5 block"><i class="fa-solid fa-cubes mr-1"></i>Departamentalización</span>
+                    </div>
+                    <div id="statIconBg3" class="p-3 bg-purple-50 text-purple-600 rounded-xl theme-transition"><i class="fa-solid fa-layer-group text-xl"></i></div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Direcciones Orgánicas</span>
+                        <span id="statDirecciones" class="block text-2xl font-extrabold text-slate-900 mt-0.5">10</span>
+                        <span id="statLabel4" class="text-[10px] text-amber-600 font-semibold mt-0.5 block"><i class="fa-solid fa-compass mr-1"></i>Nivel directivo macro</span>
+                    </div>
+                    <div id="statIconBg4" class="p-3 bg-amber-50 text-amber-600 rounded-xl theme-transition"><i class="fa-solid fa-building text-xl"></i></div>
+                </div>
+            </section>
+
+            <!-- Sistema de Pestañas Interactivas y Píldoras de Stats para Scroll Compacto -->
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 border-b border-slate-200/80 pb-1">
+                <nav class="flex space-x-6" aria-label="Tabs">
+                    <button onclick="switchTab('tab-estructura')" id="btn-tab-estructura" class="border-b-2 border-emerald-600 text-emerald-700 pb-2 px-1 inline-flex items-center gap-2 font-bold text-xs sm:text-sm tracking-wide transition-all theme-transition">
+                        <i class="fa-solid fa-folder-tree"></i> 1. Estructura Organizacional <span id="tabCountEstructura">(123 Filas)</span>
+                    </button>
+                    <button onclick="switchTab('tab-perfiles')" id="btn-tab-perfiles" class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 pb-2 px-1 inline-flex items-center gap-2 font-semibold text-xs sm:text-sm tracking-wide transition-all theme-transition">
+                        <i class="fa-solid fa-table-list"></i> 2. Matriz de Perfiles (19 Fichas Maestras)
+                    </button>
+                </nav>
+
+                <!-- Píldoras de estadísticas compactas (Visibles solo al hacer Scroll) -->
+                <div id="compactStats" class="hidden items-center gap-2 text-[10px] font-bold text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200/80 shadow-sm shrink-0">
+                    <span class="flex items-center gap-1 border-r border-slate-200 pr-2"><i class="fa-solid fa-sitemap text-emerald-600"></i> <span id="compactPuestosVal">123</span> Estructurales</span>
+                    <span class="flex items-center gap-1 border-r border-slate-200 pr-2"><i class="fa-solid fa-address-card text-teal-600"></i> <span id="compactPerfilesVal">19</span> Perfiles</span>
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-layer-group text-purple-600"></i> <span id="compactAreasVal">16</span> Áreas</span>
+                </div>
+            </div>
+
+            <!-- Filtros Inteligentes Dinámicos -->
+            <section id="filtersSection" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm transition-all duration-300">
+                <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
+                    <div class="flex-1 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Buscar puesto por nombre, depto, área o dirección..." class="w-full pl-11 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-600 focus:bg-white transition-all text-xs">
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <select id="filterDirection" onchange="applyFilters()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-600">
+                            <option value="">Todas las Direcciones</option>
+                        </select>
+                        <select id="filterArea" onchange="applyFilters()" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-600">
+                            <option value="">Todas las Áreas</option>
+                        </select>
+                        <button onclick="resetFiltersAndInputs()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> Reestablecer
+                        </button>
+                        <button onclick="exportDataToCSV()" id="exportBtn" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 theme-transition">
+                            <i class="fa-solid fa-download"></i> Exportar a Excel (CSV)
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+
+        <!-- CONTENIDO DE PESTAÑA 1: Estructura Organizacional -->
+        <div id="panel-estructura" class="tab-panel space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-bold text-slate-900 text-xs tracking-wide uppercase"><i class="fa-solid fa-list-check mr-2 text-emerald-600" id="tableTitleIcon"></i>Relación Orgánica del Excel</h3>
+                    <span class="text-xs text-slate-500 font-semibold"><i class="fa-solid fa-circle-info text-blue-500 mr-1"></i>Haz clic en cualquier renglón para abrir su Perfil del Puesto</span>
+                </div>
+                
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-100/70 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <th class="px-6 py-4">Puesto</th>
+                                <th class="px-6 py-4">Departamento</th>
+                                <th class="px-6 py-4">Área Funcional</th>
+                                <th class="px-6 py-4">Dirección Organizacional</th>
+                                <th class="px-6 py-4 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableEstructuraBody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Inyectado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="p-4 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <span id="estructuraCounter" class="text-xs font-semibold text-slate-500">Mostrando 123 de 123 puestos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO DE PESTAÑA 2: Matriz de Perfiles -->
+        <div id="panel-perfiles" class="tab-panel hidden space-y-4">
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-bold text-slate-900 text-xs tracking-wide uppercase"><i class="fa-solid fa-table-list mr-2 text-emerald-600" id="matrixTitleIcon"></i>Matriz de Especificación de Perfiles</h3>
+                    <span class="text-xs text-slate-500 font-semibold">Desplázate horizontalmente para ver las 12 dimensiones del perfil</span>
+                </div>
+                
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[3000px]" id="profilesMatrixTable">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-100/70 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <th class="px-6 py-4 sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">PUESTO</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Nivel Jerárquico / Alcance</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Sueldo Estimado (Benchmark)</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Formación Académica Requerida</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Experiencia Laboral Exigida</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Familia de Skills (Hard & Soft)</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Objetivo del Puesto</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Principales Actividades (Máx. 6)</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Herramientas Especiales y Sistemas</th>
+                                <th class="px-6 py-4 border-r border-slate-200">KPIs Críticos de Evaluación</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Competencias Conductuales Clave</th>
+                                <th class="px-6 py-4 border-r border-slate-200">Lineamientos y Reporte General</th>
+                                <th class="px-6 py-4">Alcance del Puesto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablePerfilesBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- Inyectado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Banner de Desarrollador -->
+    <footer class="bg-slate-950 text-slate-400 py-6 mt-12 border-t border-slate-800/60">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs font-bold tracking-wider flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-code text-teal-500"></i>
+                <span>Estructuras & Perfiles de Puestos • Dashboard Corporativo</span>
+            </div>
+            <div class="text-slate-300 flex items-center gap-1.5 bg-white/5 px-4 py-2 rounded-full border border-white/10 shadow-inner">
+                <span>Desarrollado por</span>
+                <span class="text-teal-400 font-extrabold hover:text-teal-300 transition-all">@AsherOwen</span>
+                <span class="text-slate-500">•</span>
+                <span>© Copyright 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Detalles e Inspección de Puesto -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 custom-scrollbar transform scale-95 opacity-0 transition-all duration-300" id="modalContent">
+            
+            <!-- Cabecera del modal -->
+            <div class="p-6 border-b border-slate-100 sticky top-0 bg-white z-10 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div id="modalIcon" class="p-2 bg-white/5 rounded-2xl theme-transition flex items-center justify-center">
+                        <!-- El Isotipo Vectorial o Icono correspondiente se inyecta dinámicamente aquí -->
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900" id="modalPuesto">PUESTO</h2>
+                        <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md theme-transition" id="modalNivel">Nivel</span>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-xl">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Cuerpo de datos del modal -->
+            <div class="p-6 space-y-6">
+                <!-- Información Origen -->
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl grid grid-cols-3 gap-4 text-xs">
+                    <div>
+                        <span class="block text-slate-400 font-bold uppercase">Departamento de Origen</span>
+                        <span class="font-semibold text-slate-800 text-sm mt-0.5 block" id="modalDepto">N/A</span>
+                    </div>
+                    <div>
+                        <span class="block text-slate-400 font-bold uppercase">Área</span>
+                        <span class="font-semibold text-slate-800 text-sm mt-0.5 block" id="modalArea">N/A</span>
+                    </div>
+                    <div>
+                        <span class="block text-slate-400 font-bold uppercase">Dirección</span>
+                        <span class="font-semibold text-slate-800 text-sm mt-0.5 block" id="modalDireccion">N/A</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Objetivo del Puesto</h4>
+                    <p class="text-slate-700 text-sm leading-relaxed" id="modalObjetivo"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Sueldo Estimado (Benchmark)</h4>
+                        <p class="text-xl font-extrabold text-emerald-800" id="modalSueldo"></p>
+                    </div>
+                    <div class="p-4 border border-slate-100 rounded-2xl bg-slate-50/50">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Alcance Territorial</h4>
+                        <p class="text-sm font-semibold text-slate-700" id="modalAlcance"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Formación Académica</h4>
+                        <p class="text-slate-700 text-xs leading-relaxed" id="modalFormacion"></p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Experiencia Requerida</h4>
+                        <p class="text-slate-700 text-xs leading-relaxed" id="modalExperiencia"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Principales Actividades (Máximo 6 Detalladas)</h4>
+                    <ul id="modalActividades" class="space-y-2.5">
+                        <!-- Lista de actividades -->
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Herramientas Especiales e Institucionales</h4>
+                    <div id="modalHerramientas" class="flex flex-wrap gap-2">
+                        <!-- Badges dinámicos -->
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">KPIs Críticos de Evaluación</h4>
+                        <p class="text-xs text-slate-700 leading-relaxed font-semibold bg-red-50/30 border border-red-100/50 p-3 rounded-xl" id="modalKPIs"></p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Competencias Clave</h4>
+                        <p class="text-xs text-slate-700 leading-relaxed font-semibold bg-blue-50/30 border border-blue-100/50 p-3 rounded-xl" id="modalCompetencias"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE BASES DE DATOS E INTERACTIVIDAD -->
+    <script>
+        // --- BASE DE DATOS EMPRESA 1: MAXIKASH MEXICO ---
+        const maxikashPerfiles = {
+            "DIRECTOR": {
+                nivel: "Directivo / Estratégico", sueldo: "$95,000 MXN",
+                formacion: "Licenciatura en Administración, Finanzas, Ingeniería o afín (Maestría deseable).",
+                experiencia: "8+ años en posiciones de liderazgo estratégico y toma de decisiones corporativas globales.",
+                skills: "Hard: Planeación financiera, diseño institucional, M&A. Soft: Liderazgo transformacional, visión sistémica.",
+                objetivo: "Definir e implementar la estrategia corporativa a largo plazo para asegurar la rentabilidad y crecimiento de la dirección de microcréditos de MaxiKash.",
+                actividades: [
+                    "Establecer directrices estratégicas alineadas con los objetivos anuales de los accionistas y el consejo de administración.",
+                    "Autorizar presupuestos anuales y supervisar la asignación eficiente de recursos financieros y materiales entre las áreas.",
+                    "Evaluar el desempeño integral de las subdirecciones y gerencias bajo su estructura jerárquica de forma mensual.",
+                    "Firmar alianzas comerciales institucionales y negociar acuerdos de negocio de alto nivel con socios comerciales.",
+                    "Presentar resultados y reportes de rentabilidad financiera a la Dirección General de manera periódica.",
+                    "Mitigar riesgos operativos y legales críticos que puedan afectar la continuidad comercial del negocio de colocación y cobranza."
+                ],
+                herramientas: ["ERP Corporativo (SAP/Oracle)", "Tableros Exec BI", "Software de Gobierno Corporativo"],
+                kpis: "EBITDA Anual, Retorno de Inversión (ROI), Margen de Crecimiento de Dirección, % Cumplimiento de Plan Estratégico.",
+                competencias: "Liderazgo de impacto, Pensamiento estratégico, Toma de decisiones complejas, Integridad absoluta.",
+                lineamientos: "Reporta a la Dirección General de la organización. Coordina de forma directa a Subdirectores y Gerentes de Área.",
+                alcance: "Nacional e Internacional: Impacta en el rumbo económico de la empresa y la estructura completa de su dirección."
+            },
+            "SUBDIRECTOR": {
+                nivel: "Directivo Medio / Táctico Ejecutivo", sueldo: "$65,000 MXN",
+                formacion: "Licenciatura concluida en Economía, Administración de Empresas, Ingeniería o afín.",
+                experiencia: "5-8 años coordinando gerencias de área u operaciones logísticas/financieras de crédito.",
+                skills: "Hard: Gestión de presupuestos, optimización de procesos (Lean/Six Sigma). Soft: Desarrollo de talento, resiliencia.",
+                objetivo: "Traducir los objetivos estratégicos en planes operativos ejecutables, asegurando el cumplimiento de las metas de las gerencias adjuntas.",
+                actividades: [
+                    "Supervisar la operation diaria de las múltiples gerencias que componen su subdirección técnica de MaxiKash.",
+                    "Diseñar planes de mitigación de desviaciones sobre las metas tácticas departamentales.",
+                    "Garantizar el correcto control presupuestal mensual asignado a su subdirección operativa.",
+                    "Coordinar comités de optimización operativa interdepartamental y alineación de procesos internos.",
+                    "Evaluar el desempeño del personal directivo intermedio y definir planes de sucesión interna viables.",
+                    "Aprobar proyectos de automatización y optimización de flujos de trabajo presentados por gerentes."
+                ],
+                herramientas: ["Tableau/Power BI", "ERP Corporativo", "Herramientas de Gestión de Proyectos (Jira/Asana)"],
+                kpis: "% de eficiencia presupuestaria, % de metas gerenciales alcanzadas, Retención de talento gerencial.",
+                competencias: "Visión operativa, Gestión del cambio, Dirección de equipos de alto rendimiento, Negociación intermedia.",
+                lineamientos: "Reporta al Director del Área. Ejerce mando directo sobre Gerentes y Coordinadores de Departamento.",
+                alcance: "Multi-regional o divisional: Coordina procesos transversales en múltiples departamentos y sedes de la empresa."
+            },
+            "GERENTE": {
+                nivel: "Gerencial / Táctico Operativo", sueldo: "$45,000 MXN",
+                formacion: "Profesional titulado en Administración, Finanzas, Mercadotecnia o carreras afines.",
+                experiencia: "4-6 años liderando equipos operativos y controlando indicadores clave (KPIs) sectoriales.",
+                skills: "Hard: Gestión por indicadores (KPIs), Control de presupuestos. Soft: Liderazgo de equipos, Solución de problemas.",
+                objetivo: "Planificar, dirigir y optimizar las actividades del departamento asignado, garantizando que el equipo de MaxiKash cumpla con los estándares de productividad.",
+                actividades: [
+                    "Asignar objetivos y metas mensuales específicas a supervisores, analistas y personal de su equipo directo.",
+                    "Monitorear diariamente los indicadores de productividad and calidad de servicio de su departamento asignado.",
+                    "Implementar políticas, metodologías de trabajo y normativas internas vigentes dentro de su área.",
+                    "Gestionar los recursos materiales, tecnológicos y humanos asignados para optimizar el flujo operativo diario.",
+                    "Elaborar reportes ejecutivos de rendimiento mensual para mandos superiores y subdirección.",
+                    "Resolver incidencias operativas complejas escaladas por el equipo de supervisión directa."
+                ],
+                herramientas: ["CRM Corporativo", "Power BI", "Hojas de cálculo avanzadas", "Sistemas ERP (Módulos operativos)"],
+                kpis: "% Cumplimiento de metas mensuales, Rotación de personal del departamento, Índice de satisfacción del cliente interno.",
+                competencias: "Liderazgo operativo, Enfoque en la eficiencia, Comunicación asertiva, Orientación al logro.",
+                lineamientos: "Reporta a la Subdirección o Dirección correspondiente. Tiene personal de Supervisión y Analistas bajo su cargo.",
+                alcance: "Departamental: Responsable directo por el éxito o fracaso operativo de un departamento específico."
+            },
+            "SUBGERENTE": {
+                nivel: "Gerencial Junior / Soporte Táctico", sueldo: "$32,000 MXN",
+                formacion: "Licenciatura en Administración, Contabilidad, Ingeniería o afín (Titulado o pasante avanzado).",
+                experiencia: "3-4 años en supervisión de personal o coordinación de procesos dentro de la misma área.",
+                skills: "Hard: Análisis de KPIs operativos, Auditorías de procesos internos. Soft: Adaptabilidad, Empatía, Organización del tiempo.",
+                objetivo: "Asistir a la gerencia en la supervisión de los planes operativos y coordinar directamente al equipo de supervisores para mantener la continuidad diaria.",
+                actividades: [
+                    "Suplir al gerente en ausencias operativas y toma de decisiones tácticas rápidas de primer nivel.",
+                    "Coordinar y supervisar los planes de capacitación inicial y continua para el personal operativo del área.",
+                    "Auditar de forma regular la calidad del servicio o producto entregado por el equipo operativo en piso/campo.",
+                    "Consolidar la información diaria de rendimiento para armar reportes de gestión gerencial.",
+                    "Atender dudas y conflictos internos que no requieran escalación gerencial o de capital humano.",
+                    "Asegurar el suministro y funcionamiento de los insumos y herramientas requeridas para operar."
+                ],
+                herramientas: ["Excel Intermedio/Avanzado", "Herramientas de reportería interna", "APP legacy", "APP sparta"],
+                kpis: "Adherencia al plan operativo diario, % de incidencias resueltas en primer nivel, Productividad agregada de supervisores.",
+                competencias: "Proactividad, Gestión del tiempo, Resolución de conflictos, Capacidad de delegación efectiva.",
+                lineamientos: "Reporta directamente al Gerente del Departamento. Funciona como puente de mando con los Supervisores.",
+                alcance: "Operativo / Turno específico: Controla la ejecución diaria de un turno o sección del departamento."
+            },
+            "COORDINADOR": {
+                nivel: "Mando Medio / Coordinación Operativa", sueldo: "$26,000 MXN",
+                formacion: "Licenciatura terminada en Administración, Ingeniería Industrial, Psicología o carreras afines.",
+                experiencia: "2-4 años coordinando flujos de trabajo específicos de personal administrativo u operativo.",
+                skills: "Hard: Flujos de proceso, Logística y compras internas. Soft: Trabajo en equipo, Empatía, Organización metodológica.",
+                objetivo: "Sincronizar las actividades de soporte de los equipos de analistas y auxiliares, garantizando que los insumos y procesos fluyan sin cuellos de botella.",
+                actividades: [
+                    "Asignar cargas y flujos de trabajo equitativos entre el personal analista y auxiliar asignado.",
+                    "Revisar y validar reportes específicos (compras, nómina, inventario) antes de la entrega gerencial.",
+                    "Implementar planes de mejora continua en la documentación y archivo de procesos del área asignada.",
+                    "Atender requerimientos de otras áreas de la empresa actuando como facilitador de servicio interno.",
+                    "Supervisar el apego estricto de las actividades a las normas internas de calidad corporativa.",
+                    "Coordinar la atención de requerimientos urgentes o extraordinarios solicitados por la gerencia."
+                ],
+                herramientas: ["Módulos específicos de ERP", "Google Workspace / MS Office avanzado", "Sistemas de comunicación interna (Slack/Teams)"],
+                kpis: "Tiempo de respuesta a solicitudes, % de errores en reportes consolidados, % de cumplimiento de cronogramas.",
+                competencias: "Planificación y organización, Relaciones interpersonales, Enfoque a la calidad, Solución práctica de problemas.",
+                lineamientos: "Reporta a la Gerencia o Subgerencia del área. Supervisas directamente a Analistas y Auxiliares.",
+                alcance: "Área interna: Impacta en el flujo ágil y correcto de los insumos y datos dentro de un área específica."
+            },
+            "SUPERVISOR": {
+                nivel: "Mando Medio / Supervisión de Campo o Piso", sueldo: "$20,000 MXN",
+                formacion: "Licenciatura trunca, pasante o carrera técnica profesional afín.",
+                experiencia: "2-3 años liderando equipos operativos de primera línea (vendedores, gestores, ejecutivos).",
+                skills: "Hard: Técnicas de negociación en campo/piso, Monitoreo de KPIs. Soft: Motivación de personal, Liderazgo situacional.",
+                objetivo: "Monitorear, capacitar y motivar al personal operativo directo para alcanzar las cuotas de colocación, recuperación o atención exigidas por la empresa.",
+                actividades: [
+                    "Realizar juntas diarias de arranque (briefing) con el equipo operativo asignado para alinear metas y tareas diarias.",
+                    "Monitorear las llamadas, visitas o gestiones de cobranza en campo/piso para corregir desvíos en el momento.",
+                    "Brindar coaching y retroalimentación individual en técnicas de venta, cobranza y atención al cliente telefónica/campo.",
+                    "Validar e ingresar solicitudes complejas o excepciones comerciales al sistema de la empresa.",
+                    "Elaborar reportes de productividad de su equipo de manera diaria, semanal y mensual.",
+                    "Resolver problemas críticos con clientes que exigen la atención de un supervisor de mayor jerarquía."
+                ],
+                herramientas: ["CRM Wolkvox", "APP legacy", "APP sparta", "Dashboards de marcación"],
+                kpis: "% de cumplimiento de cuota de equipo, Adherencia a procesos normativos, Índice de ausentismo.",
+                competencias: "Liderazgo de primera línea, Motivación intrínseca, Tolerancia a la frustración, Comunicación directa.",
+                lineamientos: "Reporta al Gerente o Subgerente de Área. Lidera directamente a Asesores, Gestores o Ejecutivos.",
+                alcance: "Equipo / Célula operativa: Responsable del cumplimiento de metas de una célula específica de trabajo."
+            },
+            "ESPECIALISTA": {
+                nivel: "Especialista / Técnico Avanzado Autónomo", sueldo: "$24,000 MXN",
+                formacion: "Licenciatura o Ingeniería concluida con especialización o certificación técnica en la materia.",
+                experiencia: "3-5 años executing tareas de alta complejidad técnica o especialización teórica (Legal, Proyectos, Mecánica).",
+                skills: "Hard: Diagnóstico especializado, Redacción técnica/legal profunda. Soft: Pensamiento analítico profundo, Autonomía.",
+                objetivo: "Resolver problemas complejos, dictaminar casos críticos y ejecutar procesos de alta especialización que escapan a la operación estándar.",
+                actividades: [
+                    "Emitir dictámenes técnicos, legales o de viabilidad de proyectos complejos con alto impacto regulatorio.",
+                    "Auditar y diagnosticar fallas atípicas o problemas graves en los productos/procesos corporativos.",
+                    "Asesorar técnicamente a gerentes y directores en la toma de decisiones complejas del negocio.",
+                    "Diseñar manuales técnicos avanzados, guías de diagnóstico o plantillas legales jurídicas.",
+                    "Impartir capacitaciones técnicas avanzadas al personal operativo y analistas de la empresa asignada.",
+                    "Investigar nuevas tendencias o regulaciones que apliquen al negocio para implementarlas oportunamente."
+                ],
+                herramientas: ["Software de diagnóstico especializado", "Plataformas legales", "Herramientas de diagramación", "MS Office Avanzado"],
+                kpis: "% de precisión en dictámenes, Tiempo de resolución de casos complejos, % de proyectos técnicos entregados a tiempo.",
+                competencias: "Dominio técnico, Autonomía profesional, Análisis riguroso, Solución innovadora de problemas.",
+                lineamientos: "Reporta a Gerencias o Subdirecciones del área. Generadamente no tiene personal a cargo (contribución individual).",
+                alcance: "Procesos clave institucionales: Sus dictámenes o diagnósticos afectan la validez y seguridad de la operación."
+            },
+            "ANALISTA": {
+                nivel: "Operativo Profesional / Análisis Técnico", sueldo: "$16,000 MXN",
+                formacion: "Licenciatura o Ingeniería (Pasante, titulado o en últimos semestres).",
+                experiencia: "1-3 años en análisis de bases de datos, evaluación de riesgos, control documental o finanzas.",
+                skills: "Hard: SQL básico/intermedio, Excel avanzado (Fórmulas/Macros). Soft: Pensamiento lógico, Concentración.",
+                objetivo: "Procesar, evaluar y transformar información masiva o expedientes en reportes estructurados que guíen la toma de decisiones operativas inmediatas.",
+                actividades: [
+                    "Extraer y consolidar bases de datos diarias para la generación de reportes operativos de las gerencias.",
+                    "Analizar expedientes de crédito, contratos o perfiles de riesgo conforme a políticas de negocio vigentes.",
+                    "Identificar patrones de fraude, inconsistencias de datos o desviaciones financieras en auditorías periódicas.",
+                    "Cargar, actualizar y depurar información relevante en el sistema institucional ERP o CRM.",
+                    "Atender y dar respuesta oportuna a solicitudes de información crítica de otras áreas de la organización.",
+                    "Elaborar proyecciones estadísticas básicas e informes analíticos de comportamiento mensual del área."
+                ],
+                herramientas: ["Excel Avanzado", "Power BI", "SQL Server", "APP legacy", "APP sparta"],
+                kpis: "Tiempo de procesamiento de solicitudes (SLA), % de error en bases de datos, Volumen de casos/expedientes dictaminados.",
+                competencias: "Atención al detalle, Capacidad analítica, Orientación a la calidad, Organización documental.",
+                lineamientos: "Reporta al Coordinador o Gerente del Área. Trabaja de manera coordinada con Auxiliares y Operativos.",
+                alcance: "Táctico Local: Genera la información y los análisis base que dan soporte a las decisiones de negocio."
+            },
+            "GESTOR": {
+                nivel: "Operativo / Campo", sueldo: "$14,000 MXN",
+                formacion: "Bachillerato concluido o carrera técnica comercial.",
+                experiencia: "1-2 años en cobranza domiciliaria, cambaceo, ventas de campo o verificación de datos.",
+                skills: "Hard: Conocimiento de rutas de la ciudad, Técnicas de negociación. Soft: Persuasión, Control emocional.",
+                objetivo: "Localizar a los clientes con cuentas en mora avanzada para negociar y recuperar los pagos correspondientes en campo de forma de ley.",
+                actividades: [
+                    "Trazar y ejecutar la ruta diaria de visitas domiciliarias asignadas en su zona geográfica asignada.",
+                    "Entrevistar al titular de la cuenta para conciliar la deuda y exigir el pago correspondiente.",
+                    "Negociar convenios de pago basados en las políticas y márgenes autorizados por la dirección comercial.",
+                    "Registrar en tiempo real el resultado de cada visita física mediante las herramientas móviles.",
+                    "Recaudar pagos en efectivo o mediante fichas de depósito referenciadas seguras del cliente.",
+                    "Identificar y reportar fraudes, vecindades deshabitadas o negativas de pago rotundas del deudor."
+                ],
+                herramientas: ["APP legacy", "APP sparta", "Dispositivos móviles corporativos", "Google Maps"],
+                kpis: "Monto de cartera recuperada mensual, % de visitas efectivas respecto a ruta, % de promesas de pago cumplidas.",
+                competencias: "Persuasión, Negociación bajo presión, Orientación a resultados, Integridad personal.",
+                lineamientos: "Reporta de forma directa al Supervisor o Gerente de Cobranza en Campo. No tiene personal a su cargo.",
+                alcance: "Micro-zona geográfica: Ejecuta acciones directas con clientes asignados en una zona territorial delimitada."
+            },
+            "EJECUTIVO": {
+                nivel: "Operativo / Call Center", sueldo: "$11,000 MXN",
+                formacion: "Bachillerato concluido o Carrera Técnica (Estudios universitarios truncos deseables).",
+                experiencia: "1-2 años en atención telefónica, telemarketing, retención o cobranza telefónica.",
+                skills: "Hard: Digitación rápida de datos, conmutadores telefónicos y software de marcación. Soft: Escucha activa.",
+                objetivo: "Brindar soluciones de soporte, atención o cobranza temprana a los usuarios vía telefónica o canales digitales.",
+                actividades: [
+                    "Atender o realizar llamadas masivas de acuerdo al script de servicio establecido por el área comercial.",
+                    "Registrar detalladamente los acuerdos o comentarios de cada contacto en el CRM Wolkvox.",
+                    "Canalizar solicitudes complejas o reclamos a las áreas de segundo nivel de soporte interno de la compañía.",
+                    "Ofrecer soluciones y alternativas de pago a cuentas en mora temprana o preventiva de cartera.",
+                    "Validar la identidad del usuario resguardando la estricta confidencialidad de la información personal.",
+                    "Cumplir con las metas individuales diarias de llamadas concretadas e indicadores de calidad telefónica."
+                ],
+                herramientas: ["CRM Wolkvox", "APP sparta", "Conmutador VoIP", "Suite de Oficina"],
+                kpis: "Tiempo Promedio de Operación (AHT), % de Calidad en la llamada, % de Promesas de Pago o Ventas cerradas.",
+                competencias: "Escucha activa, Orientación al servicio, Resiliencia, Comunicación oral efectiva.",
+                lineamientos: "Reporta de forma directa al Supervisor de Call Center. Sin personal a cargo.",
+                alcance: "Operativo Individual: Impacta en la experiencia de servicio y la recuperación de cuentas de los clientes contactados."
+            },
+            "ASESOR": {
+                nivel: "Operativo / Comercial o Ventas", sueldo: "$10,000 MXN",
+                formacion: "Bachillerato general o carrera técnica concluida.",
+                experiencia: "6 meses a 2 años en prospección de clientes, ventas de piso, cambaceo o colocación de créditos.",
+                skills: "Hard: Técnicas de cierre de ventas, Manejo de objeciones. Soft: Facilidad de palabra, Empatía inmediata.",
+                objetivo: "Prospectar, perfilar y cerrar ventas de productos o servicios financieros, cumpliendo de manera sostenida con las cuotas individuales de colocación.",
+                actividades: [
+                    "Abordar y prospectar clientes potenciales en puntos de venta físicos o zonas asignadas de comercialización.",
+                    "Explicar los beneficios, plazos y requisitos de los productos de manera transparente y clara al cliente.",
+                    "Recopilar la documentación inicial obligatoria del cliente para el trámite del financiamiento comercial.",
+                    "Ingresar las solicitudes de crédito o venta al sistema para su respectivo análisis de riesgo asignado.",
+                    "Dar seguimiento personalizado al estatus de aprobación de la venta para concretar el respectivo cierre.",
+                    "Entregar los productos vendidos asegurando la firma conforme de los contratos y pagarés requeridos."
+                ],
+                herramientas: ["Puntos de Venta (POS)", "CRM Comercial Corporativo", "Aplicaciones de cotización móviles", "WhatsApp Business"],
+                kpis: "Número de ventas colocados al mes, Monto financiero total vendido, % de conversión de prospectos.",
+                competencias: "Habilidad comercial, Facilidad de palabra, Tolerancia a la frustración, Enfoque al cliente.",
+                lineamientos: "Reporta directamente al Supervisor de Ventas o Gerente Comercial. Sin personal a cargo.",
+                alcance: "Operativo Comercial: Responsable directo de la captación de ingresos mediante el cierre de ventas individuales."
+            },
+            "DESARROLLADOR": {
+                nivel: "Especialista Operativo / TI", sueldo: "$38,000 MXN",
+                formacion: "Ingeniería en Sistemas Computacionales, Ciencias de la Computación o carrera técnica afín avanzada.",
+                experiencia: "2-5 años en desarrollo de software (Backend/Frontend), diseño de bases de datos y APIs REST.",
+                skills: "Hard: Programación (Python/Java/C#), SQL/NoSQL, Git. Soft: Pensamiento abstracto, Solución de problemas.",
+                objetivo: "Codificar, probar y mantener módulos de software internos y herramientas tecnológicas que automaticen la operación integral del negocio.",
+                actividades: [
+                    "Escribir código limpio, eficiente y documentado de acuerdo a los estándares técnicos de TI.",
+                    "Diseñar e integrar conexiones de bases de datos y servicios Web (APIs) institucionales de forma segura.",
+                    "Realizar pruebas unitarias y de integración para mitigar fallas en ambiente de producción real de la empresa.",
+                    "Corregir errores de software (bugs) reportados por los usuarios de soporte operativo interno corporativo.",
+                    "Participar en el despliegue técnico de nuevas versiones de los sistemas informáticos principales.",
+                    "Apoyar en la optimización del rendimiento y consultas complejas de las plataformas de datos institucionales."
+                ],
+                herramientas: ["VS Code / JetBrains IDEs", "Repositorios Git (GitHub/GitLab)", "SQL Server", "CRM Wolkvox APIs"],
+                kpis: "Número de bugs críticos en producción, % de entregas de Sprint a tiempo, Tiempo de resolución de fallas.",
+                competencias: "Pensamiento analítico, Innovación tecnológica, Enfoque a soluciones de software, Autogestión técnica.",
+                lineamientos: "Reporta al Subdirector de TI o Líder de Desarrollo. Colabora de forma estrecha con Diseñadores de TI y PMO.",
+                alcance: "Infraestructura Digital Corporativa: Su código mantiene vivas y automatizadas las operaciones de toda la compañía."
+            },
+            "DISEÑADOR": {
+                nivel: "Operativo Técnico / Diseño y UI-UX", sueldo: "$19,000 MXN",
+                formacion: "Licenciatura en Diseño Gráfico, Animación Digital, Diseño UI/UX o carreras afines.",
+                experiencia: "1-3 años creando interfaces digitales, materiales de marketing corporativo o flujos interactivos.",
+                skills: "Hard: Diseño de interfaces digitales (UI), Prototipos dinámicos. Soft: Creatividad orientada al negocio, Empatía.",
+                objetivo: "Diseñar la identidad visual y la experiencia de usuario de las aplicaciones y campañas, garantizando interfaces atractivas e intuitivas.",
+                actividades: [
+                    "Crear layouts, wireframes y prototipos interactivos para las aplicaciones móviles y web internas.",
+                    "Diseñar activos visuales (banners, infografías, layouts) para campañas publicitarias digitales de la marca.",
+                    "Asegurar la consistencia visual y de marca en todos los puntos de contacto digitales del corporativo.",
+                    "Colaborar de manera directa con desarrolladores para garantizar la viabilidad técnica del diseño gráfico.",
+                    "Realizar pruebas de usabilidad visual sencillas e iterar diseños según retroalimentación de usuarios.",
+                    "Optimizar imágenes y recursos multimedia para su rápido rendimiento y carga en las plataformas web."
+                ],
+                herramientas: ["Adobe Creative Cloud", "Figma / Adobe XD", "Herramientas de prototipado rápido", "Bancos de recursos digitales"],
+                kpis: "Tiempo de entrega de maquetas/recursos, Tasa de adopción/usabilidad de interfaces, Calidad del diseño.",
+                competencias: "Creatividad aplicada, Sentido estético profesional, Colaboración multifuncional, Atención al detalle visual.",
+                lineamientos: "Reporta a la Gerencia de Marketing o Dirección de TI según la asignación del proyecto. Sin personal a cargo.",
+                alcance: "Identidad Digital e Interfaz: Define cómo se ven y se sienten las herramientas y marcas de cara al usuario final."
+            },
+            "ADMINISTRADOR SALESFORCE": {
+                nivel: "Especialista Técnico / CRM", sueldo: "$34,000 MXN",
+                formacion: "Licenciatura o Ingeniería en Computación, Sistemas o carrera afín (Certificación Salesforce Administrator obligatoria).",
+                experiencia: "2-4 años configurando, administrando y personalizando nubes de Salesforce (Sales / Service Cloud).",
+                skills: "Hard: Configuración avanzada de Salesforce (Flows, Roles, Perfiles). Soft: Comunicación, Organización.",
+                objetivo: "Optimizar y mantener la plataforma Salesforce, garantizando la seguridad de la información, flujos automatizados de ventas y reportes operativos precisos.",
+                actividades: [
+                    "Configurar usuarios, perfiles, roles, reglas de compartición y permisos de seguridad del CRM corporativo.",
+                    "Crear y mantener flujos de automatización complejos utilizando Salesforce Flows estándar de la plataforma.",
+                    "Elaborar reportes, tableros y páneles métricos personalizados para directivos, directores y gerentes de área.",
+                    "Capacitar de manera continua a los usuarios finales en el uso óptimo y funcional de la plataforma.",
+                    "Monitorear la calidad de los datos, eliminando registros duplicados o inconsistentes en la base de datos.",
+                    "Evaluar e instalar paquetes tecnológicos complementarios desde el AppExchange corporativo asignado."
+                ],
+                herramientas: ["Ecosistema Avanzado Salesforce", "Data Loader", "Salesforce Inspector", "Plataformas de integración de datos"],
+                kpis: "Tasa de adopción de la plataforma por los usuarios, Tiempo de resolución de tickets, Integridad de la base de datos.",
+                competencias: "Orientación al cliente de negocio, Enfoque a procesos sistémicos, Metodología rigurosa de control de datos.",
+                lineamientos: "Reporta a la Dirección o Subdirección de TI. Trabaja de manera coordinada con Desarrolladores y Analistas.",
+                alcance: "Estratégico Tecnológico: Custodio y optimizador de la plataforma centralizada de datos de clientes e interacciones comerciales."
+            },
+            "PMO": {
+                nivel: "Coordinación Estratégica / Proyectos", sueldo: "$35,000 MXN",
+                formacion: "Licenciatura o Ingeniería concluida (Deseable certificación PMP o Scrum Master).",
+                experiencia: "3-5 años liderando e implementando proyectos de software o reingeniería de procesos.",
+                skills: "Hard: Metodologías de proyectos (PMBOK, Agile/Scrum), Gestión de presupuestos. Soft: Liderazgo de influencia.",
+                objetivo: "Garantizar que el portafolio de proyectos estratégicos y tecnológicos asignados se entregue en el tiempo estipulado, bajo el alcance acordado.",
+                actividades: [
+                    "Definir el cronograma detallado de los proyectos (WBS) y coordinar las reuniones de inicio formal corporativo.",
+                    "Realizar el seguimiento puntual de las tareas críticas diarias asignadas a los equipos técnicos y de ingeniería.",
+                    "Identificar de manera proactiva riesgos de atraso en entregas y proponer planes de contingencia viables.",
+                    "Gestionar y mediar la comunicación formal entre los líderes técnicos y usuarios finales del negocio corporativo.",
+                    "Elaborar reportes periódicos de estatus (Semáforos de avance) para directivos y directores de las áreas asignadas.",
+                    "Controlar la documentación final del proyecto y asegurar el cierre administrativo formal de entregables."
+                ],
+                herramientas: ["Jira / Confluence", "Asana", "Software de diagramación (Lucidchart/Visio)", "MS Project"],
+                kpis: "Desviación de tiempo del cronograma (SPI), Desviación presupuestal del proyecto (CPI), % de proyectos cerrados con éxito.",
+                competencias: "Liderazgo facilitador, Planificación estructurada, Comunicación multidireccional, Enfoque al cumplimiento.",
+                lineamientos: "Reporta directamente a la Dirección de TI o Dirección de Operaciones según el portafolio. Lidera equipos por proyecto.",
+                alcance: "Transversal Corporativo: Orquesta iniciativas que transforman las capacidades tecnológicas y operativas de la organización entera."
+            },
+            "AUDITOR": {
+                nivel: "Operativo Profesional / Control Interno", sueldo: "$18,000 MXN",
+                formacion: "Licenciatura en Contabilidad Pública, Finanzas, Administración o Ingeniería.",
+                experiencia: "2-4 años ejecutando auditorías operativas, financieras, de procesos de campo o cumplimiento normativo.",
+                skills: "Hard: Técnicas de muestreo estadístico, Normas de auditoría vigentes. Soft: Escepticismo profesional, Firmeza.",
+                objetivo: "Evaluar la correcta aplicación de los controles internos, políticas corporativas y regulaciones legales para detectar y mitigar fraudes o mermas.",
+                actividades: [
+                    "Ejecutar el plan de auditoría asignado de manera puntual mediante visitas sorpresa y revisiones de cartera.",
+                    "Validar de manera minuciosa que los expedientes de crédito e inventarios cumplan con la norma interna de calidad.",
+                    "Realizar arqueos de caja rápidos, conciliaciones de valores y pruebas de cumplimiento de procesos de cobro.",
+                    "Redactar informes de hallazgos y debilidades de control detectadas en campo o de manera remota al equipo de control.",
+                    "Acordar planes de acción y metodologías correctivas con los gerentes de las áreas auditadas actualmente.",
+                    "Dar seguimiento formal a la implementación real de los compromisos de mejora previamente pactados por el área."
+                ],
+                herramientas: ["Software de auditoría forense/análisis", "Módulos ERP financieros", "Excel avanzado", "Sistemas de rastreo interno"],
+                kpis: "% de cumplimiento del Plan Anual de Auditoría, Número de vulnerabilidades detectadas, Tiempo de entrega del informe.",
+                competencias: "Integridad moral, Escepticismo profesional, Objetividad analítica, Comunicación asertiva y firme.",
+                lineamientos: "Reporta a la Subdirección o Dirección de Auditoría. No posee personal a cargo directo.",
+                alcance: "Institucional / Fiscalizador: Sus reportes e inspecciones blindan el patrimonio y la legalidad de los activos de la empresa."
+            },
+            "AUXILIAR": {
+                nivel: "Operativo de Soporte / Administrativo", sueldo: "$9,000 MXN",
+                formacion: "Bachillerato técnico comercial, carrera técnica o licenciatura trunca inicial.",
+                experiencia: "6 meses a 1 año realizando tareas de captura de datos, archivo o conciliación física básica.",
+                skills: "Hard: Captura ágil de datos (Data Entry), Organización de archivo. Soft: Disciplina operativa, Disposición.",
+                objetivo: "Brindar soporte operativo de primera línea en la ejecución de tareas administrativas rutinarias, asegurando el orden y disponibilidad de los registros.",
+                actividades: [
+                    "Capturar información masiva de movimientos contables o comerciales en el sistema institucional de la empresa.",
+                    "Archivar, foliar y clasificar expedientes físicos y digitales conforme a la norma de la compañía.",
+                    "Monitorear pantallas de rastreo básico de unidades o CEDIS para reportar anomalías de inmediato al supervisor.",
+                    "Apoyar en la atención telefónica básica a proveedores o clientes internos dirigiendo llamadas correctamente.",
+                    "Verificar que la documentación física recibida contenga las firmas de autorización obligatorias del área asignada.",
+                    "Generar copias de respaldo, escanear documentos y armar paquetes de mensajería para distribución física."
+                ],
+                herramientas: ["Software de oficina básico (Word/Excel)", "Sistemas ERP locales", "Herramientas de rastreo vehicular"],
+                kpis: "Volumen de registros capturados diariamente, % de error en la captura de datos, Tiempo empleado en localizar expedientes.",
+                competencias: "Disciplina, Responsabilidad, Organización del espacio, Enfoque a tareas rutinarias.",
+                lineamientos: "Reporta al Coordinador o Supervisor directo de su área de asignación. Sin personal a su cargo.",
+                alcance: "Soporte de Oficina: Agiliza la carga laboral de analistas y coordinadores manteniendo el flujo operativo ordenado."
+            },
+            "BECARIO": {
+                nivel: "Operativo Formativo / Prácticas", sueldo: "$6,000 MXN",
+                formacion: "Estudiante activo de los últimos semestres de Licenciatura o Ingeniería afín al área.",
+                experiencia: "No indispensable (Proyectos escolares previos o interés genuino en el área técnica del puesto).",
+                skills: "Hard: Manejo intermedio de Office, Conocimientos teóricos de su área. Soft: Curiosidad intelectual, Proactividad extrema.",
+                objetivo: "Desarrollar habilidades prácticas reales mediante el soporte guiado en tareas complementarias del área, aportando valor formativo continuo.",
+                actividades: [
+                    "Apoyar en la actualización de manuales de políticas y procedimientos internos del departamento asignado.",
+                    "Colaborar en la recopilación inicial de datos para la posterior elaboración de reportes mensuales del área técnica.",
+                    "Participar en sesiones de lluvia de ideas y diseño de propuestas de proyectos formativos internos de la empresa.",
+                    "Realizar llamadas informativas de seguimiento básico que no requieran técnicas de negociación avanzada.",
+                    "Acompañar a analistas experimentados en la revisión rutinaria de sistemas o bases de datos internas del área.",
+                    "Aprender activamente el uso de las herramientas y metodologías profesionales implementadas en la compañía."
+                ],
+                herramientas: ["Suite de colaboración (Google Docs / MS Office)", "CRM Básico", "Herramientas de desarrollo básicas de TI"],
+                kpis: "Curva de aprendizaje demostrada, Calidad y empeño en tareas, Iniciativa en el soporte diario, Asistencia programada.",
+                competencias: "Disposición para aprender, Apertura a la retroalimentación, Iniciativa personal, Compromiso académico.",
+                lineamientos: "Reporta al Analista Senior, Coordinador o Gerente asignado como tutor institucional. Sin personal a cargo.",
+                alcance: "Formativo / Apoyo Inicial: Su impacto principal radica en la agilización de tareas secundarias mientras absorbe el know-how corporativo."
+            },
+            "AYUDANTE GENERAL": {
+                nivel: "Operativo Básico / Servicios Generales", sueldo: "$8,000 MXN",
+                formacion: "Secundaria concluida o Bachillerato trunco.",
+                experiencia: "6 meses a 1 año en servicios generales, limpieza, mantenimiento básico o mensajería.",
+                skills: "Hard: Uso seguro de herramientas de reparación manuales, Limpieza institucional. Soft: Actitud servicial, Honestidad.",
+                objetivo: "Mantener las instalaciones físicas corporativas en condiciones óptimas de limpieza, orden y funcionamiento básico seguro para la comodidad del personal.",
+                actividades: [
+                    "Realizar la limpieza profunda diaria de las oficinas, sanitarios y áreas comunes que le correspondan de forma formal.",
+                    "Apoyar en el traslado físico de mobiliario pesado, insumos de papelería o cajas de archivo muerto de oficina.",
+                    "Ejecutar reparaciones menores de mantenimiento básico (cambio de luminarias, pintura, fontanería básica).",
+                    "Reportar de forma inmediata fallas estructurales graves que requieran la intervención de proveedores externos.",
+                    "Asegurar el correcto resguardo y uso eficiente de los productos químicos de limpieza provistos en la compañía.",
+                    "Apoyar en tareas logísticas básicas de carga y descarga de materiales en almacenes o CEDIS corporativos asignados."
+                ],
+                herramientas: ["Herramientas de mantenimiento manuales básicas", "Equipos de limpieza institucional", "EPP"],
+                kpis: "Índice de limpieza y orden de áreas comunes, Tiempo de atención a reportes de fallas menores, Cero accidentes.",
+                competencias: "Espíritu de servicio, Honestidad comprobada, Disposición física, Disposición inmediata.",
+                lineamientos: "Reporta de forma directa al Coordinador de Compras/Servicios Generales o Supervisor. Sin personal a cargo.",
+                alcance: "Instalaciones Físicas: Su labor garantiza un entorno de trabajo digno, limpio y seguro para toda la plantilla."
+            }
+        };
+
+        // --- BASE DE DATOS ESTRUCTURA EN EXCEL DE MAXIKASH MEXICO ---
+        const maxikashEstructura = [
+            { puesto: "GERENTE", depto: "REGIONAL", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "GESTOR", depto: "CAMPO", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "EJECUTIVO", depto: "COMERCIAL", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DIRECTOR", depto: "EJECUTIVO", area: "DIRECCION", direccion: "EJECUTIVA" },
+            { puesto: "GERENTE", depto: "AFILIACIONES", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DIRECTOR", depto: "ATENCION A CLIENTES", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ASESOR", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ANALISTA", depto: "CREDITO", area: "MESA DE CONTROL", direccion: "OPERACIONES" },
+            { puesto: "COORDINADOR", depto: "OPERACIONES", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "TESORERIA", area: "TESORERIA", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "GERENTE", depto: "ATENCION A CLIENTES", area: "OPERACIONES", direccion: "OPERACIONES" },
+            { puesto: "SUBDIRECTOR", depto: "ADMINISTRACION", area: "MESA DE CONTROL", direccion: "OPERACIONES" },
+            { puesto: "SUPERVISOR", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "GERENTE", depto: "ADMINISTRACION", area: "INTELIGENCIA DE NEGOCIO", direccion: "COBRANZA" },
+            { puesto: "EJECUTIVO", depto: "ATENCION A CLIENTES", area: "OPERACIONES", direccion: "OPERACIONES" },
+            { puesto: "SUPERVISOR", depto: "CARTERA", area: "INTELIGENCIA DE NEGOCIO", direccion: "OPERACIONES" },
+            { puesto: "ANALISTA", depto: "DATA", area: "OPERACIONES", direccion: "TI" },
+            { puesto: "DIRECTOR", depto: "REGIONAL", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ANALISTA", depto: "INVERSIONES Y MERCADO", area: "ADMINISTRACION", direccion: "INVERSIONES Y MERCADO" },
+            { puesto: "SUBDIRECTOR", depto: "CAMPO", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "OPERACIONES", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "SUPERVISOR", depto: "CAMPO", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "COORDINADOR", depto: "INNOVACION", area: "OPERACIONES", direccion: "TI" },
+            { puesto: "EJECUTIVO", depto: "CALL CENTER", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "DESARROLLO DE NEGOCIO", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "COORDINADOR", depto: "COMPRAS", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "GERENTE", depto: "COBRANZA", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "CUMPLIMIENTO", area: "ADMINISTRACION", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "SUBDIRECTOR", depto: "TI", area: "INTELIGENCIA DE NEGOCIO", direccion: "COBRANZA" },
+            { puesto: "ANALISTA", depto: "DATA", area: "TI", direccion: "TI" },
+            { puesto: "ANALISTA", depto: "INTELIGENCIA", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ANALISTA", depto: "CONTROL DOCUMENTAL", area: "ADMINISTRACION", direccion: "COMERCIAL" },
+            { puesto: "GERENTE", depto: "COBRANZA", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "PROYECTOS", area: "OPERACIONES", direccion: "TI" },
+            { puesto: "GERENTE", depto: "DATA", area: "TI", direccion: "TI" },
+            { puesto: "GERENTE", depto: "REGIONAL", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "SUBDIRECTOR", depto: "AUDITORIA", area: "AUDITORIA", direccion: "AUDITORIA" },
+            { puesto: "ANALISTA", depto: "CARTERA", area: "INTELIGENCIA DE NEGOCIO", direccion: "OPERACIONES" },
+            { puesto: "SUPERVISOR", depto: "VENTAS", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "ASESOR", depto: "REGIONAL", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DESARROLLADOR", depto: "PRODUCTO", area: "OPERACIONES", direccion: "OPERACIONES" },
+            { puesto: "GERENTE", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DISEÑADOR", depto: "MARKETING", area: "TI", direccion: "TI" },
+            { puesto: "GERENTE", depto: "MARKETING", area: "TI", direccion: "TI" },
+            { puesto: "ANALISTA", depto: "COMPROBACION DE GASTOS", area: "CONTABILIDAD", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "GERENTE", depto: "CAMPO", area: "ADMINISTRACION", direccion: "COBRANZA" },
+            { puesto: "ESPECIALISTA", depto: "PROYECTOS", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "ANALISTA", depto: "PREVENCION DE FRAUDE", area: "OPERACIONES", direccion: "OPERACIONES" },
+            { puesto: "AYUDANTE GENERAL", depto: "SERVICIOS GENERALES", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "COORDINADOR", depto: "CONTABILIDAD", area: "CONTABILIDAD", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "AUXILIAR", depto: "RASTREO", area: "ADMINISTRACION", direccion: "COBRANZA" },
+            { puesto: "ANALISTA", depto: "INVENTARIO", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "EJECUTIVO", depto: "COMERCIAL SN", area: "COMERCIAL SN", direccion: "COMERCIAL SN" },
+            { puesto: "ANALISTA", depto: "AUDITORIA", area: "AUDITORIA", direccion: "AUDITORIA" },
+            { puesto: "COORDINADOR", depto: "RASTREO", area: "ADMINISTRACION", direccion: "COBRANZA" },
+            { puesto: "ANALISTA", depto: "RIESGO", area: "INTELIGENCIA DE NEGOCIO", direccion: "OPERACIONES" },
+            { puesto: "DESARROLLADOR", depto: "TI", area: "TI", direccion: "TI" },
+            { puesto: "ANALISTA", depto: "SOPORTE", area: "INFRAESTRUCTURA", direccion: "TI" },
+            { puesto: "DESARROLLADOR", depto: "TI", area: "OPERACIONES", direccion: "TI" },
+            { puesto: "ESPECIALISTA", depto: "DIAGNOSTICO DE MOTOCICLETAS", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "GERENTE", depto: "REGIONAL", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "LEGAL", area: "ADMINISTRACION", direccion: "LEGAL" },
+            { puesto: "EJECUTIVO", depto: "COMERCIAL SN", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ANALISTA", depto: "TALENTO", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "DESARROLLADOR", depto: "TI", area: "TI-OPERACIONES", direccion: "TI" },
+            { puesto: "ESPECIALISTA", depto: "LEGAL", area: "ADMINISTRACION", direccion: "LEGAL" },
+            { puesto: "SUBDIRECTOR", depto: "MARKETING", area: "ADMINISTRACION", direccion: "COMERCIAL" },
+            { puesto: "ESPECIALISTA", depto: "NOMINAS", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "ANALISTA", depto: "ADMINISTRACION", area: "CONTROL INTERNO", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "ADMINISTRACION", area: "CONTABILIDAD", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "SUBDIRECTOR", depto: "PLANEACION", area: "ADMINISTRACION", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "SUBDIRECTOR", depto: "RIESGO", area: "INTELIGENCIA DE NEGOCIO", direccion: "OPERACIONES" },
+            { puesto: "DIRECTOR", depto: "ADMINISTRACION", area: "ADMINISTRACION", direccion: "TI" },
+            { puesto: "ANALISTA", depto: "CONTROL DOCUMENTAL", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "DESARROLLADOR", depto: "TI", area: "INFRAESTRUCTURA", direccion: "COBRANZA" },
+            { puesto: "SUBDIRECTOR", depto: "ADMINISTRACION", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "ANALISTA", depto: "ADMINISTRACION", area: "INTELIGENCIA DE NEGOCIO", direccion: "COBRANZA" },
+            { puesto: "SUPERVISOR", depto: "MANTENIMIENTO", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "EJECUTIVO", depto: "MARKETING", area: "TI", direccion: "TI" },
+            { puesto: "AUXILIAR", depto: "CEDIS", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "COORDINADOR", depto: "LOGISTICA", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "GERENTE", depto: "VENTAS", area: "COMERCIAL SN", direccion: "COMERCIAL SN" },
+            { puesto: "DIRECTOR", depto: "INVERSIONES Y MERCADO", area: "ADMINISTRACION", direccion: "INVERSIONES Y MERCADO" },
+            { puesto: "SUBDIRECTOR", depto: "SEMINUEVAS", area: "COMERCIAL SN", direccion: "COMERCIAL" },
+            { puesto: "BECARIO", depto: "TI", area: "OPERACIONES", direccion: "TI" },
+            { puesto: "DIRECTOR", depto: "ADMINISTRACION", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "BECARIO", depto: "ADMINISTRACION", area: "ADMINISTRACION", direccion: "COMERCIAL" },
+            { puesto: "ASESOR", depto: "VENTAS", area: "COMERCIAL SN", direccion: "COMERCIAL SN" },
+            { puesto: "DISEÑADOR", depto: "TI", area: "TI-OPERACIONES", direccion: "TI" },
+            { puesto: "GERENTE", depto: "MARKETING", area: "OPERACIONES", direccion: "TI" },
+            { puesto: "DIRECTOR", depto: "ADMINISTRACION", area: "ADMINISTRACION", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "ANALISTA", depto: "ADMINISTRACION", area: "ADMINISTRACION", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "AUXILIAR", depto: "CONTABILIDAD", area: "CONTABILIDAD", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "ANALISTA", depto: "CUENTAS POR PAGAR", area: "ADMINISTRACION", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "SUBDIRECTOR", depto: "TESORERIA", area: "TESORERIA", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "GERENTE", depto: "CAMPO", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "DESARROLLADOR", depto: "SOPORTE", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "GERENTE", depto: "ATENCION A CLIENTES", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ADMINISTRADOR SALESFORCE", depto: "TI", area: "TI", direccion: "TI" },
+            { puesto: "ANALISTA", depto: "LOGISTICA", area: "COMERCIAL SN", direccion: "COMERCIAL SN" },
+            { puesto: "DESARROLLADOR", depto: "OPERACIONES", area: "TI", direccion: "TI" },
+            { puesto: "SUPERVISOR", depto: "ATENCION A CLIENTES", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DIRECTOR", depto: "AUDITORIA", area: "AUDITORIA", direccion: "AUDITORIA" },
+            { puesto: "GERENTE", depto: "N/A", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "SUPERVISOR", depto: "VENTAS", area: "COBRANZA", direccion: "COMERCIAL" },
+            { puesto: "ESPECIALISTA", depto: "OPERACIONES", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DIRECTOR", depto: "CAMPO", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "SUPERVISOR", depto: "CAMPO", area: "OPERACIONES", direccion: "COBRANZA" },
+            { puesto: "ANALISTA", depto: "TALENTO", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "AUXILIAR", depto: "ADMINISTRACION", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "DISEÑADOR", depto: "TI", area: "TI", direccion: "TI" },
+            { puesto: "SUBGERENTE", depto: "CAMPO", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "AUXILIAR", depto: "CAMPO", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "DIRECTOR", depto: "COMERCIAL", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "GERENTE", depto: "ADMINISTRACION", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "PMO", depto: "TI", area: "TI", direccion: "TI" },
+            { puesto: "ANALISTA", depto: "ADMINISTRACION", area: "COBRANZA", direccion: "COBRANZA" },
+            { puesto: "PMO", depto: "CARTERA", area: "OPERACIONES", direccion: "OPERACIONES" },
+            { puesto: "AUDITOR", depto: "AUDITORIA", area: "AUDITORIA", direccion: "AUDITORIA" },
+            { puesto: "ESPECIALISTA", depto: "MANTENIMIENTO", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "AUXILIAR", depto: "CONTABILIDAD", area: "ADMINISTRACION", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "ANALISTA", depto: "TESORERIA", area: "TESORERIA", direccion: "ADMINISTRACION Y FINANZAS" },
+            { puesto: "BECARIO", depto: "CALL CENTER", area: "OPERACIONES", direccion: "OPERACIONES" }
+        ];
+
+        // --- BASE DE DATOS EMPRESA 2: FURIAMOTOS - PENSIONAMAX ---
+        const furiamotosPerfiles = {
+            "ASESOR": {
+                nivel: "Operativo / Comercial o Ventas", sueldo: "$11,000 MXN",
+                formacion: "Bachillerato general o carrera técnica concluida con orientación comercial activa.",
+                experiencia: "6 meses a 2 años en venta de motocicletas, servicios retail de mostrador o colocación de financiamientos.",
+                skills: "Hard: Técnicas de abordaje en showroom, Prospección en campo, Cotización en sistemas. Soft: Orientación al cliente.",
+                objetivo: "Prospectar clientes en mostrador, perfilar sus necesidades de movilidad y cerrar la venta de motocicletas y accesorios.",
+                actividades: [
+                    "Abordar de forma proactiva a los visitantes del Showroom de motos guiándolos en la elección de su motocicleta ideal.",
+                    "Ofrecer planes de financiamiento Pensionamax calculando cotizaciones mensuales personalizadas basadas en el perfil de ingresos.",
+                    "Recopilar y validar la documentación inicial del jubilado o cliente para el expediente del trámite de financiamiento.",
+                    "Ingresar las solicitudes de crédito al sistema y dar seguimiento diario al estatus del dictamen emitido por la mesa de control.",
+                    "Entregar la motocicleta al cliente final, explicando a detalle el correcto funcionamiento de las garantías y componentes de seguridad.",
+                    "Mantener limpias, calibradas y listas para demostración del asesor las unidades destinadas a la exhibición del Showroom."
+                ],
+                herramientas: ["CRM FurioMax", "SIP (Sistema Inventario Partes)", "Puntos de Venta (POS)", "WhatsApp Business"],
+                kpis: "Número de unidades físicas vendidas, % de conversión de prospectos en piso, Volumen financiero total de contratos.",
+                competencias: "Habilidad de negociación comercial, Comunicación efectiva y empática, Enfoque absoluto a resultados diarios.",
+                lineamientos: "Reporta directamente al Gerente de la Sucursal de Ventas. No tiene personal a su cargo.",
+                alcance: "Piso de Ventas / Showroom: Impacta de manera directa en el volumen transaccional de ingresos de la sucursal."
+            },
+            "GERENTE": {
+                nivel: "Gerencial / Táctico Operativo", sueldo: "$48,000 MXN",
+                formacion: "Licenciatura en Administración, Contabilidad, Ingeniería Industrial o carreras comerciales afín.",
+                experiencia: "4-6 años como gerente de sucursal automotriz, retail comercial o líder de operaciones de taller.",
+                skills: "Hard: Auditoría de almacén, Gestión de personal comercial, Administración de caja. Soft: Liderazgo inspirador.",
+                objetivo: "Dirigir el punto de venta de motocicletas y taller mecánico, asegurando la colocación diaria de stock y cumplimiento de cuotas comerciales.",
+                actividades: [
+                    "Dirigir y motivar al equipo de asesores de ventas de motos para cumplir la meta de colocación mensual.",
+                    "Asegurar el correcto orden, limpieza y acomodo estético de la exhibición de motos nuevas y seminuevas en el Showroom local.",
+                    "Coordinar con el área de talleres mecánicos la preparación y entrega conforme de las unidades de motocicletas vendidas.",
+                    "Revisar diariamente las solicitudes de crédito enviadas a mesa de control para agilizar firmas y desembolsos rápidos.",
+                    "Administrar la caja de la sucursal, inventarios de motocicletas físicas y refacciones de alta rotación en piso de tienda.",
+                    "Establecer dinámicas de prospección (visita a centros de jubilados, sindicatos) para captar clientes del programa Pensionamax."
+                ],
+                herramientas: ["CRM FurioMax", "SIP (Sistema Inventario Partes)", "Hojas de cálculo avanzadas", "ERP local (SAP)"],
+                kpis: "% Cumplimiento de cuota de sucursal (motos/crédito), Margen bruto de tienda, Nivel de quejas de clientes, Rotación de stock.",
+                competencias: "Liderazgo inspiracional, Orientación a resultados agresiva, Comunicación asertiva, Control de inventario.",
+                lineamientos: "Reporta a la Subdirección de Operaciones. Tiene bajo su cargo a Supervisores, Especialistas y Asesores de Tienda.",
+                alcance: "Sucursal local: Responsable único por las metas de venta de motos, colocación de créditos y taller mecánico de su sede."
+            },
+            "ESPECIALISTA": {
+                nivel: "Especialista / Técnico Avanzado Autónomo", sueldo: "$25,000 MXN",
+                formacion: "Ingeniería Mecánica, Carrera Técnica Automotriz Avanzada o afín.",
+                experiencia: "3-5 años en diagnóstico y mantenimiento correctivo avanzado de motocicletas y motores multimarca.",
+                skills: "Hard: Diagnóstico computarizado con escáner, Mecánica y sistemas eléctricos, Dictámenes técnicos. Soft: Pensamiento lógico.",
+                objetivo: "Resolver problemas mecánicos de alta complejidad en el taller de servicio y dictaminar las garantías de fallas atípicas del fabricante.",
+                actividades: [
+                    "Ejecutar el diagnóstico computarizado y reparaciones mecánicas complejas de motocicletas que no resolvió el taller estándar.",
+                    "Analizar a fondo los dictámenes técnicos y fichas de ensamble de motocicletas para detectar fallas atípicas de fábrica.",
+                    "Dictaminar casos de garantía de fábrica de motocicletas con base en los lineamientos técnicos de la marca Furiamotos.",
+                    "Desarrollar manuales de armado, mantenimiento preventivo y guías rápidas de diagnóstico para la red nacional de talleres.",
+                    "Brindar soporte técnico operativo avanzado en la preparación de unidades complejas de la sucursal.",
+                    "Capacitar técnicamente a los auxiliares y mecánicos de primer nivel de la empresa de manera mensual en sitio."
+                ],
+                herramientas: ["Escáner OBD / Software Diagnóstico", "Manuales Técnicos de Armado", "SIP (Sistema Inventario)", "SADEP"],
+                kpis: "% Efectividad de diagnóstico mecánico, Tiempo de dictamen legal de operaciones, % Reclamaciones de garantía aceptadas.",
+                competencias: "Dominio de especialidad, Atención milimétrica al detalle, Enfoque lógico, Autonomía técnica y profesional.",
+                lineamientos: "Reporta a la Gerencia Comercial o de Taller según su especialización técnica. No cuenta con personal directo a su cargo.",
+                alcance: "Institucional Técnico: Su dictamen valida la entrega física de motocicletas bajo garantía o la viabilidad de créditos."
+            },
+            "AUXILIAR": {
+                nivel: "Operativo de Soporte / Mantenimiento", sueldo: "$10,000 MXN",
+                formacion: "Bachillerato general o carrera técnica en mecánica de motocicletas / mantenimiento industrial.",
+                experiencia: "1 año en mantenimiento general, ensamble de motocicletas, o auxiliar de taller de servicio técnico.",
+                skills: "Hard: Ensamble de componentes mecánicos, Mantenimiento preventivo, Clasificación de inventario de refacciones. Soft: Actitud servicial.",
+                objetivo: "Brindar soporte logístico de ensamble y mantenimiento preventivo menor a las unidades de motocicletas en exhibición y piso de servicio.",
+                actividades: [
+                    "Realizar el ensamble inicial de motocicletas nuevas (colocación de espejos, baterías, kit de accesorios) provenientes del CEDIS.",
+                    "Acomodar, clasificar y foliar las refacciones y accesorios recibidos en el almacén de partes de la sucursal.",
+                    "Apoyar a los especialistas mecánicos en reparaciones preventivas básicas (cambios de aceite, ajuste de cadena, bujías).",
+                    "Asegurar que el taller mecánico de motocicletas cuente con las herramientas ordenadas y limpias al cierre del turno.",
+                    "Ejecutar tareas de mantenimiento menor en las instalaciones de la tienda (pintura, luminarias, conexiones de servicios).",
+                    "Mantener las motocicletas de exhibición del Showroom perfectamente limpias, calibradas y listas para demostración del asesor."
+                ],
+                herramientas: ["Herramienta manual mecánica", "SIP (Sistema Inventario)", "Equipos de ensamble", "EPP básico"],
+                kpis: "Número de motos ensambladas por día, Cuidado y cero daños al ensamblar, Índice de orden y limpieza del taller/tienda.",
+                competencias: "Disciplina física, Actitud servicial, Responsabilidad con herramientas, Enfoque en tareas prácticas.",
+                lineamientos: "Reporta directamente al Supervisor del Taller o Gerente de Sucursal. Trabaja en piso de servicio técnico.",
+                alcance: "Soporte de Piso: Su labor agiliza el flujo de entrega física de motocicletas ensambladas y listas para circular."
+            }
+        };
+
+        const furiamotosEstructura = [
+            { puesto: "ASESOR", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "GERENTE", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "ESPECIALISTA", depto: "OPERACIONES", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "AUXILIAR", depto: "MANTENIMIENTO", area: "RECURSOS HUMANOS", direccion: "ADMINISTRACION Y FINANZAS" }
+        ];
+
+        // --- BASE DE DATOS EMPRESA 3: MAXIKASH GUATEMALA ---
+        const guatemalaPerfiles = {
+            "GERENTE": {
+                nivel: "Gerencial / Táctico Operativo", sueldo: "Q18,000 GTQ",
+                formacion: "Licenciatura en Administración, Auditoría, Ingeniería Comercial o carreras comerciales afines.",
+                experiencia: "3-5 años liderando sucursales financieras de colocación o microfinanzas en la región.",
+                skills: "Hard: Control presupuestal en quetzales, Técnicas de abordaje comercial, Auditoría de créditos. Soft: Liderazgo de equipos.",
+                objetivo: "Supervisar y coordinar el correcto funcionamiento administrativo y comercial de la operación de ventas de MaxiKash en Guatemala.",
+                actividades: [
+                    "Monitorear diariamente las metas comerciales de colocación de microcréditos y planes de recuperación del módulo asignado.",
+                    "Auditar que los expedientes comerciales cumplan con las leyes vigentes y normativas locales bancarias de la SIB en Guatemala.",
+                    "Asegurar el correcto uso de los presupuestos del departamento minimizando mermas y desviaciones administrativas.",
+                    "Coordinar de forma presencial y remota al equipo de gestores integrales a su cargo, brindando apoyo técnico directo.",
+                    "Emitir reportes semanales del estatus financiero y comercial para la Dirección General Regional.",
+                    "Resolver dudas de clientes especiales que requieran la intervención formal del administrador o gerente de la sucursal."
+                ],
+                herramientas: ["APP legacy (gestión de cuentas)", "ERP Corporativo de Guatemala", "MS Office Avanzado"],
+                kpis: "% Cumplimiento de cuota comercial mensual, Índice de retención de talento en la sucursal, Eficiencia administrativa.",
+                competencias: "Liderazgo de influencia, Toma de decisiones operativas, Comunicación estratégica, Control de riesgos locales.",
+                lineamientos: "Reporta de forma directa a la Dirección Regional. Tiene personal de ventas y gestores integrales a su cargo.",
+                alcance: "Sucursal / Módulo Local: Responsable final de la rentabilidad, ventas y control de la sucursal asignada en Guatemala."
+            },
+            "GESTOR INTEGRAL": {
+                nivel: "Operativo / Campo o Ventas", sueldo: "Q6,500 GTQ",
+                formacion: "Bachillerato concluido, carrera técnica comercial o estudios universitarios iniciales.",
+                experiencia: "1-2 años en colocación de microcréditos de campo, ventas de cambaceo o cobranza domiciliaria.",
+                skills: "Hard: Gestión de rutas locales, Técnicas avanzadas de abordaje y venta, Técnicas de recuperación. Soft: Persuasión de alto nivel.",
+                objetivo: "Acompañar al cliente durante todo el ciclo de financiamiento, desde la prospección inicial de ventas hasta la gestión preventiva en campo.",
+                actividades: [
+                    "Prospectar clientes en zonas asignadas mediante abordaje directo de campo u oficinas.",
+                    "Explicar de forma detallada y transparente las tasas, plazos y condiciones de los microcréditos de MaxiKash.",
+                    "Recopilar y cargar en los sistemas correspondientes la documentación de los prospectos para su rápido dictamen.",
+                    "Realizar gestiones presenciales de cobranza temprana y preventiva para mantener sana la cartera de clientes asignada.",
+                    "Negociar acuerdos de pago con clientes en mora conforme a los márgenes e incentivos autorizados por la gerencia.",
+                    "Registrar diariamente en tiempo real cada visita y gestión realizada en campo mediante los dispositivos móviles corporativos."
+                ],
+                herramientas: ["APP legacy (gestión de cuentas)", "APP sparta (gestion datos GT)", "Google Maps"],
+                kpis: "Volumen financiero total de colocación, % de cobro y recuperación sobre cartera activa, Tiempo promedio de carga de expediente (SLA).",
+                competencias: "Persuasión y facilidad de palabra, Orientación absoluta a resultados de campo, Tolerancia a la frustración, Integridad.",
+                lineamientos: "Reporta directamente al Gerente de la Sucursal en Guatemala. No cuenta con personal a su cargo.",
+                alcance: "Operativo Comercial y Campo: Responsable de la captación directa de ingresos y la salud financiera de su cartera asignada."
+            }
+        };
+
+        const guatemalaEstructura = [
+            { puesto: "GERENTE", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" },
+            { puesto: "GESTOR INTEGRAL", depto: "VENTAS", area: "COMERCIAL", direccion: "COMERCIAL" }
+        ];
+    </script>
+
+    <script>
+        // --- MOTOR LOGICO DEL DASHBOARD ---
+        let currentCompany = "MAXIKASH";
+        let currentTab = "tab-estructura";
+
+        // Recreación matemática en SVG de alta fidelidad del Isotipo de image_530323.png (Banda de Moebius Imposible)
+        // Posee colores corporativos vibrantes: Azul Real (#004baf) y Verde Limón (#b4cc18)
+        const maxikashLogoSVG = `
+            <svg class="w-10 h-10 select-none animate-logo-spin logo-hover-effect cursor-pointer" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Sombra proyectada integrada para realce 3D -->
+                <defs>
+                    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.25"/>
+                    </filter>
+                </defs>
+                <g filter="url(#glow)">
+                    <!-- 1. Top-Left: Outer Blue Ribbon (Butt Joint) -->
+                    <polygon points="10,50 50,10 50,24 24,50" fill="#004baf" />
+                    <!-- 2. Top-Left: Inner Lime Ribbon -->
+                    <polygon points="24,50 50,24 50,38 38,50" fill="#b4cc18" />
+                    
+                    <!-- 3. Top-Right: Outer Lime Ribbon -->
+                    <polygon points="50,10 90,50 76,50 50,24" fill="#b4cc18" />
+                    <!-- 4. Top-Right: Inner Blue Ribbon -->
+                    <polygon points="50,24 76,50 62,50 50,38" fill="#004baf" />
+                    
+                    <!-- 5. Bottom-Right: Outer Blue Ribbon -->
+                    <polygon points="90,50 50,90 50,76 76,50" fill="#004baf" />
+                    <!-- 6. Bottom-Right: Inner Lime Ribbon -->
+                    <polygon points="76,50 50,76 50,62 62,50" fill="#b4cc18" />
+                    
+                    <!-- 7. Bottom-Left: Outer Lime Ribbon -->
+                    <polygon points="50,90 10,50 24,50 50,76" fill="#b4cc18" />
+                    <!-- 8. Bottom-Left: Inner Blue Ribbon -->
+                    <polygon points="50,76 24,50 38,50 50,62" fill="#004baf" />
+                </g>
+            </svg>
+        `;
+
+        // Inicializar Render de Tablas al cargar
+        window.onload = function () {
+            switchCompany("MAXIKASH"); // Carga MaxiKash México por default
+            initScrollBehavior();      // Inicializar detector de scroll
+        };
+
+        // DETECTOR DE SCROLL INTELIGENTE PARA EL CONTENEDOR PEGADO (STICKY PANEL)
+        function initScrollBehavior() {
+            window.addEventListener("scroll", function() {
+                if (window.scrollY > 60) {
+                    document.body.classList.add("scrolled-header");
+                } else {
+                    document.body.classList.remove("scrolled-header");
+                }
+            });
+        }
+
+        // Cambiar entre Pestaña 1 y Pestaña 2
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const tabEstructura = document.getElementById("panel-estructura");
+            const tabPerfiles = document.getElementById("panel-perfiles");
+            const btnEstructura = document.getElementById("btn-tab-estructura");
+            const btnPerfiles = document.getElementById("btn-tab-perfiles");
+
+            let activeColorClass = "border-emerald-600 text-emerald-700";
+            if (currentCompany === "FURIAMOTOS") {
+                activeColorClass = "border-amber-500 text-amber-600";
+            } else if (currentCompany === "MAXIKASH_GT") {
+                activeColorClass = "border-blue-600 text-blue-700";
+            }
+
+            if (tabId === "tab-estructura") {
+                tabEstructura.classList.remove("hidden");
+                tabPerfiles.classList.add("hidden");
+                btnEstructura.className = `border-b-2 ${activeColorClass} pb-2 px-1 inline-flex items-center gap-2 font-bold text-xs sm:text-sm tracking-wide transition-all theme-transition`;
+                btnPerfiles.className = "border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 pb-2 px-1 inline-flex items-center gap-2 font-semibold text-xs sm:text-sm tracking-wide transition-all theme-transition";
+            } else {
+                tabEstructura.classList.add("hidden");
+                tabPerfiles.classList.remove("hidden");
+                btnEstructura.className = "border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 pb-2 px-1 inline-flex items-center gap-2 font-semibold text-xs sm:text-sm tracking-wide transition-all theme-transition";
+                btnPerfiles.className = `border-b-2 ${activeColorClass} pb-2 px-1 inline-flex items-center gap-2 font-bold text-xs sm:text-sm tracking-wide transition-all theme-transition`;
+            }
+            applyFilters();
+        }
+
+        // Cambiar de modelo de negocio (Empresa)
+        function switchCompany(companyCode) {
+            currentCompany = companyCode;
+
+            // Elementos de la interfaz a transformar
+            const header = document.getElementById("mainHeader");
+            const subTitleText = document.getElementById("subTitleText");
+            const logoContainer = document.getElementById("logoContainer");
+            const companyBadge = document.getElementById("companyBadge");
+            const exportBtn = document.getElementById("exportBtn");
+            const tableTitleIcon = document.getElementById("tableTitleIcon");
+            const matrixTitleIcon = document.getElementById("matrixTitleIcon");
+            const modalIcon = document.getElementById("modalIcon");
+
+            // Elementos de contadores en estadísticas extendidas
+            const statPuestos = document.getElementById("statPuestos");
+            const statPerfiles = document.getElementById("statPerfiles");
+            const statAreas = document.getElementById("statAreas");
+            const statDirecciones = document.getElementById("statDirecciones");
+
+            // Elementos de contadores en píldoras compactas
+            const compactPuestosVal = document.getElementById("compactPuestosVal");
+            const compactPerfilesVal = document.getElementById("compactPerfilesVal");
+            const compactAreasVal = document.getElementById("compactAreasVal");
+
+            // Elementos de estilos en tarjetas
+            const statIconBg1 = document.getElementById("statIconBg1");
+            const statIconBg2 = document.getElementById("statIconBg2");
+            const statIconBg3 = document.getElementById("statIconBg3");
+            const statIconBg4 = document.getElementById("statIconBg4");
+
+            if (companyCode === "MAXIKASH") {
+                // Tema MaxiKash México: Esmeralda
+                header.className = "bg-gradient-to-r from-emerald-950 to-teal-900 text-white shadow-md py-4 sm:px-6 lg:px-8 transition-all duration-300";
+                subTitleText.textContent = "MAXIKASH MEXICO - AMIGO EFECTIVO • 123 RELACIONES DE NEGOCIO";
+                subTitleText.className = "text-xs text-emerald-300 font-semibold tracking-wider uppercase theme-transition";
+                
+                // Inyectar Isotipo Vectorial Giratorio en el Encabezado
+                logoContainer.className = "bg-white/10 p-2 rounded-2xl shadow-inner theme-transition flex items-center justify-center";
+                logoContainer.innerHTML = maxikashLogoSVG;
+                
+                companyBadge.textContent = "MÉXICO";
+                exportBtn.className = "px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 theme-transition";
+                tableTitleIcon.className = "fa-solid fa-list-check mr-2 text-emerald-600";
+                matrixTitleIcon.className = "fa-solid fa-table-list mr-2 text-emerald-600";
+                modalIcon.className = "p-2 bg-white/5 rounded-2xl theme-transition flex items-center justify-center";
+
+                // Stats Extendidas
+                statPuestos.textContent = "123";
+                statPerfiles.textContent = "19";
+                statAreas.textContent = "16";
+                statDirecciones.textContent = "10";
+
+                // Stats Compactas
+                compactPuestosVal.textContent = "123";
+                compactPerfilesVal.textContent = "19";
+                compactAreasVal.textContent = "16";
+
+                statIconBg1.className = "p-3 bg-emerald-50 text-emerald-600 rounded-xl theme-transition";
+                statIconBg2.className = "p-3 bg-teal-50 text-teal-600 rounded-xl theme-transition";
+                statIconBg3.className = "p-3 bg-purple-50 text-purple-600 rounded-xl theme-transition";
+                statIconBg4.className = "p-3 bg-amber-50 text-amber-600 rounded-xl theme-transition";
+
+                document.getElementById("tabCountEstructura").textContent = "(123 Filas)";
+                document.getElementById("btn-tab-perfiles").textContent = "2. Matriz de Perfiles (19 Fichas Maestras)";
+
+            } else if (companyCode === "FURIAMOTOS") {
+                // Tema Furiamotos - Pensionamax: Grafito / Ámbar
+                header.className = "bg-gradient-to-r from-slate-900 via-amber-950 to-slate-900 text-white shadow-md py-4 sm:px-6 lg:px-8 transition-all duration-300";
+                subTitleText.textContent = "FURIAMOTOS - PENSIONAMAX • MOTOCICLETAS & PENSIONADOS";
+                subTitleText.className = "text-xs text-amber-400 font-semibold tracking-wider uppercase theme-transition";
+                
+                // Inyectar Icono de Motocicleta con Movimiento sobre Ruedas
+                logoContainer.className = "bg-amber-500 text-amber-950 p-3 rounded-2xl shadow-inner theme-transition flex items-center justify-center";
+                logoContainer.innerHTML = `<i class="fa-solid fa-motorcycle text-2xl transition-all animate-moto-ride"></i>`;
+                
+                companyBadge.textContent = "PENSIONAMAX";
+                exportBtn.className = "px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 theme-transition";
+                tableTitleIcon.className = "fa-solid fa-motorcycle mr-2 text-amber-600";
+                matrixTitleIcon.className = "fa-solid fa-shield mr-2 text-amber-600";
+                modalIcon.className = "p-3 bg-amber-50 text-amber-700 rounded-2xl theme-transition flex items-center justify-center";
+
+                // Stats Extendidas
+                statPuestos.textContent = "4";
+                statPerfiles.textContent = "4";
+                statAreas.textContent = "2";
+                statDirecciones.textContent = "2";
+
+                // Stats Compactas
+                compactPuestosVal.textContent = "4";
+                compactPerfilesVal.textContent = "4";
+                compactAreasVal.textContent = "2";
+
+                statIconBg1.className = "p-3 bg-amber-50 text-amber-600 rounded-xl theme-transition";
+                statIconBg2.className = "p-3 bg-orange-50 text-orange-600 rounded-xl theme-transition";
+                statIconBg3.className = "p-3 bg-slate-100 text-slate-800 rounded-xl theme-transition";
+                statIconBg4.className = "p-3 bg-red-50 text-red-600 rounded-xl theme-transition";
+
+                document.getElementById("tabCountEstructura").textContent = "(4 Filas)";
+                document.getElementById("btn-tab-perfiles").textContent = "2. Matriz de Perfiles (4 Fichas Maestras)";
+                
+            } else if (companyCode === "MAXIKASH_GT") {
+                // Tema MaxiKash Guatemala: Azul / Cyan
+                header.className = "bg-gradient-to-r from-blue-950 to-indigo-900 text-white shadow-md py-4 sm:px-6 lg:px-8 transition-all duration-300";
+                subTitleText.textContent = "MAXIKASH GUATEMALA • 2 RELACIONES DE NEGOCIO";
+                subTitleText.className = "text-xs text-cyan-300 font-semibold tracking-wider uppercase theme-transition";
+                
+                // Inyectar Isotipo Vectorial Giratorio de MaxiKash en el Encabezado
+                logoContainer.className = "bg-white/10 p-2 rounded-2xl shadow-inner theme-transition flex items-center justify-center";
+                logoContainer.innerHTML = maxikashLogoSVG;
+                
+                companyBadge.textContent = "GUATEMALA";
+                exportBtn.className = "px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-2 theme-transition";
+                tableTitleIcon.className = "fa-solid fa-globe mr-2 text-blue-600 animate-logo-spin";
+                matrixTitleIcon.className = "fa-solid fa-address-book mr-2 text-blue-600";
+                modalIcon.className = "p-2 bg-white/5 rounded-2xl theme-transition flex items-center justify-center";
+
+                // Stats Extendidas
+                statPuestos.textContent = "2";
+                statPerfiles.textContent = "2";
+                statAreas.textContent = "1";
+                statDirecciones.textContent = "1";
+
+                // Stats Compactas
+                compactPuestosVal.textContent = "2";
+                compactPerfilesVal.textContent = "2";
+                compactAreasVal.textContent = "1";
+
+                statIconBg1.className = "p-3 bg-blue-50 text-blue-600 rounded-xl theme-transition";
+                statIconBg2.className = "p-3 bg-cyan-50 text-cyan-600 rounded-xl theme-transition";
+                statIconBg3.className = "p-3 bg-indigo-50 text-indigo-600 rounded-xl theme-transition";
+                statIconBg4.className = "p-3 bg-sky-50 text-sky-600 rounded-xl theme-transition";
+
+                document.getElementById("tabCountEstructura").textContent = "(2 Filas)";
+                document.getElementById("btn-tab-perfiles").textContent = "2. Matriz de Perfiles (2 Fichas Maestras)";
+            }
+
+            // Población de desplegables de filtro según la empresa
+            populateFilterDropdowns();
+            
+            // Forzar renderizado y filtros
+            resetFiltersAndInputs();
+            switchTab(currentTab);
+        }
+
+        // Llenar dinámicamente los campos de filtro
+        function populateFilterDropdowns() {
+            let structure = maxikashEstructura;
+            if (currentCompany === "FURIAMOTOS") {
+                structure = furiamotosEstructura;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                structure = guatemalaEstructura;
+            }
+            
+            const directions = [...new Set(structure.map(item => item.direccion))].sort();
+            const areas = [...new Set(structure.map(item => item.area))].sort();
+
+            const dirSelect = document.getElementById("filterDirection");
+            const areaSelect = document.getElementById("filterArea");
+
+            dirSelect.innerHTML = '<option value="">Todas las Direcciones</option>';
+            areaSelect.innerHTML = '<option value="">Todas las Áreas</option>';
+
+            directions.forEach(dir => {
+                dirSelect.innerHTML += `<option value="${dir}">${dir}</option>`;
+            });
+            areas.forEach(ar => {
+                areaSelect.innerHTML += `<option value="${ar}">${ar}</option>`;
+            });
+        }
+
+        // Renderizar la Pestaña 1
+        function renderEstructuraTable(data) {
+            const tbody = document.getElementById("tableEstructuraBody");
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium bg-slate-50/50">
+                            <i class="fa-solid fa-folder-open text-4xl mb-3 block text-slate-300"></i>
+                            No se encontraron registros con los filtros seleccionados
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let currentList = maxikashEstructura;
+            let btnColorClass = "group-hover:bg-emerald-600";
+            if (currentCompany === "FURIAMOTOS") {
+                currentList = furiamotosEstructura;
+                btnColorClass = "group-hover:bg-amber-600";
+            } else if (currentCompany === "MAXIKASH_GT") {
+                currentList = guatemalaEstructura;
+                btnColorClass = "group-hover:bg-blue-600";
+            }
+
+            data.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50/80 transition-all cursor-pointer group";
+                tr.onclick = () => openProfileFromEstructura(item);
+
+                // Asignar colores de badge por dirección
+                let dirColor = "bg-slate-100 text-slate-700 border-slate-200";
+                if (item.direccion === "COBRANZA") dirColor = "bg-red-50 text-red-700 border-red-200";
+                else if (item.direccion === "TI") dirColor = "bg-blue-50 text-blue-700 border-blue-200";
+                else if (item.direccion === "COMERCIAL" || item.direccion === "COMERCIAL SN") {
+                    if (currentCompany === "MAXIKASH") {
+                        dirColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                    } else if (currentCompany === "FURIAMOTOS") {
+                        dirColor = "bg-amber-50 text-amber-700 border-amber-200";
+                    } else {
+                        dirColor = "bg-sky-50 text-sky-700 border-sky-200";
+                    }
+                }
+                else if (item.direccion === "ADMINISTRACION Y FINANZAS") dirColor = "bg-purple-50 text-purple-700 border-purple-200";
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">${item.puesto}</td>
+                    <td class="px-6 py-4 font-semibold text-slate-600">${item.depto}</td>
+                    <td class="px-6 py-4 text-slate-600"><span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded text-xs border border-slate-200">${item.area}</span></td>
+                    <td class="px-6 py-4"><span class="px-2.5 py-1 text-xs border rounded-full font-bold ${dirColor}">${item.direccion}</span></td>
+                    <td class="px-6 py-4 text-center">
+                        <button class="bg-slate-100 ${btnColorClass} group-hover:text-white text-slate-700 transition-colors px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 mx-auto shadow-sm">
+                            <i class="fa-solid fa-expand"></i> Ver Perfil
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("estructuraCounter").innerHTML = `Mostrando <strong>${data.length}</strong> de <strong>${currentList.length}</strong> registros de la estructura`;
+        }
+
+        // Renderizar la Pestaña 2 (Matriz de Especificación de Perfiles)
+        function renderPerfilesTable() {
+            const tbody = document.getElementById("tablePerfilesBody");
+            tbody.innerHTML = "";
+
+            let perfilesData = maxikashPerfiles;
+            if (currentCompany === "FURIAMOTOS") {
+                perfilesData = furiamotosPerfiles;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                perfilesData = guatemalaPerfiles;
+            }
+
+            Object.keys(perfilesData).forEach(puestoKey => {
+                const p = perfilesData[puestoKey];
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50/80 transition-colors cursor-pointer";
+                tr.onclick = () => openProfileDirect(puestoKey);
+
+                // Actividades formateadas
+                const actList = p.actividades.map((a, idx) => `<span class="block mb-1 text-[11px] text-slate-600"><strong class="text-emerald-700">${idx+1}.</strong> ${a}</span>`).join("");
+
+                // Badges de herramientas
+                const toolBadges = p.herramientas.map(t => {
+                    let badgeClass = "bg-slate-100 text-slate-700 border-slate-200";
+                    if (t.includes("APP legacy") || t.includes("APP sparta") || t.includes("Wolkvox") || t.includes("FurioMax") || t.includes("SIP") || t.includes("SADEP")) {
+                        if (currentCompany === "MAXIKASH") {
+                            badgeClass = "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold";
+                        } else if (currentCompany === "FURIAMOTOS") {
+                            badgeClass = "bg-amber-50 text-amber-800 border-amber-200 font-bold";
+                        } else {
+                            badgeClass = "bg-blue-50 text-blue-800 border-blue-200 font-bold";
+                        }
+                    }
+                    return `<span class="inline-block px-1.5 py-0.5 border text-[10px] rounded mr-1 mb-1 ${badgeClass}">${t}</span>`;
+                }).join("");
+
+                // Badge Nivel Jerárquico
+                let nivelBadge = "bg-slate-50 text-slate-600 border-slate-200";
+                if (p.nivel.includes("Directivo")) nivelBadge = "bg-blue-50 text-blue-700 border-blue-200";
+                else if (p.nivel.includes("Gerencial")) nivelBadge = "bg-purple-50 text-purple-700 border-purple-200";
+                else if (p.nivel.includes("Especialista")) nivelBadge = "bg-amber-50 text-amber-700 border-amber-200";
+
+                tr.innerHTML = `
+                    <td class="sticky left-0 bg-white hover:bg-slate-50 font-bold text-slate-900 px-6 py-4 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-xs uppercase z-10">${puestoKey}</td>
+                    <td class="px-6 py-4 border-r border-slate-200"><span class="px-2 py-0.5 border rounded-md text-[10px] font-bold ${nivelBadge}">${p.nivel}</span></td>
+                    <td class="px-6 py-4 font-bold text-slate-900 border-r border-slate-200">${p.sueldo}</td>
+                    <td class="px-6 py-4 text-slate-600 border-r border-slate-200 max-w-xs truncate" title="${p.formacion}">${p.formacion}</td>
+                    <td class="px-6 py-4 text-slate-600 border-r border-slate-200 max-w-xs truncate" title="${p.experiencia}">${p.experiencia}</td>
+                    <td class="px-6 py-4 text-slate-600 border-r border-slate-200 max-w-xs" title="${p.skills}">${p.skills}</td>
+                    <td class="px-6 py-4 text-slate-700 font-medium border-r border-slate-200 max-w-xs leading-relaxed" title="${p.objetivo}">${p.objetivo}</td>
+                    <td class="px-6 py-4 border-r border-slate-200 max-w-md">${actList}</td>
+                    <td class="px-6 py-4 border-r border-slate-200 max-w-xs">${toolBadges}</td>
+                    <td class="px-6 py-4 text-slate-600 border-r border-slate-200 max-w-xs" title="${p.kpis}">${p.kpis}</td>
+                    <td class="px-6 py-4 text-slate-600 border-r border-slate-200 max-w-xs" title="${p.competencias}">${p.competencias}</td>
+                    <td class="px-6 py-4 text-slate-600 border-r border-slate-200 max-w-xs" title="${p.lineamientos}">${p.lineamientos}</td>
+                    <td class="px-6 py-4 text-slate-600 max-w-xs" title="${p.alcance}">${p.alcance}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Aplicar filtros combinados
+        function applyFilters() {
+            const query = document.getElementById("searchInput").value.toUpperCase();
+            const direction = document.getElementById("filterDirection").value;
+            const area = document.getElementById("filterArea").value;
+
+            let structure = maxikashEstructura;
+            let perfilesData = maxikashPerfiles;
+
+            if (currentCompany === "FURIAMOTOS") {
+                structure = furiamotosEstructura;
+                perfilesData = furiamotosPerfiles;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                structure = guatemalaEstructura;
+                perfilesData = guatemalaPerfiles;
+            }
+
+            if (currentTab === "tab-estructura") {
+                const filtered = structure.filter(item => {
+                    const matchesSearch = item.puesto.toUpperCase().includes(query) ||
+                                          item.depto.toUpperCase().includes(query) ||
+                                          item.area.toUpperCase().includes(query) ||
+                                          item.direccion.toUpperCase().includes(query);
+
+                    const matchesDir = !direction || item.direccion === direction;
+                    const matchesArea = !area || item.area === area;
+
+                    return matchesSearch && matchesDir && matchesArea;
+                });
+                renderEstructuraTable(filtered);
+            } else {
+                // Filtro para matriz de perfiles
+                const rows = document.getElementById("tablePerfilesBody").getElementsByTagName("tr");
+                for (let i = 0; i < rows.length; i++) {
+                    const puestoKey = rows[i].getElementsByTagName("td")[0].innerText.toUpperCase();
+                    const profile = perfilesData[puestoKey];
+
+                    if (!profile) continue;
+
+                    const matchesSearch = puestoKey.includes(query) || 
+                                          profile.objetivo.toUpperCase().includes(query) || 
+                                          profile.skills.toUpperCase().includes(query);
+
+                    const hasRelation = structure.some(item => {
+                        const matchesPuesto = item.puesto === puestoKey;
+                        const matchesDir = !direction || item.direccion === direction;
+                        const matchesArea = !area || item.area === area;
+                        return matchesPuesto && matchesDir && matchesArea;
+                    });
+
+                    if (matchesSearch && (!direction && !area || hasRelation)) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        // Resetear Filtros y Buscador
+        function resetFiltersAndInputs() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("filterDirection").value = "";
+            document.getElementById("filterArea").value = "";
+            
+            let structure = maxikashEstructura;
+            if (currentCompany === "FURIAMOTOS") {
+                structure = furiamotosEstructura;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                structure = guatemalaEstructura;
+            }
+            renderEstructuraTable(structure);
+            renderPerfilesTable();
+        }
+
+        // Abrir Modal de Perfil desde Estructura
+        function openProfileFromEstructura(item) {
+            let perfilesData = maxikashPerfiles;
+            if (currentCompany === "FURIAMOTOS") {
+                perfilesData = furiamotosPerfiles;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                perfilesData = guatemalaPerfiles;
+            }
+            const profile = perfilesData[item.puesto];
+            if (!profile) return;
+
+            // Inyectar datos de la fila (Relacional)
+            document.getElementById("modalDepto").textContent = item.depto;
+            document.getElementById("modalArea").textContent = item.area;
+            document.getElementById("modalDireccion").textContent = item.direccion;
+
+            populateModalAndShow(item.puesto, profile);
+        }
+
+        // Abrir Modal Directo desde Matriz
+        function openProfileDirect(puestoKey) {
+            let perfilesData = maxikashPerfiles;
+            let structure = maxikashEstructura;
+
+            if (currentCompany === "FURIAMOTOS") {
+                perfilesData = furiamotosPerfiles;
+                structure = furiamotosEstructura;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                perfilesData = guatemalaPerfiles;
+                structure = guatemalaEstructura;
+            }
+            const profile = perfilesData[puestoKey];
+            if (!profile) return;
+
+            // Buscar la primera relación o consolidar relaciones
+            const relations = structure.filter(i => i.puesto === puestoKey);
+            const deptos = [...new Set(relations.map(r => r.depto))].join(", ");
+            const areas = [...new Set(relations.map(r => r.area))].join(", ");
+            const dirs = [...new Set(relations.map(r => r.direccion))].join(", ");
+
+            document.getElementById("modalDepto").textContent = deptos || "N/A";
+            document.getElementById("modalArea").textContent = areas || "N/A";
+            document.getElementById("modalDireccion").textContent = dirs || "N/A";
+
+            populateModalAndShow(puestoKey, profile);
+        }
+
+        // Rellenar contenido común del modal y desplegar
+        function populateModalAndShow(puesto, p) {
+            const modal = document.getElementById("detailModal");
+            const content = document.getElementById("modalContent");
+            
+            let colorClass = "text-emerald-800 bg-emerald-50 border-emerald-300";
+            if (currentCompany === "FURIAMOTOS") {
+                colorClass = "text-amber-800 bg-amber-50 border-amber-300";
+            } else if (currentCompany === "MAXIKASH_GT") {
+                colorClass = "text-blue-800 bg-blue-50 border-blue-300";
+            }
+
+            document.getElementById("modalPuesto").textContent = puesto;
+            document.getElementById("modalNivel").className = `text-xs font-semibold px-2.5 py-1 rounded-md ${colorClass}`;
+            document.getElementById("modalNivel").textContent = p.nivel;
+            document.getElementById("modalObjetivo").textContent = p.objetivo;
+            document.getElementById("modalSueldo").textContent = p.sueldo + " (Mensual Estimado)";
+            document.getElementById("modalAlcance").textContent = p.alcance;
+            document.getElementById("modalFormacion").textContent = p.formacion;
+            document.getElementById("modalExperiencia").textContent = p.experiencia;
+            document.getElementById("modalKPIs").textContent = p.kpis;
+            document.getElementById("modalCompetencias").textContent = p.competencias;
+
+            // Actividades estructuradas
+            const actUl = document.getElementById("modalActividades");
+            let badgeTheme = "bg-emerald-100 text-emerald-800";
+            if (currentCompany === "FURIAMOTOS") {
+                badgeTheme = "bg-amber-100 text-amber-800";
+            } else if (currentCompany === "MAXIKASH_GT") {
+                badgeTheme = "bg-blue-100 text-blue-800";
+            }
+            
+            actUl.innerHTML = p.actividades.map((act, idx) => `
+                <li class="text-xs text-slate-700 leading-relaxed flex items-start gap-2.5 p-2 bg-slate-50 border border-slate-100 rounded-xl">
+                    <span class="inline-flex items-center justify-center ${badgeTheme} font-bold rounded-full w-5 h-5 text-xs shrink-0 mt-0.5">${idx+1}</span>
+                    <span>${act}</span>
+                </li>
+            `).join("");
+
+            // Cargar badges de herramientas
+            const toolDiv = document.getElementById("modalHerramientas");
+            toolDiv.innerHTML = p.herramientas.map(t => {
+                let badgeStyle = "bg-slate-100 text-slate-800 border-slate-200";
+                if (t.includes("APP legacy") || t.includes("APP sparta") || t.includes("Wolkvox") || t.includes("FurioMax") || t.includes("SIP") || t.includes("SADEP")) {
+                    if (currentCompany === "MAXIKASH") {
+                        badgeStyle = "bg-emerald-100 text-emerald-900 border-emerald-300 font-bold shadow-sm";
+                    } else if (currentCompany === "FURIAMOTOS") {
+                        badgeStyle = "bg-amber-100 text-amber-900 border-amber-300 font-bold shadow-sm";
+                    } else {
+                        badgeStyle = "bg-blue-100 text-blue-900 border-blue-300 font-bold shadow-sm";
+                    }
+                }
+                return `<span class="px-3 py-1 text-xs border rounded-lg ${badgeStyle}"><i class="fa-solid fa-screwdriver-wrench mr-1.5 opacity-60"></i>${t}</span>`;
+            }).join("");
+
+            // Color del icono del modal según la empresa
+            const modalIcon = document.getElementById("modalIcon");
+            if (currentCompany === "MAXIKASH") {
+                modalIcon.className = "p-1 bg-white/5 rounded-2xl theme-transition flex items-center justify-center";
+                // Inyectar el logotipo vectorial giratorio oficial en el modal para MaxiKash
+                modalIcon.innerHTML = maxikashLogoSVG;
+            } else if (currentCompany === "FURIAMOTOS") {
+                modalIcon.className = "p-3 bg-amber-50 text-amber-700 rounded-2xl theme-transition flex items-center justify-center";
+                if (puesto === "GESTOR" || puesto === "ASESOR") {
+                    modalIcon.innerHTML = `<i class="fa-solid fa-motorcycle text-2xl animate-moto-ride"></i>`;
+                } else if (puesto === "ESPECIALISTA") {
+                    modalIcon.innerHTML = `<i class="fa-solid fa-gears text-2xl"></i>`;
+                } else {
+                    modalIcon.innerHTML = `<i class="fa-solid fa-address-card text-2xl"></i>`;
+                }
+            } else if (currentCompany === "MAXIKASH_GT") {
+                modalIcon.className = "p-1 bg-white/5 rounded-2xl theme-transition flex items-center justify-center";
+                // Inyectar el logotipo vectorial giratorio oficial en el modal para MaxiKash Guatemala
+                modalIcon.innerHTML = maxikashLogoSVG;
+            }
+
+            modal.classList.remove("hidden");
+            setTimeout(() => {
+                content.classList.remove("scale-95", "opacity-0");
+                content.classList.add("scale-100", "opacity-100");
+            }, 50);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("detailModal");
+            const content = document.getElementById("modalContent");
+
+            content.classList.remove("scale-100", "opacity-100");
+            content.classList.add("scale-95", "opacity-0");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+            }, 200);
+        }
+
+        // Motor de exportación a Excel / CSV con compatibilidad absoluta (Cruce Completo 15 Columnas)
+        function exportDataToCSV() {
+            let csvContent = "\uFEFF"; // BOM UTF-8 para compatibilidad con tildes y caracteres en Excel
+            let prefixFilename = "MaxiKash_Mexico";
+            let structure = maxikashEstructura;
+            let perfilesData = maxikashPerfiles;
+
+            if (currentCompany === "FURIAMOTOS") {
+                prefixFilename = "FuriaMotos_PensionaMax";
+                structure = furiamotosEstructura;
+                perfilesData = furiamotosPerfiles;
+            } else if (currentCompany === "MAXIKASH_GT") {
+                prefixFilename = "MaxiKash_Guatemala";
+                structure = guatemalaEstructura;
+                perfilesData = guatemalaPerfiles;
+            }
+            
+            // Definición de las 15 columnas unificadas cruzando estructura + perfiles detallados
+            csvContent += "PUESTO,DEPARTAMENTO,AREA,DIRECCION ORGANIZACIONAL,NIVEL JERARQUICO,SUELDO ESTIMADO (BENCHMARK),FORMACION ACADEMICA,EXPERIENCIA EXIGIDA,OBJETIVO DEL PUESTO,ACTIVIDADES PRINCIPALES,HERRAMIENTAS Y SISTEMAS,KPIS CRITICOS,COMPETENCIAS CONDUCTUALES,LINEAMIENTOS Y REPORTE,ALCANCE TERRITORIAL\n";
+            
+            structure.forEach(row => {
+                // Obtenemos los detalles del perfil correspondientes al tipo de puesto
+                const p = perfilesData[row.puesto] || {};
+                
+                // Limpieza de comillas dobles y saltos de línea para evitar romper el formato CSV de Excel
+                const depto = (row.depto || "").replace(/"/g, '""');
+                const area = (row.area || "").replace(/"/g, '""');
+                const direccion = (row.direccion || "").replace(/"/g, '""');
+                
+                const nivel = (p.nivel || "N/A").replace(/"/g, '""');
+                const sueldo = (p.sueldo || "N/A").replace(/"/g, '""');
+                const formacion = (p.formacion || "N/A").replace(/"/g, '""');
+                const experiencia = (p.experiencia || "N/A").replace(/"/g, '""');
+                const objetivo = (p.objetivo || "N/A").replace(/"/g, '""');
+                const actividades = p.actividades ? p.actividades.join(" | ").replace(/"/g, '""') : "N/A";
+                const herramientas = p.herramientas ? p.herramientas.join(", ").replace(/"/g, '""') : "N/A";
+                const kpis = (p.kpis || "N/A").replace(/"/g, '""');
+                const competencias = (p.competencias || "N/A").replace(/"/g, '""');
+                const lineamientos = (p.lineamientos || "N/A").replace(/"/g, '""');
+                const alcance = (p.alcance || "N/A").replace(/"/g, '""');
+
+                // Inyectamos la fila cruzada con toda la información disponible
+                csvContent += `"${row.puesto}","${depto}","${area}","${direccion}","${nivel}","${sueldo}","${formacion}","${experiencia}","${objetivo}","${actividades}","${herramientas}","${kpis}","${competencias}","${lineamientos}","${alcance}"\n`;
+            });
+
+            triggerDownload(csvContent, `${prefixFilename}_Estructura_Y_Perfiles_Completo.csv`);
+        }
+
+        function triggerDownload(content, fileName) {
+            const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", fileName);
+                link.style.visibility = "hidden";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Cerrar modal al hacer clic en fondo
+        document.getElementById("detailModal").addEventListener("click", function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2487 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Vacaciones 2026 — MaxiKash México</title>
+  
+  <!-- Tailwind CSS para diseño fluido y corporativo -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts de alto impacto visual corporativo -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Iconos de Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- CRÍTICO: Reincorporación de SheetJS para lectura local y procesamiento de archivos Excel de activos (.xlsx, .xls) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg: #edf4fb;
+      --bg2: #f6f8fc;
+      --card: #ffffff;
+      --border: #cbd7ea;
+      --blue: #214bd6;
+      --green: #10a36f;
+      --red: #df3d3d;
+      --yellow: #d5961f;
+      --navy: #132b80;
+      --lime: #d9ea1c;
+    }
+    body {
+      background: linear-gradient(180deg, #edf4fb 0%, #f8fbff 42%, #ffffff 100%);
+      color: #07183f;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+    
+    /* ANIMACIÓN ROTACIONAL MOEBIUS */
+    @keyframes logo-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .animate-logo-spin {
+      animation: logo-spin 12s linear infinite;
+    }
+
+    /* CUSTOM TOAST NOTIFICATION SYSTEM */
+    #toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 10px 25px rgba(20, 44, 130, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    /* CUSTOM SCROLLBAR */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+
+    /* CONFIGURACIÓN NATIVA PARA LA IMPRESIÓN DEL EXPEDIENTE DE SALDO */
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printModal, #printModal * {
+        visibility: visible !important;
+      }
+      #printModal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      #printModal button {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast" class="flex items-center gap-3 bg-[#132b80] text-white px-5 py-4 rounded-xl border-l-4 border-[#d9ea1c]">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-[#d9ea1c] text-lg"></i>
+    <span id="toast-message" class="text-xs font-bold tracking-wide">Mensaje del sistema</span>
+  </div>
+
+  <!-- LOADER BLOCK -->
+  <div id="loader" class="fixed inset-0 bg-white/80 z-50 flex flex-col items-center justify-center transition-opacity duration-300 hidden">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-[#214bd6] rounded-full animate-spin"></div>
+    <p class="text-xs font-bold text-[#132b80] mt-3">Procesando información...</p>
+  </div>
+
+  <!-- CUSTOM CONFIRMATION MODAL -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 transform transition-all scale-95 duration-200">
+      <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h3 class="font-extrabold text-[#132b80] text-base font-['Syne']">¿Confirmar Acción?</h3>
+        <p class="text-xs text-slate-500 mt-2 leading-relaxed">Esta acción ocultará permanentemente el historial visible de solicitudes en tu pantalla de monitoreo actual.</p>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button id="confirmCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2.5 rounded-xl transition-all">
+          Cancelar
+        </button>
+        <button id="confirmYesBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm">
+          Sí, limpiar bitácora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE IMPRESIÓN DE CONSTANCIA DE SALDO Y HISTÓRICO -->
+  <div id="printModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-8 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <!-- Printable Area -->
+      <div id="printableStatementArea" class="space-y-6 text-slate-800 p-2">
+        <!-- Header -->
+        <div class="flex justify-between items-center border-b pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-[#132b80] font-['Syne']">AMIGO EFECTIVO SAPI DE C.V. MAXIKASH MÉXICO </h2>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">CONSTANCIA OFICIAL DE SALDO DE VACACIONES</p>
+          </div>
+          <div class="text-right text-[10px] text-slate-400 font-semibold">
+            <p>Fecha de Emisión: <span id="printStatementDate">--</span></p>
+            <p>ID Espacio: <span id="printStatementSession">--</span></p>
+          </div>
+        </div>
+        <!-- Employee Details -->
+        <div class="grid grid-cols-2 gap-4 text-xs border-b pb-4">
+          <div>
+            <p class="text-slate-400 font-bold uppercase text-[9px]">Colaborador</p>
+            <p id="printEmpName" class="font-extrabold text-slate-800 text-sm">--</p>
+          </div>
+          <div>
+            <p class="text-slate-400 font-bold uppercase text-[9px]">Fecha de Ingreso (DD/MM/AAAA)</p>
+            <p id="printEmpJoin" class="font-bold text-slate-700">--</p>
+          </div>
+          <div>
+            <p class="text-slate-400 font-bold uppercase text-[9px]">Fecha de Solicitud (DD/MM/AAAA)</p>
+            <p id="printEmpRequest" class="font-bold text-[#214bd6]">--</p>
+          </div>
+          <div>
+            <p class="text-slate-400 font-bold uppercase text-[9px]">Antigüedad Proyectada 2026</p>
+            <p id="printEmpTenure" class="font-bold text-slate-700">--</p>
+          </div>
+          <div class="col-span-2">
+            <p class="text-slate-400 font-bold uppercase text-[9px]">Días de Ley (Vigentes)</p>
+            <p id="printEmpStatutory" class="font-bold text-slate-700">--</p>
+          </div>
+        </div>
+        <!-- Summary Balances -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <span class="block text-[8px] font-bold text-slate-400 uppercase">Días ya Gozados</span>
+            <span id="printEmpTaken" class="text-base font-extrabold text-slate-700">--</span>
+          </div>
+          <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+            <span class="block text-[8px] font-bold text-blue-500 uppercase">Días Solicitados</span>
+            <span id="printEmpCurrent" class="text-base font-extrabold text-[#214bd6]">--</span>
+          </div>
+          <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+            <span class="block text-[8px] font-bold text-emerald-500 uppercase">Saldo Pendiente</span>
+            <span id="printEmpRemaining" class="text-base font-extrabold text-emerald-600">--</span>
+          </div>
+        </div>
+        <!-- Table of Dates -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-[#132b80] uppercase tracking-wider">Historial de Fechas Solicitadas</h4>
+          <table class="w-full text-left text-[10px] border-collapse">
+            <thead>
+              <tr class="border-b text-slate-400 uppercase">
+                <th class="py-2">Periodo Solicitado</th>
+                <th class="py-2">Días Hábiles</th>
+                <th class="py-2">Jefe Autoriza</th>
+                <th class="py-2">Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="printHistoryTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Disclaimer and Signatures -->
+        <div class="pt-8 text-[9px] text-slate-400 leading-relaxed text-center">
+          <p>Esta constancia avala los registros almacenados en el sistema MaxiKash de Recursos Humanos para el año fiscal 2026.</p>
+          <div class="grid grid-cols-2 gap-12 pt-12">
+            <div class="border-t border-slate-300 pt-2">
+              <p class="font-bold text-slate-700">Firma del Colaborador</p>
+              <p class="text-[8px] text-slate-400">Fecha: ____ / ____ / 2026</p>
+            </div>
+            <div class="border-t border-slate-300 pt-2">
+              <p class="font-bold text-slate-700">Recursos Humanos / Autorizador</p>
+              <p class="text-[8px] text-slate-400">AMIGO EFECTIVO SAPI DE C.V. MAXIKASH MÉXICO</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Actions -->
+      <div class="flex gap-3 mt-6 justify-end border-t pt-4">
+        <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-4 rounded-xl transition-all">
+          Cerrar
+        </button>
+        <button onclick="triggerPrintAction()" class="bg-[#214bd6] hover:bg-[#132b80] text-white text-xs font-bold py-2 px-4 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i> Mandar a Imprimir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV BAR -->
+  <nav class="sticky top-0 z-40 bg-gradient-to-r from-[#132b80] to-[#183b9c] px-6 py-4 shadow-lg flex items-center justify-between flex-wrap gap-4">
+    <div class="flex items-center gap-3">
+      <div class="bg-white/10 p-2 rounded-xl flex items-center justify-center shadow-inner">
+        <!-- Isotipo Moebius Giratorio Corporativo -->
+        <svg class="w-8 h-8 animate-logo-spin" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="10,50 50,10 50,24 24,50" fill="#214bd6" />
+          <polygon points="24,50 50,24 50,38 38,50" fill="#d9ea1c" />
+          <polygon points="50,10 90,50 76,50 50,24" fill="#d9ea1c" />
+          <polygon points="50,24 76,50 62,50 50,38" fill="#214bd6" />
+          <polygon points="90,50 50,90 50,76 76,50" fill="#214bd6" />
+          <polygon points="76,50 50,76 50,62 62,50" fill="#d9ea1c" />
+          <polygon points="50,90 10,50 24,50 50,76" fill="#d9ea1c" />
+          <polygon points="50,76 24,50 38,50 50,62" fill="#214bd6" />
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-white font-extrabold text-sm sm:text-base tracking-tight font-['Syne']">AMIGO EFECTIVO SAPI DE C.V. <span class="text-[#d9ea1c]">MAXIKASH MÉXICO</span></h1>
+          <span class="text-[9px] bg-[#d9ea1c] text-[#132b80] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">RRHH</span>
+        </div>
+        <p class="text-[10px] text-[#c5d2f8] font-bold uppercase tracking-wider">Módulo de Vacaciones • Carga de Colaboradores Activos</p>
+      </div>
+    </div>
+
+    <!-- Indicador de conexión -->
+    <div class="flex items-center gap-3">
+      <button onclick="forceSyncData()" class="flex items-center gap-2 bg-[#d9ea1c] hover:bg-yellow-400 border border-[#d9ea1c] px-4 py-2 rounded-xl text-xs font-extrabold text-[#132b80] transition-all shadow-md active:scale-95">
+        <i id="sync-icon" class="fa-solid fa-rotate"></i>
+        <span>Sincronizar a Google Drive</span>
+      </button>
+      <div class="hidden sm:flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-400">
+        <i class="fa-brands fa-google-drive"></i>
+        <span>Vínculo Activo</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN WRAPPER -->
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    
+    <!-- BANNER DE INTEGRACIÓN DE BASE DE DATOS ACTIVA (DRAG & DROP) -->
+    <section class="bg-gradient-to-r from-[#eff6ff] to-[#e0eafc] border border-[#cbd7ea] rounded-2xl p-6 shadow-sm">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-6 space-y-2">
+          <div class="flex items-center gap-3">
+            <div class="bg-[#214bd6] text-white p-2.5 rounded-xl text-lg shadow-md shrink-0">
+              <i class="fa-solid fa-users-viewfinder"></i>
+            </div>
+            <h2 class="font-extrabold text-sm sm:text-base text-[#132b80] font-['Syne']">Cargar Base de Colaboradores Activos</h2>
+          </div>
+          <p class="text-xs text-[#627194] leading-relaxed">
+            Arrastra tu plantilla de personal aquí (Excel o CSV). El sistema extraerá de forma automática las fechas de ingreso para habilitar el autocompletado y calcular instantáneamente los días de ley correspondientes al año 2026 sin duplicados.
+          </p>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <span class="bg-[#214bd6]/10 text-[#214bd6] border border-[#214bd6]/20 text-[10px] px-2.5 py-1 rounded-md font-bold">Detección Inteligente de Columnas</span>
+            <span class="bg-slate-200 text-slate-700 text-[10px] px-2.5 py-1 rounded-md font-bold" id="assets-loaded-counter">Ninguna base cargada</span>
+          </div>
+        </div>
+        
+        <!-- DRAG AND DROP ZONE -->
+        <div class="lg:col-span-6">
+          <div id="drop-zone" class="border-2 border-dashed border-[#214bd6]/40 hover:border-[#214bd6] bg-white/70 hover:bg-white rounded-2xl p-6 text-center transition-all cursor-pointer relative group">
+            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#214bd6] group-hover:scale-110 transition-transform mb-2 block"></i>
+            <span class="block text-xs font-bold text-slate-700">Arrastra tu archivo Excel / CSV aquí</span>
+            <span class="block text-[10px] text-slate-400 font-medium mt-1">O haz clic para explorar tus archivos</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN GRID CONTAINER -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- COLUMNA IZQUIERDA: FORMULARIO DE CAPTURA (5 COLS) -->
+      <section class="lg:col-span-5 space-y-6">
+        
+        <div class="bg-white border border-[#cbd7ea] rounded-2xl p-6 shadow-md relative overflow-hidden">
+          <!-- Línea decorativa superior -->
+          <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#214bd6]"></div>
+          
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2.5">
+              <i class="fa-solid fa-file-signature text-[#214bd6] text-lg"></i>
+              <h2 class="font-extrabold text-[#132b80] font-['Syne'] text-base uppercase tracking-tight">Nueva Solicitud</h2>
+            </div>
+          </div>
+
+          <!-- FORM -->
+          <form id="vacationForm" onsubmit="submitVacationRequest(event)" class="space-y-4">
+            
+            <!-- DETECTAR AJUSTE MANUAL (FALLSAFE) -->
+            <div class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl p-3 mb-2">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-unlock-keyhole text-amber-600 text-sm"></i>
+                <div class="flex flex-col">
+                  <span class="text-[11px] font-bold text-amber-800">¿Edición Manual de Saldos?</span>
+                  <span class="text-[9px] text-amber-600">Permite forzar días si el guardado falla</span>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="manualOverrideToggle" onchange="toggleManualOverride()" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+              </label>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5">
+                <i class="fa-solid fa-circle-info mr-1 text-[#214bd6]"></i> Estatus Inicial
+              </label>
+              <div class="relative">
+                <select id="requestStatus" onchange="updateStatusStyle()" class="w-full bg-[#fffbeb] border border-[#fde047] rounded-xl px-4 py-3 text-xs focus:outline-none font-bold text-[#d97706] cursor-pointer transition-colors shadow-sm appearance-none">
+                  <option value="PENDIENTE" class="font-bold text-[#d97706]">⏳ Pendiente de Autorización</option>
+                  <option value="APROBADO" class="font-bold text-[#10a36f]">✅ Aprobado</option>
+                  <option value="RECHAZADO" class="font-bold text-[#df3d3d]">❌ Rechazado</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#d97706]" id="statusArrow">
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- NOMBRE DEL COLABORADOR -->
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="empName">
+                <i class="fa-solid fa-user mr-1 text-[#214bd6]"></i> Nombre del Colaborador
+              </label>
+              <input type="text" id="empName" list="assetsList" required autocomplete="off" placeholder="Escribe o selecciona de la lista..." oninput="checkSelectedEmployee()" onchange="checkSelectedEmployee()"
+                class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+              <datalist id="assetsList">
+                <!-- Se poblará dinámicamente al cargar el Excel -->
+              </datalist>
+            </div>
+
+            <!-- PERIODO DE INGRESO Y SOLICITUD (DOBLE COLUMNA GRILLED) -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="empJoinDate">
+                  <i class="fa-solid fa-calendar-check mr-1 text-[#10a36f]"></i> Fecha de Ingreso
+                </label>
+                <input type="date" id="empJoinDate" required autocomplete="off" onchange="calculateAccruedDays()" 
+                  class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="requestDate">
+                  <i class="fa-solid fa-calendar-day mr-1 text-[#7443d8]"></i> Fecha de Solicitud
+                </label>
+                <input type="date" id="requestDate" required autocomplete="off" 
+                  class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+              </div>
+            </div>
+
+            <!-- DÍAS YA GOZADOS ANTERIORMENTE (MÓDULO SOLICITADO) -->
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="manualTakenDays">
+                <i class="fa-solid fa-umbrella-beach mr-1 text-amber-500"></i> Días ya Gozados (Historial / Fuera de Sistema)
+              </label>
+              <input type="number" id="manualTakenDays" min="0" value="0" oninput="calculateAccruedDays()" placeholder="Ej. 5 (Días tomados antes de usar este portal)"
+                class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+            </div>
+
+            <!-- DÍAS DE DESCANSO SEMANAL (PILLS INTERACTIVAS) -->
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5">
+                <i class="fa-solid fa-bed mr-1 text-[#214bd6]"></i> Días de Descanso Semanal
+              </label>
+              <div class="flex flex-wrap gap-1.5" id="restDaysContainer">
+                <button type="button" data-day="1" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">Lu</button>
+                <button type="button" data-day="2" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">Ma</button>
+                <button type="button" data-day="3" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">Mi</button>
+                <button type="button" data-day="4" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">Ju</button>
+                <button type="button" data-day="5" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200">Vi</button>
+                <button type="button" data-day="6" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-[#214bd6] text-white border-[#214bd6] shadow-sm">Sá</button>
+                <button type="button" data-day="0" class="rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-[#214bd6] text-white border-[#214bd6] shadow-sm">Do</button>
+              </div>
+              <input type="hidden" id="selectedRestDays" value="0,6">
+            </div>
+
+            <!-- DÍAS SEGÚN LEY CARD CON DESGLOSE ACUMULATIVO PARA CONTROL DE SALDOS -->
+            <div id="daysAccruedCard" class="bg-[#eff6ff] border border-[#bfdbfe] rounded-xl p-4 hidden space-y-3">
+              <div class="flex items-center justify-between border-b border-[#bfdbfe]/60 pb-2">
+                <div>
+                  <span class="text-[10px] font-extrabold text-[#1e40af] uppercase tracking-wide">Antigüedad Proyectada 2026:</span>
+                  <span id="tenureText" class="block text-xs text-slate-700 font-semibold mt-0.5">0 años</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] font-extrabold text-[#1e40af] uppercase tracking-wide">Total Ley:</span>
+                  <span id="statutoryDays" class="block text-lg font-extrabold text-[#1e40af]">0 días</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1 text-[11px] font-semibold text-slate-600">
+                <div class="bg-white/55 p-2 rounded-lg border border-slate-100">
+                  <span class="block text-[9px] uppercase tracking-wider text-[#627194]">Días usados/solicitados:</span>
+                  <span id="daysAlreadyTaken" class="text-xs font-bold text-slate-800">0 días</span>
+                </div>
+                <div class="bg-emerald-50/70 p-2 rounded-lg border border-emerald-100">
+                  <span class="block text-[9px] uppercase tracking-wider text-emerald-800">Saldo Disponible:</span>
+                  <span id="daysAvailableBalance" class="text-xs font-extrabold text-emerald-700">0 días</span>
+                </div>
+              </div>
+              <div id="employeeBalanceSummary" class="bg-white/65 border border-[#bfdbfe]/70 rounded-lg px-3 py-2 text-[10px] text-slate-600 font-bold leading-relaxed">
+                Consulta un colaborador para ver su saldo pendiente de goce.
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5">
+                  <i class="fa-solid fa-clock mr-1 text-[#214bd6]"></i> Esquema de Selección
+                </label>
+                <div class="grid grid-cols-3 gap-2 bg-slate-100 p-1 rounded-xl">
+                  <button type="button" id="btnConsecutiveMode" onclick="toggleSelectionMode('consecutive')" class="py-2.5 text-[10px] font-bold rounded-lg transition-all bg-[#214bd6] text-white shadow-sm flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-calendar"></i> Periodo Corrido
+                  </button>
+                  <button type="button" id="btnAlternateMode" onclick="toggleSelectionMode('alternate')" class="py-2.5 text-[10px] font-bold rounded-lg transition-all text-slate-600 hover:bg-white/50 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-calendar-plus"></i> Periodo Alterno
+                  </button>
+                  <button type="button" id="btnSalteadasMode" onclick="toggleSelectionMode('salteadas')" class="py-2.5 text-[10px] font-bold rounded-lg transition-all text-slate-600 hover:bg-white/50 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-calendar-days"></i> Días Salteados
+                  </button>
+                </div>
+                <input type="hidden" id="selectionMode" value="consecutive">
+              </div>
+
+              <!-- SECCIÓN CONDICIONAL: PERIODO CORRIDO -->
+              <div id="wrapperConsecutive" class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="vacStart">
+                    <i class="fa-solid fa-calendar-plus mr-1 text-[#214bd6]"></i> Del (Inicio)
+                  </label>
+                  <input type="date" id="vacStart" onchange="calculateRequestedPeriod()" 
+                    class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="vacEnd">
+                    <i class="fa-solid fa-calendar-minus mr-1 text-[#df3d3d]"></i> Al (Término)
+                  </label>
+                  <input type="date" id="vacEnd" onchange="calculateRequestedPeriod()" 
+                    class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+                </div>
+              </div>
+
+              <!-- SECCIÓN CONDICIONAL: PERIODO ALTERNO -->
+              <div id="wrapperAlternate" class="hidden space-y-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="block text-[10px] font-extrabold text-[#132b80] uppercase tracking-wider mb-1">Configuración Periodos Múltiples</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase">Bloque 1: Del</label>
+                    <input type="date" id="altStart1" onchange="calculateRequestedPeriod()" class="w-full bg-white border border-[#cbd7ea] rounded-lg p-2 text-xs focus:outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase">Bloque 1: Al</label>
+                    <input type="date" id="altEnd1" onchange="calculateRequestedPeriod()" class="w-full bg-white border border-[#cbd7ea] rounded-lg p-2 text-xs focus:outline-none">
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase">Bloque 2: Del</label>
+                    <input type="date" id="altStart2" onchange="calculateRequestedPeriod()" class="w-full bg-white border border-[#cbd7ea] rounded-lg p-2 text-xs focus:outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-[9px] font-bold text-slate-500 uppercase">Bloque 2: Al</label>
+                    <input type="date" id="altEnd2" onchange="calculateRequestedPeriod()" class="w-full bg-white border border-[#cbd7ea] rounded-lg p-2 text-xs focus:outline-none">
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECCIÓN CONDICIONAL: FECHAS SALTEADAS -->
+              <div id="wrapperSalteadas" class="hidden space-y-3">
+                <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-0.5">
+                  <i class="fa-solid fa-calendar-plus mr-1 text-[#214bd6]"></i> Agregar Fecha Individual
+                </label>
+                <div class="flex gap-2">
+                  <input type="date" id="singleDateSelector" class="flex-1 bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+                  <button type="button" onclick="addSingleDateToList()" class="bg-[#214bd6] hover:bg-[#132b80] text-white px-5 py-3 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> Agregar
+                  </button>
+                </div>
+                <!-- Contenedor de Tags de Fechas Seleccionadas -->
+                <div class="border border-[#cbd7ea]/80 rounded-xl bg-slate-50 p-4 space-y-2">
+                  <span class="block text-[9px] font-bold text-[#627194] uppercase tracking-wider">Fechas Seleccionadas:</span>
+                  <div id="datesTagContainer" class="flex flex-wrap gap-1.5 min-h-[40px] max-h-[140px] overflow-y-auto custom-scrollbar">
+                    <span class="text-[10px] text-slate-400 font-medium italic">Ningún día agregado aún. Selecciona fechas arriba.</span>
+                  </div>
+                </div>
+                <input type="hidden" id="serializedSalteadas" value="">
+              </div>
+            </div>
+
+            <!-- DÍAS A TOMAR Y DÍAS RESTANTES (LECTURA AUTOMÁTICA/EDICIÓN DE EMERGENCIA) -->
+            <div class="grid grid-cols-2 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+              <div>
+                <span class="block text-[9px] font-extrabold text-[#627194] uppercase tracking-wider mb-1">Días a Tomar:</span>
+                <div class="flex items-baseline gap-1.5">
+                  <input type="number" id="daysToTakeInput" value="0" readonly oninput="recalculateManualRemaining()"
+                    class="bg-transparent text-lg font-extrabold text-[#214bd6] w-20 focus:outline-none transition-all font-sans">
+                  <span class="text-[9px] text-[#627194] font-bold uppercase">hábiles</span>
+                </div>
+                <span class="text-[9px] text-slate-400 font-medium leading-none block mt-0.5" id="restDaysSummaryLabel">Excluye: Sábado, Domingo</span>
+              </div>
+              <div>
+                <span class="block text-[9px] font-extrabold text-[#627194] uppercase tracking-wider mb-1">Días Restantes:</span>
+                <div class="flex items-baseline gap-1.5">
+                  <input type="number" id="daysRemainingInput" value="0" readonly
+                    class="bg-transparent text-lg font-extrabold text-[#10a36f] w-20 focus:outline-none transition-all font-sans">
+                  <span class="text-[9px] text-[#10a36f] font-bold uppercase">restantes</span>
+                </div>
+                <span class="text-[9px] text-slate-400 font-medium leading-none block mt-0.5">Renovación no acumulativa</span>
+              </div>
+            </div>
+
+            <!-- CAJA DE COMENTARIOS / OBSERVACIONES -->
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="comments">
+                <i class="fa-solid fa-comment-dots mr-1 text-[#214bd6]"></i> Comentarios u Observaciones
+              </label>
+              <textarea id="comments" rows="3" placeholder="Ingresa motivos especiales, guardias asignadas o detalles específicos..."
+                class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors resize-none"></textarea>
+            </div>
+
+            <!-- JEFE QUE AUTORIZA -->
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="approverManager">
+                <i class="fa-solid fa-user-tie mr-1 text-[#7443d8]"></i> Nombre Jefe que Autoriza
+              </label>
+              <input type="text" id="approverManager" required autocomplete="off" placeholder="Ej. ING. ALEJANDRO LOZANO V." 
+                class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+            </div>
+
+            <!-- REPRESENTANTE DE RH -->
+            <div>
+              <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider mb-1.5" for="hrRepresentative">
+                <i class="fa-solid fa-user-shield mr-1 text-[#214bd6]"></i> Representante de RRHH
+              </label>
+              <input type="text" id="hrRepresentative" required autocomplete="off" placeholder="Ej. LIC. ANA SOFIA MARTINEZ" 
+                class="w-full bg-[#f8fbff] border border-[#cbd7ea] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[#214bd6] focus:bg-white font-medium transition-colors">
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" class="w-full bg-[#214bd6] hover:bg-[#132b80] text-white text-xs font-extrabold py-3.5 rounded-xl shadow-md hover:shadow-lg transition-all tracking-wide uppercase flex items-center justify-center gap-2">
+              <i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones
+            </button>
+            
+          </form>
+        </div>
+
+      </section>
+
+      <!-- COLUMNA DERECHA: MONITOREO Y ACCIONES DE DRIVE (7 COLS) -->
+      <section class="lg:col-span-7 space-y-6">
+        
+        <!-- TARJETAS DE MÉTRICAS RÁPIDAS -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-gradient-to-br from-[#132b80] to-[#183b9c] text-white p-4 rounded-2xl shadow-md border border-white/10">
+            <span class="text-[10px] text-[#c5d2f8] font-bold uppercase tracking-wider">Registros</span>
+            <span id="statActiveRequests" class="block text-2xl font-extrabold tracking-tight mt-1 font-['Syne']">0</span>
+            <span class="text-[9px] text-[#c5d2f8]/80 block mt-1">Solicitudes guardadas</span>
+          </div>
+          <div class="bg-white border border-[#cbd7ea] p-4 rounded-2xl shadow-md flex justify-between items-center">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Días Tomados</span>
+              <span id="statTotalDaysTaken" class="block text-2xl font-extrabold text-[#214bd6] mt-1 font-['Syne']">0</span>
+              <span class="text-[9px] text-slate-500 block mt-1">Suma acumulada</span>
+            </div>
+            <div class="p-3 bg-blue-50 text-[#214bd6] rounded-xl"><i class="fa-solid fa-umbrella-beach text-lg"></i></div>
+          </div>
+          <div class="bg-white border border-[#cbd7ea] p-4 rounded-2xl shadow-md flex justify-between items-center">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Prom. Restante</span>
+              <span id="statAvgRemaining" class="block text-2xl font-extrabold text-[#10a36f] mt-1 font-['Syne']">0</span>
+              <span class="text-[9px] text-slate-500 block mt-1">Días promedio</span>
+            </div>
+            <div class="p-3 bg-emerald-50 text-[#10a36f] rounded-xl"><i class="fa-solid fa-clock-rotate-left text-lg"></i></div>
+          </div>
+        </div>
+
+        <!-- LISTADO DE SOLICITUDES REGISTRADAS -->
+        <div class="bg-white border border-[#cbd7ea] rounded-2xl shadow-md overflow-hidden flex flex-col">
+          
+          <!-- FILTRADO Y BÚSQUEDA -->
+          <div class="p-5 border-b border-[#cbd7ea] bg-[#f8fbff] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-extrabold text-[#132b80] font-['Syne'] text-base uppercase tracking-tight">Historial de Vacaciones</h3>
+              <p class="text-[11px] text-[#627194] mt-0.5">Bitácora central de solicitudes. Permite cambiar el estatus en tiempo real.</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button onclick="printEmployeeStatement()" class="bg-[#132b80] hover:bg-[#214bd6] text-white text-[10px] font-bold px-3 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                <i class="fa-solid fa-print"></i>
+                <span>Imprimir Constancia</span>
+              </button>
+              <div class="relative w-full sm:w-auto">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[#627194] text-xs"></i>
+                <input type="text" id="searchInput" oninput="filterRequests()" placeholder="Buscar colaborador..." 
+                  class="bg-white border border-[#cbd7ea] rounded-xl pl-8 pr-3 py-2 text-xs focus:outline-none focus:border-[#214bd6] w-full sm:w-44">
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLA -->
+          <div class="overflow-x-auto custom-scrollbar max-h-[460px]">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-[#cbd7ea] bg-[#f1f5f9]/70 text-[10px] font-bold text-[#627194] uppercase tracking-wider">
+                  <th class="px-5 py-3.5">Colaborador</th>
+                  <th class="px-5 py-3.5">Ingreso / Solicitud</th>
+                  <th class="px-5 py-3.5">Periodo / Descanso</th>
+                  <th class="px-5 py-3.5 text-center">Días</th>
+                  <th class="px-5 py-3.5">Autoriza & Comentarios</th>
+                  <th class="px-5 py-3.5 text-center">Estatus (Interactivo)</th>
+                  <th class="px-5 py-3.5 text-center">Drive Sync</th>
+                  <th class="px-5 py-3.5 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="vacationTableBody" class="divide-y divide-[#cbd7ea]/60 text-xs">
+                <tr>
+                  <td colspan="8" class="px-5 py-12 text-center text-[#627194]">
+                    <i class="fa-solid fa-folder-open text-3xl text-slate-300 mb-2 block"></i>
+                    No hay registros de vacaciones capturados aún.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FOOTER PANEL CON EXPORTADORES -->
+          <div class="p-4 border-t border-[#cbd7ea] bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span id="tableRecordCount" class="text-[11px] font-semibold text-[#627194]">0 solicitudes</span>
+            
+            <div class="flex gap-2">
+              <button onclick="downloadCSVReport()" class="bg-[#10a36f] hover:bg-[#0d855a] text-white text-xs font-bold px-3 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                <i class="fa-solid fa-file-excel"></i> Descargar Excel (Drive)
+              </button>
+              <button onclick="triggerClearAllConfirmation()" class="bg-white hover:bg-red-50 border border-slate-200 hover:border-red-300 text-slate-500 hover:text-[#df3d3d] text-xs font-bold px-3 py-2 rounded-xl transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-trash-can"></i> Limpiar Todo
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ASISTENTE DE IA EN TIEMPO REAL -->
+        <div class="bg-gradient-to-br from-[#1e3a8a]/5 to-[#1e40af]/10 border border-[#cbd7ea] rounded-2xl p-6 shadow-md space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="bg-gradient-to-tr from-[#214bd6] to-[#7443d8] text-white p-2 rounded-xl text-md shadow bg-indigo-600">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div>
+                <h3 class="font-extrabold text-[#132b80] font-['Syne'] text-sm sm:text-base uppercase tracking-tight">Consulta Inteligente</h3>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Asistencia Legal y de Negocio en Tiempo Real</p>
+              </div>
+            </div>
+            <span class="text-[9px] bg-[#214bd6]/10 text-[#214bd6] border border-[#214bd6]/20 px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">Model: Llama 3.3 70B</span>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider" for="aiPrompt">Pregunta o Consulta sobre la Ley o Vacaciones:</label>
+            <textarea id="aiPrompt" rows="3" placeholder="Ej. ¿Cuántos días de vacaciones corresponden a un colaborador con 3 años de antigüedad en 2026?" 
+              class="w-full bg-white border border-[#cbd7ea] rounded-xl p-3 text-xs focus:outline-none focus:border-[#214bd6] font-medium transition-colors"></textarea>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-[11px] font-bold text-[#627194] uppercase tracking-wider" for="groqApiKey"> API Key</label>
+            <input type="password" id="groqApiKey" placeholder="Pega tu llave de Groq; se guarda solo en este navegador" oninput="saveGroqApiKey()"
+              class="w-full bg-white border border-[#cbd7ea] rounded-xl p-3 text-xs focus:outline-none focus:border-[#214bd6] font-medium transition-colors">
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button onclick="setQuickPrompt('¿Cuáles son los lineamientos clave de las Vacaciones Dignas 2026 en México?')" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-all">
+              <i class="fa-solid fa-gavel mr-1 text-[#214bd6]"></i> Vacaciones Dignas 2026
+            </button>
+            <button onclick="setQuickPrompt('Haz un resumen de las reglas para programar vacaciones en la empresa de forma eficiente.')" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-all">
+              <i class="fa-solid fa-business-time mr-1 text-[#10a36f]"></i> Guía de Programación
+            </button>
+            <button onclick="setQuickPrompt('¿Cómo se calcula la antigüedad para un ingreso en el año 2023 proyectado al 2026?')" class="bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-all">
+              <i class="fa-solid fa-calculator mr-1 text-[#7443d8]"></i> Ejemplo de Antigüedad
+            </button>
+          </div>
+
+          <button onclick="consultGroqAI()" class="w-full bg-[#132b80] hover:bg-[#214bd6] text-white text-xs font-bold py-3 rounded-xl transition-all tracking-wide flex items-center justify-center gap-2 shadow">
+            <i class="fa-solid fa-brain"></i>
+            <span>Enviar Consulta en Tiempo Real</span>
+          </button>
+
+          <!-- AI Output Box -->
+          <div id="aiOutputBox" class="hidden bg-white border border-[#cbd7ea] rounded-xl p-4 text-xs text-slate-700 leading-relaxed max-h-[300px] overflow-y-auto custom-scrollbar">
+            <!-- La IA responderá aquí -->
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- BANNER DE RESPONSABILIDAD DE RRHH -->
+  <footer class="bg-[#132b80] text-[#c5d2f8] py-8 mt-12 border-t border-white/10 shadow-inner">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-white">Recursos Humanos • AMIGO EFECTIVO SAPI DE C.V. MaxiKash México </p>
+        <p class="text-[11px] text-[#c5d2f8]/80 mt-1">Este aplicativo se alinea con los reglamentos de Vacaciones Dignas 2026. Todas las solicitudes requieren aprobación y firmas físicas complementarias.</p>
+      </div>
+      <div class="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold shadow-inner text-slate-300">
+        Desarrollado por <span class="text-[#d9ea1c]">@asherowen</span> • Copyright © 2026 Todos los derechos reservados • <span class="text-white">MaxiKash </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FIREBASE IMPORTS AND SYSTEM LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    window.VACATION_STATE = window.VACATION_STATE || {
+      rawList: [],
+      filteredList: [],
+      activeEmployees: [],
+      salteadasDates: [],
+      archiveList: [] // Histórico persistente que no se borra con "Limpiar Todo"
+    };
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+      apiKey: "demo-api-key",
+      authDomain: "demo.firebaseapp.com",
+      projectId: "demo-project",
+      storageBucket: "demo.appspot.com",
+      messagingSenderId: "12345678",
+      appId: "1:1234:web:abcd"
+    };
+
+    // Inicializamos Firebase
+    let app, db, auth;
+    try {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      auth = getAuth(app);
+    } catch (e) {
+      console.warn("Firebase initialization failed, operating in fully offline mode.", e);
+    }
+
+    // GENERACIÓN DE ID DE ESPACIO DE TRABAJO ÚNICO
+    function getOrCreateWorkspaceId() {
+      let wId = localStorage.getItem('maxikash_workspace_id');
+      if (!wId) {
+        wId = 'work-' + Math.random().toString(36).substring(2, 15) + '-' + Date.now();
+        localStorage.setItem('maxikash_workspace_id', wId);
+      }
+      return wId;
+    }
+    const currentWorkspaceId = getOrCreateWorkspaceId();
+
+    // Cargar datos locales de persistencia inmediata para que NUNCA falle el registro
+    function loadLocalStorageData() {
+      try {
+        const stored = localStorage.getItem('maxikash_vacations_2026');
+        if (stored) {
+          let parsed = JSON.parse(stored);
+          
+          // RUTINA DE AUTOCURACIÓN
+          parsed = parsed.map(item => {
+            let updated = false;
+            
+            if (!item.id && item.uid) {
+              item.id = item.uid;
+              updated = true;
+            } else if (item.id && !item.uid) {
+              item.uid = item.id;
+              updated = true;
+            }
+
+            if (!item.name_formatted && typeof window.parseNameFormats === 'function') {
+              const names = window.parseNameFormats(item.name);
+              item.name_formatted = names.apellidoNombre.toUpperCase();
+              item.name = names.nombreApellido.toUpperCase(); 
+              updated = true;
+            }
+            if (!item.tenure && typeof window.calculateTenureYears === 'function') {
+              const years = window.calculateTenureYears(item.joinDate);
+              item.tenure = `${years} ${years === 1 ? 'AÑO' : 'AÑOS'}`;
+              updated = true;
+            }
+            if ((item.statutoryDays === undefined || item.statutoryDays === "") && typeof window.calculateTenureYears === 'function' && typeof window.getMexicanVacationDaysScale === 'function') {
+              const years = window.calculateTenureYears(item.joinDate);
+              item.statutoryDays = window.getMexicanVacationDaysScale(years);
+              updated = true;
+            }
+            
+            // Generar UID determinista si no existe
+            if (!item.uid) {
+              const cleanName = (item.name || "").replace(/\s+/g, "").toLowerCase();
+              item.uid = `vac-det-${cleanName}-${item.startDate}-${item.endDate}`;
+              item.id = item.id || item.uid;
+              updated = true;
+            }
+
+            if (!item.formattedCreatedAt) {
+              const d = item.createdAt ? new Date(item.createdAt) : new Date();
+              try {
+                const options = { timeZone: 'America/Mexico_City', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+                const formatter = new Intl.DateTimeFormat('es-MX', options);
+                const parts = formatter.formatToParts(d);
+                const partMap = {};
+                parts.forEach(p => partMap[p.type] = p.value);
+                item.formattedCreatedAt = `${partMap.year}-${partMap.month}-${partMap.day} ${partMap.hour}:${partMap.minute}:${partMap.second}`;
+              } catch(err) {
+                item.formattedCreatedAt = d.toISOString();
+              }
+              updated = true;
+            }
+            return item;
+          });
+
+          // BLINDAJE ANTI-DUPLICADOS
+          const uniqueParsed = [];
+          parsed.forEach(p => {
+            if (!uniqueParsed.some(x => x.uid === p.uid)) {
+              uniqueParsed.push(p);
+            }
+          });
+
+          window.VACATION_STATE.rawList = uniqueParsed;
+          localStorage.setItem('maxikash_vacations_2026', JSON.stringify(uniqueParsed));
+        } else {
+          window.VACATION_STATE.rawList = [];
+        }
+
+        // CARGAR HISTÓRICO PERMANENTE DESDE MEMORIA (NUNCA se borra al limpiar el monitor)
+        const storedArchive = localStorage.getItem('maxikash_vacations_archive_2026');
+        if (storedArchive) {
+          window.VACATION_STATE.archiveList = JSON.parse(storedArchive);
+        } else {
+          window.VACATION_STATE.archiveList = [];
+        }
+
+        // Respaldo secundario: Si por algún motivo la bitácora activa está vacía, alimentar el histórico desde la bitácora persistente
+        if (window.VACATION_STATE.rawList.length === 0 && window.VACATION_STATE.archiveList.length > 0) {
+          // El historial permanente contiene todo, mantenemos rawList como la bitácora activa en curso de esta sesión
+        }
+
+        const storedActives = localStorage.getItem('maxikash_actives_2026');
+        if (storedActives) {
+          window.VACATION_STATE.activeEmployees = JSON.parse(storedActives);
+          populateDatalist(window.VACATION_STATE.activeEmployees);
+        }
+
+        filterRequests();
+      } catch (e) {
+        console.error("Error loading local storage:", e);
+        window.VACATION_STATE.rawList = [];
+        window.VACATION_STATE.archiveList = [];
+        filterRequests();
+      }
+    }
+
+    // Guardar datos localmente
+    window.saveToLocalStorage = function() {
+      try {
+        localStorage.setItem('maxikash_vacations_2026', JSON.stringify(window.VACATION_STATE.rawList));
+        localStorage.setItem('maxikash_vacations_archive_2026', JSON.stringify(window.VACATION_STATE.archiveList || []));
+      } catch (e) {
+        console.error("Error saving local storage:", e);
+      }
+    };
+
+    // Sincronización en tiempo real con Firestore
+    function setupRealtimeSync() {
+      try {
+        const vacationCollection = collection(db, 'artifacts', appId, 'public', 'data', 'vacaciones');
+        
+        onSnapshot(vacationCollection, (snapshot) => {
+          const cloudRecords = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data) {
+              if (data.workspaceId !== currentWorkspaceId) {
+                return;
+              }
+
+              if (!data.uid) {
+                const cleanName = (data.name || "").replace(/\s+/g, "").toLowerCase();
+                data.uid = `vac-det-${cleanName}-${data.startDate}-${data.endDate}`;
+              }
+              if (data.name) data.name = data.name.toUpperCase();
+              if (data.name_formatted) data.name_formatted = data.name_formatted.toUpperCase();
+              if (data.approverManager) data.approverManager = data.approverManager.toUpperCase();
+              if (data.hrRepresentative) data.hrRepresentative = data.hrRepresentative.toUpperCase();
+              
+              cloudRecords.push({ id: doc.id, ...data, synced: true });
+            }
+          });
+
+          const localUnsynced = window.VACATION_STATE.rawList.filter(l => !l.synced);
+          
+          const merged = [];
+          cloudRecords.forEach(cloudItem => {
+            if (!merged.some(x => x.uid === cloudItem.uid)) {
+              merged.push(cloudItem);
+            }
+          });
+          localUnsynced.forEach(localItem => {
+            if (!merged.some(cloudItem => cloudItem.uid === localItem.uid)) {
+              merged.push(localItem);
+            }
+          });
+
+          window.VACATION_STATE.rawList = merged;
+          
+          // RESPALDAR REGISTROS DE NUBE EN EL HISTÓRICO DE ARCHIVO DE FORMA TRANSPARENTE
+          window.VACATION_STATE.archiveList = window.VACATION_STATE.archiveList || [];
+          merged.forEach(item => {
+            if (!window.VACATION_STATE.archiveList.some(x => x.uid === item.uid)) {
+              window.VACATION_STATE.archiveList.push(item);
+            }
+          });
+
+          window.saveToLocalStorage();
+          filterRequests();
+          showLoader(false);
+        }, (error) => {
+          console.warn("Firestore connection warning:", error);
+          showLoader(false);
+        });
+      } catch (e) {
+        console.warn("Firestore listener not started:", e);
+        showLoader(false);
+      }
+    }
+
+    // Registrar y Enviar solicitud
+    window.saveRequestToCloud = async function(requestObj) {
+      showLoader(true);
+      
+      if (window.VACATION_STATE.rawList.some(item => item.uid === requestObj.uid)) {
+        showLoader(false);
+        return;
+      }
+
+      let formattedDate = "";
+      try {
+        const now = new Date();
+        const options = { timeZone: 'America/Mexico_City', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const formatter = new Intl.DateTimeFormat('es-MX', options);
+        const parts = formatter.formatToParts(now);
+        const partMap = {};
+        parts.forEach(p => partMap[p.type] = p.value);
+        formattedDate = `${partMap.year}-${partMap.month}-${partMap.day} ${partMap.hour}:${partMap.minute}:${partMap.second}`;
+      } catch (e) {
+        formattedDate = new Date().toISOString();
+      }
+
+      const newRecord = { 
+        id: requestObj.uid, 
+        uid: requestObj.uid,
+        ...requestObj, 
+        workspaceId: currentWorkspaceId, 
+        synced: false,
+        formattedCreatedAt: formattedDate
+      };
+      
+      window.VACATION_STATE.rawList.push(newRecord);
+
+      // GUARDAR EN EL ARCHIVO DE CONTROL DE HISTÓRICOS (NUNCA SE BORRA AL LIMPIAR TODO)
+      window.VACATION_STATE.archiveList = window.VACATION_STATE.archiveList || [];
+      if (!window.VACATION_STATE.archiveList.some(x => x.uid === newRecord.uid)) {
+        window.VACATION_STATE.archiveList.push(newRecord);
+      }
+
+      window.saveToLocalStorage();
+      filterRequests();
+      
+      // Limpiar formulario y resetear contadores
+      document.getElementById('vacationForm').reset();
+      document.getElementById('manualTakenDays').value = "0";
+      document.getElementById('daysAccruedCard').classList.add('hidden');
+      document.getElementById('daysToTakeInput').value = "0";
+      document.getElementById('daysRemainingInput').value = "0";
+      
+      window.VACATION_STATE.salteadasDates = [];
+      renderSalteadasTags();
+
+      // Forzar reset de interruptor de anulación manual
+      const overrideToggle = document.getElementById('manualOverrideToggle');
+      if (overrideToggle) {
+        overrideToggle.checked = false;
+        window.toggleManualOverride();
+      }
+
+      document.getElementById('selectedRestDays').value = "0,6";
+      document.querySelectorAll('.rest-day-btn').forEach(btn => {
+        const d = Number(btn.getAttribute('data-day'));
+        if (d === 0 || d === 6) {
+          btn.className = "rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-[#214bd6] text-white border-[#214bd6] shadow-sm";
+        } else {
+          btn.className = "rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+        }
+      });
+      document.getElementById('restDaysSummaryLabel').textContent = "Excluye: Sábado, Domingo";
+
+      // Reset de caja de estatus inicial
+      document.getElementById('requestStatus').value = "PENDIENTE";
+      updateStatusStyle();
+
+      showToast("Solicitud registrada de forma inmediata en la bitácora local.");
+      showLoader(false);
+
+      if (auth && auth.currentUser && db) {
+        try {
+          const vacationCollection = collection(db, 'artifacts', appId, 'public', 'data', 'vacaciones');
+          await addDoc(vacationCollection, {
+            ...requestObj,
+            workspaceId: currentWorkspaceId, 
+            synced: false, 
+            formattedCreatedAt: formattedDate
+          });
+        } catch (err) {
+          console.warn("Could not sync to cloud immediately, saved locally.", err);
+        }
+      }
+    };
+
+    // Borrado de registros de forma segura
+    window.deleteRequestFromCloud = async function(id) {
+      showLoader(true);
+      
+      // Si el usuario elimina individualmente, sí removemos del histórico
+      window.VACATION_STATE.rawList = window.VACATION_STATE.rawList.filter(x => x.id !== id && x.uid !== id);
+      if (window.VACATION_STATE.archiveList) {
+        window.VACATION_STATE.archiveList = window.VACATION_STATE.archiveList.filter(x => x.id !== id && x.uid !== id);
+      }
+      window.saveToLocalStorage();
+      filterRequests();
+      showToast("Registro eliminado del historial.");
+      showLoader(false);
+
+      if (id && !id.startsWith('local-') && !id.startsWith('vac-') && auth && auth.currentUser && db) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'vacaciones', id);
+          await deleteDoc(docRef);
+        } catch (err) {
+          console.warn("Could not delete from cloud database:", err);
+        }
+      }
+    };
+
+    // CAMBIO DE ESTATUS INTERACTIVO DESDE LA TABLA DE HISTORIAL
+    window.changeRequestStatus = async function(id, newStatus) {
+      showLoader(true);
+      
+      // 1. Encontrar la solicitud en el listado local o en el archivo histórico
+      let req = window.VACATION_STATE.rawList.find(x => x.id === id || x.uid === id);
+      
+      // Si no está en rawList (porque se limpió la pantalla), buscar en archiveList para modificarlo
+      if (!req && window.VACATION_STATE.archiveList) {
+        req = window.VACATION_STATE.archiveList.find(x => x.id === id || x.uid === id);
+      }
+
+      if (!req) {
+        showLoader(false);
+        return;
+      }
+      
+      // 2. Actualizar estatus localmente en ambas listas para evitar inconsistencias de cálculos
+      req.status = newStatus;
+      if (window.VACATION_STATE.archiveList) {
+        const archiveReq = window.VACATION_STATE.archiveList.find(x => x.id === id || x.uid === id);
+        if (archiveReq) {
+          archiveReq.status = newStatus;
+        }
+      }
+      
+      // 3. Recalcular las balanzas secuenciales de este empleado (para que libere días si se rechaza)
+      if (typeof window.recalculateAllEmployeeBalances === 'function') {
+        window.recalculateAllEmployeeBalances(req.name);
+      }
+      
+      // 4. Guardar en almacenamiento local
+      window.saveToLocalStorage();
+      
+      // 5. Re-filtrar y re-renderizar tabla
+      filterRequests();
+      calculateAccruedDays();
+      showToast(`Estatus actualizado a ${newStatus} correctamente.`);
+      showLoader(false);
+
+      // 6. Actualizar en Firebase si está en línea
+      if (auth && auth.currentUser && db) {
+        try {
+          const docId = req.id;
+          if (docId && !docId.startsWith('vac-') && !docId.startsWith('local-')) {
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'vacaciones', docId);
+            await setDoc(docRef, { status: newStatus, daysRemaining: req.daysRemaining }, { merge: true });
+          }
+        } catch (err) {
+          console.warn("No se pudo sincronizar el estatus en la nube de forma inmediata.", err);
+        }
+      }
+    };
+
+    // Inicialización de la Autenticación y Sincronización
+    async function initAuthAndDB() {
+      showLoader(true);
+      loadLocalStorageData();
+
+      try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const reqInput = document.getElementById('requestDate');
+        if (reqInput) reqInput.value = todayStr;
+      } catch (e) {
+        console.warn("Could not set initial request date", e);
+      }
+
+      if (!auth || !db) {
+        showLoader(false);
+        return;
+      }
+
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+        
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            setupRealtimeSync();
+          } else {
+            showLoader(false);
+          }
+        });
+      } catch (err) {
+        console.warn("Firebase Auth Error, running beautifully with local storage.", err);
+        showLoader(false);
+      }
+    }
+
+    initAuthAndDB();
+  </script>
+
+  <!-- BUSINESS ACTION ENGINE AND RENDER CONTROLLERS -->
+  <script>
+    window.VACATION_STATE = window.VACATION_STATE || {
+      rawList: [],
+      filteredList: [],
+      activeEmployees: [],
+      salteadasDates: [],
+      archiveList: []
+    };
+
+    window.formatDateDMY = function(dateStr) {
+      if (!dateStr) return "N/A";
+      if (dateStr === "FECHAS SALTEADAS" || dateStr === "PERIODOS ALTERNOS") return dateStr;
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
+      
+      const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (match) {
+        return `${match[3]}/${match[2]}/${match[1]}`;
+      }
+      
+      if (dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        if (parts.length === 3 && parts[0].length === 4) {
+          return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
+        }
+      }
+      
+      const parsed = Date.parse(dateStr);
+      if (!isNaN(parsed)) {
+        const d = new Date(parsed);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+      return dateStr;
+    };
+
+    window.updateStatusStyle = function() {
+      const select = document.getElementById('requestStatus');
+      const arrow = document.getElementById('statusArrow');
+      if (!select || !arrow) return;
+      
+      const val = select.value;
+      if (val === 'PENDIENTE') {
+        select.className = "w-full bg-[#fffbeb] border border-[#fde047] rounded-xl px-4 py-3 text-xs focus:outline-none font-bold text-[#d97706] cursor-pointer transition-colors shadow-sm appearance-none";
+        arrow.className = "pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#d97706]";
+      } else if (val === 'APROBADO') {
+        select.className = "w-full bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl px-4 py-3 text-xs focus:outline-none font-bold text-[#10a36f] cursor-pointer transition-colors shadow-sm appearance-none";
+        arrow.className = "pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#10a36f]";
+      } else if (val === 'RECHAZADO') {
+        select.className = "w-full bg-[#fef2f2] border border-[#fecaca] rounded-xl px-4 py-3 text-xs focus:outline-none font-bold text-[#df3d3d] cursor-pointer transition-colors shadow-sm appearance-none";
+        arrow.className = "pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#df3d3d]";
+      }
+    };
+
+    window.getCombinedVacationHistory = function() {
+      const list = window.VACATION_STATE.rawList || [];
+      const archive = window.VACATION_STATE.archiveList || [];
+      const combined = [];
+      const seenUids = new Set();
+
+      const addItem = (item) => {
+        if (!item) return;
+        const uid = item.uid || `${item.name}-${item.startDate}-${item.endDate}`;
+        if (!seenUids.has(uid)) {
+          seenUids.add(uid);
+          combined.push(item);
+        }
+      };
+
+      list.forEach(addItem);
+      archive.forEach(addItem);
+      return combined;
+    };
+
+    window.getEmployeeVacationBalance = function(empName, joinDate, manualTakenOverride) {
+      const cleanName = (empName || '').trim().toUpperCase();
+      const years = joinDate ? calculateTenureYears(joinDate) : 0;
+      const statutoryTotal = getMexicanVacationDaysScale(years);
+      const manualTaken = Number(manualTakenOverride || 0);
+      const combined = window.getCombinedVacationHistory();
+
+      let approvedTaken = 0;
+      let pendingTaken = 0;
+      let rejectedTaken = 0;
+      let requestCount = 0;
+
+      combined.forEach(item => {
+        const itemName = (item.name || '').trim().toUpperCase();
+        const itemFormattedName = (item.name_formatted || '').trim().toUpperCase();
+        if (itemName !== cleanName && itemFormattedName !== cleanName) return;
+
+        requestCount++;
+        const status = (item.status || 'PENDIENTE').toUpperCase();
+        const days = Number(item.daysToTake || 0);
+
+        if (status === 'RECHAZADO') {
+          rejectedTaken += days;
+        } else if (status === 'PENDIENTE') {
+          pendingTaken += days;
+        } else {
+          approvedTaken += days;
+        }
+      });
+
+      const committedTaken = manualTaken + approvedTaken + pendingTaken;
+      const enjoyedTaken = manualTaken + approvedTaken;
+
+      return {
+        years,
+        statutoryTotal,
+        manualTaken,
+        approvedTaken,
+        pendingTaken,
+        rejectedTaken,
+        enjoyedTaken,
+        committedTaken,
+        requestCount,
+        availableAfterApproved: Math.max(0, statutoryTotal - enjoyedTaken),
+        availableAfterPending: Math.max(0, statutoryTotal - committedTaken)
+      };
+    };
+
+    // RETORNA LOS DÍAS SOLICITADOS POR UN EMPLEADO EXCLUYENDO LAS SOLICITUDES RECHAZADAS
+    window.getEmployeePreviousTakenDays = function(empName) {
+      if (!empName) return 0;
+      const cleanName = empName.trim().toUpperCase();
+      
+      const list = window.VACATION_STATE.rawList || [];
+      const archive = window.VACATION_STATE.archiveList || [];
+      
+      const combined = [];
+      const seenUids = new Set();
+      
+      const addItem = (item) => {
+        if (!item) return;
+        const uid = item.uid || `${item.name}-${item.startDate}-${item.endDate}`;
+        if (!seenUids.has(uid)) {
+          seenUids.add(uid);
+          combined.push(item);
+        }
+      };
+      
+      list.forEach(addItem);
+      archive.forEach(addItem);
+      
+      let totalTaken = 0;
+      combined.forEach(item => {
+        const itemName = (item.name || '').trim().toUpperCase();
+        const itemFormattedName = (item.name_formatted || '').trim().toUpperCase();
+        // IMPORTANTE: Excluimos de la sumatoria los días de las solicitudes que tengan estatus RECHAZADO
+        if ((itemName === cleanName || itemFormattedName === cleanName) && item.status !== 'RECHAZADO') {
+          totalTaken += Number(item.daysToTake || 0);
+        }
+      });
+      return totalTaken;
+    };
+
+    // RECALCULA EN CASCADA LAS SALDOS DE TODAS LAS SOLICITUDES DE UN EMPLEADO
+    window.recalculateAllEmployeeBalances = function(empName) {
+      if (!empName) return;
+      const cleanName = empName.toUpperCase().trim();
+      
+      // Buscar la fecha de ingreso de la base de activos para calcular días ley vigentes
+      const activeEmp = window.VACATION_STATE.activeEmployees.find(emp => 
+        emp.name.toUpperCase() === cleanName || emp.altName.toUpperCase() === cleanName
+      );
+      
+      const joinDateInput = activeEmp ? activeEmp.joinDate : document.getElementById('empJoinDate').value;
+      if (!joinDateInput) return;
+
+      const years = calculateTenureYears(joinDateInput);
+      const statutoryTotal = getMexicanVacationDaysScale(years);
+
+      // Filtrar todas las solicitudes del colaborador ordenadas cronológicamente
+      const empRequests = window.VACATION_STATE.rawList.filter(item => {
+        const itemName = (item.name || '').trim().toUpperCase();
+        const itemFormattedName = (item.name_formatted || '').trim().toUpperCase();
+        return itemName === cleanName || itemFormattedName === cleanName;
+      });
+
+      // Ordenar por fecha de creación o de solicitud
+      empRequests.sort((a, b) => new Date(a.createdAt || a.requestDate) - new Date(b.createdAt || b.requestDate));
+
+      const manualTaken = activeEmp ? (activeEmp.manualTakenDays || 0) : Number(document.getElementById('manualTakenDays').value || 0);
+      let runningTaken = manualTaken;
+
+      empRequests.forEach(req => {
+        if (req.status !== 'RECHAZADO') {
+          runningTaken += Number(req.daysToTake || 0);
+        }
+        req.daysRemaining = Math.max(0, statutoryTotal - runningTaken);
+      });
+    };
+
+    window.toggleSelectionMode = function(mode) {
+      const modeInput = document.getElementById('selectionMode');
+      const btnConsecutive = document.getElementById('btnConsecutiveMode');
+      const btnAlternate = document.getElementById('btnAlternateMode');
+      const btnSalteadas = document.getElementById('btnSalteadasMode');
+      const wrapperConsecutive = document.getElementById('wrapperConsecutive');
+      const wrapperAlternate = document.getElementById('wrapperAlternate');
+      const wrapperSalteadas = document.getElementById('wrapperSalteadas');
+
+      modeInput.value = mode;
+
+      // Reset styles
+      [btnConsecutive, btnAlternate, btnSalteadas].forEach(b => {
+        if(b) b.className = "py-2.5 text-[10px] font-bold rounded-lg transition-all text-slate-600 hover:bg-white/50 flex items-center justify-center gap-1";
+      });
+      [wrapperConsecutive, wrapperAlternate, wrapperSalteadas].forEach(w => {
+        if(w) w.classList.add('hidden');
+      });
+
+      // Set explicit requirements parameters
+      document.getElementById('vacStart').required = false;
+      document.getElementById('vacEnd').required = false;
+      document.getElementById('altStart1').required = false;
+      document.getElementById('altEnd1').required = false;
+
+      if (mode === 'consecutive') {
+        btnConsecutive.className = "py-2.5 text-[10px] font-bold rounded-lg transition-all bg-[#214bd6] text-white shadow-sm flex items-center justify-center gap-1";
+        wrapperConsecutive.classList.remove('hidden');
+        document.getElementById('vacStart').required = true;
+        document.getElementById('vacEnd').required = true;
+      } else if (mode === 'alternate') {
+        btnAlternate.className = "py-2.5 text-[10px] font-bold rounded-lg transition-all bg-[#214bd6] text-white shadow-sm flex items-center justify-center gap-1";
+        wrapperAlternate.classList.remove('hidden');
+        document.getElementById('altStart1').required = true;
+        document.getElementById('altEnd1').required = true;
+      } else {
+        btnSalteadas.className = "py-2.5 text-[10px] font-bold rounded-lg transition-all bg-[#214bd6] text-white shadow-sm flex items-center justify-center gap-1";
+        wrapperSalteadas.classList.remove('hidden');
+      }
+
+      calculateRequestedPeriod();
+    }
+
+    // Agregar fecha individual a la lista de salteadas
+    window.addSingleDateToList = function() {
+      const dateVal = document.getElementById('singleDateSelector').value;
+      if (!dateVal) {
+        showToast("Por favor selecciona una fecha válida.", "warning");
+        return;
+      }
+
+      if (window.VACATION_STATE.salteadasDates.includes(dateVal)) {
+        showToast("Esta fecha ya ha sido agregada.", "warning");
+        return;
+      }
+
+      window.VACATION_STATE.salteadasDates.push(dateVal);
+      window.VACATION_STATE.salteadasDates.sort();
+
+      renderSalteadasTags();
+      calculateRequestedPeriod();
+      document.getElementById('singleDateSelector').value = "";
+    }
+
+    // Interruptor de Edición Manual de Emergencia (Failsafe)
+    window.toggleManualOverride = function() {
+      const override = document.getElementById('manualOverrideToggle').checked;
+      const daysToTakeInput = document.getElementById('daysToTakeInput');
+      const daysRemainingInput = document.getElementById('daysRemainingInput');
+      
+      if (override) {
+        daysToTakeInput.removeAttribute('readonly');
+        daysRemainingInput.removeAttribute('readonly');
+        daysToTakeInput.className = "bg-white text-lg font-extrabold text-[#214bd6] w-24 border border-amber-300 rounded-lg px-2 py-1 focus:outline-none transition-all font-sans";
+        daysRemainingInput.className = "bg-white text-lg font-extrabold text-[#10a36f] w-24 border border-amber-300 rounded-lg px-2 py-1 focus:outline-none transition-all font-sans";
+        showToast("Modo de edición de emergencia desbloqueado. Ingrese los saldos directamente.", "warning");
+      } else {
+        daysToTakeInput.setAttribute('readonly', 'true');
+        daysRemainingInput.setAttribute('readonly', 'true');
+        daysToTakeInput.className = "bg-transparent text-lg font-extrabold text-[#214bd6] w-20 focus:outline-none transition-all font-sans";
+        daysRemainingInput.className = "bg-transparent text-lg font-extrabold text-[#10a36f] w-20 focus:outline-none transition-all font-sans";
+        calculateRequestedPeriod(); // Recalcular con calendario de forma normal
+      }
+    };
+
+    // Recalcular saldo manual cuando el usuario escribe directamente en el input desbloqueado
+    window.recalculateManualRemaining = function() {
+      const override = document.getElementById('manualOverrideToggle').checked;
+      if (!override) return;
+      
+      const joinInput = document.getElementById('empJoinDate').value;
+      const empNameInput = document.getElementById('empName').value.trim();
+      
+      const years = joinInput ? calculateTenureYears(joinInput) : 0;
+      const statutoryTotal = getMexicanVacationDaysScale(years);
+      
+      const manualTaken = Number(document.getElementById('manualTakenDays').value || 0);
+      const previousTaken = window.getEmployeePreviousTakenDays(empNameInput) + manualTaken;
+      const startingBalance = Math.max(0, statutoryTotal - previousTaken);
+      
+      const daysToTake = Number(document.getElementById('daysToTakeInput').value || 0);
+      document.getElementById('daysRemainingInput').value = Math.max(0, startingBalance - daysToTake);
+    };
+
+    // Remover fecha individual de la lista
+    window.removeSalteadaDate = function(dateStr) {
+      window.VACATION_STATE.salteadasDates = window.VACATION_STATE.salteadasDates.filter(d => d !== dateStr);
+      renderSalteadasTags();
+      calculateRequestedPeriod();
+    }
+
+    // Renderizar las etiquetas de fechas salteadas
+    function renderSalteadasTags() {
+      const container = document.getElementById('datesTagContainer');
+      const hiddenInput = document.getElementById('serializedSalteadas');
+      
+      if (window.VACATION_STATE.salteadasDates.length === 0) {
+        container.innerHTML = `<span class="text-[10px] text-slate-400 font-medium italic">Ningún día agregado aún. Selecciona fechas arriba.</span>`;
+        hiddenInput.value = "";
+        return;
+      }
+
+      hiddenInput.value = window.VACATION_STATE.salteadasDates.join(',');
+
+      container.innerHTML = window.VACATION_STATE.salteadasDates.map(date => {
+        const formatted = window.formatDateDMY(date);
+        return `
+          <span class="bg-[#214bd6]/10 text-[#214bd6] border border-[#214bd6]/20 font-bold text-[10px] px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-sm">
+            ${formatted}
+            <button type="button" onclick="removeSalteadaDate('${date}')" class="text-red-500 hover:text-red-700 font-extrabold focus:outline-none text-xs">&times;</button>
+          </span>
+        `;
+      }).join('');
+    }
+
+    // Configuración de interactividad de los botones de descanso
+    function initRestDaysClickHandlers() {
+      document.querySelectorAll('.rest-day-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const day = Number(this.getAttribute('data-day'));
+          let currentDays = document.getElementById('selectedRestDays').value.split(',').filter(x => x !== "").map(Number);
+          
+          if (currentDays.includes(day)) {
+            if (currentDays.length <= 1) {
+              showToast("Debes seleccionar al menos un día de descanso.", "warning");
+              return;
+            }
+            currentDays = currentDays.filter(d => d !== day);
+            this.className = "rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+          } else {
+            currentDays.push(day);
+            this.className = "rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-[#214bd6] text-white border-[#214bd6] shadow-sm";
+          }
+          
+          document.getElementById('selectedRestDays').value = currentDays.join(',');
+          
+          const dayNames = {0: "Domingo", 1: "Lunes", 2: "Martes", 3: "Miércoles", 4: "Jueves", 5: "Viernes", 6: "Sábado"};
+          const summaryText = currentDays.sort().map(d => dayNames[d]).join(", ");
+          document.getElementById('restDaysSummaryLabel').textContent = "Excluye: " + summaryText;
+
+          calculateRequestedPeriod();
+        });
+      });
+    }
+
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('excel-file-input');
+
+    if (dropZone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+    }
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    if (dropZone) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+          dropZone.classList.add('border-[#214bd6]', 'bg-blue-50/50');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => {
+          dropZone.classList.remove('border-[#214bd6]', 'bg-blue-50/50');
+        }, false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) {
+          handleDroppedFile(files[0]);
+        }
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          handleDroppedFile(e.target.files[0]);
+        }
+      });
+    }
+
+    // Procesador de archivos subidos
+    function handleDroppedFile(file) {
+      showLoader(true);
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          const range = worksheet['!ref'] ? XLSX.utils.decode_range(worksheet['!ref']) : null;
+          let bestHeaderRowIndex = 0;
+          let maxScore = -1;
+
+          if (range) {
+            const rowsToScan = Math.min(15, range.e.r + 1);
+            for (let r = 0; r < rowsToScan; r++) {
+              let score = 0;
+              for (let c = range.s.c; c <= range.e.c; c++) {
+                const cellAddress = XLSX.utils.encode_cell({ r: r, c: c });
+                const cell = worksheet[cellAddress];
+                if (cell && cell.v) {
+                  const valStr = String(cell.v).toLowerCase();
+                  if (/nombre|colaborador|empleado|name|staff|persona|trabajador|asociado|socio/i.test(valStr)) score += 5;
+                  if (/ingreso|fecha|contrataci[oó]n|date|join|alta|entrada/i.test(valStr)) score += 5;
+                  if (/puesto|cargo|rol|departamento|depto|area|área/i.test(valStr)) score += 1;
+                }
+              }
+              if (score > maxScore && score >= 5) {
+                maxScore = score;
+                bestHeaderRowIndex = r;
+              }
+            }
+          }
+
+          let jsonData;
+          if (maxScore >= 5) {
+            jsonData = XLSX.utils.sheet_to_json(worksheet, { range: bestHeaderRowIndex });
+          } else {
+            jsonData = XLSX.utils.sheet_to_json(worksheet);
+          }
+
+          processActiveEmployeesData(jsonData);
+        } catch (err) {
+          showLoader(false);
+          showToast("Error al decodificar el archivo. Asegúrate que sea un Excel o CSV válido.", "warning");
+          console.error(err);
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Mapear de forma ultra-robusta activos del Excel
+    function processActiveEmployeesData(rows) {
+      try {
+        if (!rows || rows.length === 0) {
+          showLoader(false);
+          showToast("El archivo Excel está vacío o no contiene renglones legibles.", "warning");
+          return;
+        }
+
+        const sample = rows[0];
+        const keys = Object.keys(sample);
+
+        let nameKey = keys.find(k => /nombre|colaborador|empleado/i.test(k));
+        if (!nameKey) {
+          nameKey = keys.find(k => /name|staff|persona|trabajador|asociado|socio|usuario|user/i.test(k));
+        }
+
+        let dateKey = keys.find(k => /ingreso|alta|contrataci[oó]n|join/i.test(k));
+        if (!dateKey) {
+          dateKey = keys.find(k => /fecha|date|entrada/i.test(k));
+        }
+
+        // Búsqueda de columna de días gozados históricos
+        let takenDaysKey = keys.find(k => /gozados|tomados|historico|historial|previo|past_days/i.test(k));
+
+        if (!nameKey) nameKey = keys[0];
+        if (!dateKey) dateKey = keys[1] || keys[0];
+
+        const mappedActives = [];
+
+        rows.forEach((r, index) => {
+          try {
+            let rawDate = r[dateKey];
+            let cleanedDate = "";
+
+            if (rawDate !== undefined && rawDate !== null) {
+              if (typeof rawDate === 'number' && rawDate > 30000) {
+                cleanedDate = formatExcelSerialDate(rawDate);
+              } else if (!isNaN(Number(String(rawDate).trim())) && Number(String(rawDate).trim()) > 30000) {
+                cleanedDate = formatExcelSerialDate(Number(String(rawDate).trim()));
+              } else {
+                cleanedDate = cleanDateFormat(rawDate);
+              }
+            }
+
+            if (cleanedDate) {
+              const rawName = r[nameKey] ? String(r[nameKey]).trim() : `EMPLEADO #${index + 1}`;
+              const nameMetadata = parseNameFormats(rawName);
+              const historyDays = takenDaysKey && r[takenDaysKey] !== undefined ? Math.max(0, parseInt(r[takenDaysKey], 10) || 0) : 0;
+
+              mappedActives.push({
+                name: nameMetadata.nombreApellido.toUpperCase(), 
+                altName: nameMetadata.apellidoNombre.toUpperCase(),
+                joinDate: cleanedDate,
+                manualTakenDays: historyDays
+              });
+            }
+          } catch (rowErr) {
+            console.warn(`Error de mapeo ignorado en fila Excel #${index}:`, rowErr);
+          }
+        });
+
+        if (mappedActives.length === 0) {
+          showLoader(false);
+          showToast("No se encontraron fechas de ingreso procesables en el archivo. Verifica las columnas.", "warning");
+          return;
+        }
+
+        window.VACATION_STATE.activeEmployees = mappedActives;
+        localStorage.setItem('maxikash_actives_2026', JSON.stringify(mappedActives));
+        
+        populateDatalist(mappedActives);
+
+        document.getElementById('assets-loaded-counter').textContent = `${mappedActives.length} colaboradores cargados`;
+        showLoader(false);
+        showToast(`¡Base de activos cargada! ${mappedActives.length} registros listos.`);
+      } catch (err) {
+        showLoader(false);
+        showToast("Error inesperado al procesar la data del archivo.", "error");
+        console.error(err);
+      }
+    }
+
+    // Poblar datalist del input
+    function populateDatalist(actives) {
+      const datalist = document.getElementById('assetsList');
+      if (!datalist) return;
+      datalist.innerHTML = "";
+      actives.forEach(emp => {
+        const option = document.createElement('option');
+        option.value = emp.name.toUpperCase(); 
+        datalist.appendChild(option);
+      });
+    }
+
+    // Autodetectar y autocompletar fecha al seleccionar colaborador
+    function checkSelectedEmployee() {
+      const currentVal = document.getElementById('empName').value.trim().toUpperCase();
+      if (!currentVal) return;
+
+      const match = window.VACATION_STATE.activeEmployees.find(emp => 
+        emp.name.toUpperCase() === currentVal || 
+        emp.altName.toUpperCase() === currentVal ||
+        emp.name.toUpperCase().replace(/,/g, "") === currentVal.replace(/,/g, "") ||
+        emp.altName.toUpperCase().replace(/,/g, "") === currentVal.replace(/,/g, "")
+      );
+      
+      if (match) {
+        document.getElementById('empJoinDate').value = match.joinDate;
+        document.getElementById('manualTakenDays').value = match.manualTakenDays || 0;
+        calculateAccruedDays();
+        showToast(`Colaborador detectado: ${match.name}`);
+      } else {
+        document.getElementById('manualTakenDays').value = 0;
+        calculateAccruedDays();
+      }
+    }
+
+    // Formatear fecha serial de Excel
+    function formatExcelSerialDate(serial) {
+      try {
+        const ms = Math.round((serial - 25569) * 86400 * 1000);
+        const dateObj = new Date(ms);
+        const year = dateObj.getUTCFullYear();
+        const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getUTCDate()).padStart(2, '0');
+        
+        if (isNaN(dateObj.getTime())) return "";
+        return `${year}-${month}-${day}`;
+      } catch (e) {
+        return "";
+      }
+    }
+
+    // Limpieza de fechas
+    function cleanDateFormat(str) {
+      if (!str) return "";
+      
+      if (str instanceof Date) {
+        const y = str.getUTCFullYear();
+        const m = String(str.getUTCMonth() + 1).padStart(2, '0');
+        const d = String(str.getUTCDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      str = String(str).trim();
+      
+      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+        return str;
+      }
+      
+      let matches = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (matches) {
+        let d = matches[1].padStart(2, '0');
+        let m = matches[2].padStart(2, '0');
+        return `${matches[3]}-${m}-${d}`;
+      }
+      
+      matches = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (matches) {
+        let m = matches[2].padStart(2, '0');
+        let d = matches[3].padStart(2, '0');
+        return `${matches[1]}-${m}-${d}`;
+      }
+
+      const parsed = Date.parse(str);
+      if (!isNaN(parsed)) {
+        const dateObj = new Date(parsed);
+        const y = dateObj.getUTCFullYear();
+        const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getUTCDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      return "";
+    }
+
+    // Tabla de días de vacaciones según ley (México)
+    function getMexicanVacationDaysScale(years) {
+      if (years < 1) return 0;
+      if (years === 1) return 12;
+      if (years === 2) return 14;
+      if (years === 3) return 16;
+      if (years === 4) return 18;
+      if (years === 5) return 20;
+      if (years >= 6 && years <= 10) return 22;
+      if (years >= 11 && years <= 15) return 24;
+      if (years >= 16 && years <= 20) return 26;
+      if (years >= 21 && years <= 25) return 28;
+      if (years >= 26 && years <= 30) return 30;
+      return 32; 
+    }
+
+    // Antigüedad proyectada al cierre de 2026
+    function calculateTenureYears(joinDate) {
+      const join = new Date(joinDate + 'T00:00:00');
+      const targetDate = new Date('2026-12-31T00:00:00'); 
+      
+      if (isNaN(join.getTime())) return 0;
+      
+      let diffYears = targetDate.getFullYear() - join.getFullYear();
+      const monthDiff = targetDate.getMonth() - join.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && targetDate.getDate() < join.getDate())) {
+        diffYears--;
+      }
+      return diffYears < 0 ? 0 : diffYears;
+    }
+
+    // Gatillo al cambiar la fecha de ingreso o días ya gozados
+    window.calculateAccruedDays = function() {
+      const empNameInput = document.getElementById('empName').value.trim();
+      const joinInput = document.getElementById('empJoinDate').value;
+      const card = document.getElementById('daysAccruedCard');
+      const tenureText = document.getElementById('tenureText');
+      const statutoryDays = document.getElementById('statutoryDays');
+      const daysAlreadyTakenEl = document.getElementById('daysAlreadyTaken');
+      const daysAvailableBalanceEl = document.getElementById('daysAvailableBalance');
+      const employeeBalanceSummaryEl = document.getElementById('employeeBalanceSummary');
+
+      if (!joinInput) {
+        if (card) card.classList.add('hidden');
+        return;
+      }
+
+      const manualTaken = Number(document.getElementById('manualTakenDays').value || 0);
+      const balance = window.getEmployeeVacationBalance(empNameInput, joinInput, manualTaken);
+      const years = balance.years;
+      const statutoryMax = balance.statutoryTotal;
+
+      if (tenureText) tenureText.textContent = `${years} ${years === 1 ? 'AÑO' : 'AÑOS'} de antigüedad calculados (Proyección 2026)`;
+      if (statutoryDays) statutoryDays.textContent = `${statutoryMax} días`;
+      if (daysAlreadyTakenEl) daysAlreadyTakenEl.textContent = `${balance.committedTaken} días`;
+      if (daysAvailableBalanceEl) daysAvailableBalanceEl.textContent = `${balance.availableAfterPending} días`;
+      if (employeeBalanceSummaryEl) {
+        employeeBalanceSummaryEl.innerHTML = `
+          <div><span class="text-[#132b80]">Saldo pendiente de goce:</span> ${balance.availableAfterPending} días disponibles después de solicitudes registradas.</div>
+          <div class="text-slate-500 mt-0.5">Aprobados/gozados: ${balance.enjoyedTaken} días · Pendientes de autorización: ${balance.pendingTaken} días · Rechazados no descuentan: ${balance.rejectedTaken} días.</div>
+        `;
+      }
+      
+      if (card) card.classList.remove('hidden');
+
+      calculateRequestedPeriod();
+    }
+
+    // Excluir días de descanso del cálculo de días hábiles corrido
+    function calculateBusinessDays(startDateStr, endDateStr, restDaysArr) {
+      if(!startDateStr || !endDateStr) return 0;
+      const start = new Date(startDateStr + 'T00:00:00');
+      const end = new Date(endDateStr + 'T00:00:00');
+      
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+      if (start > end) return 0;
+
+      const restDays = restDaysArr || [0, 6];
+      let businessDays = 0;
+      let current = new Date(start);
+
+      while (current <= end) {
+        const dayOfWeek = current.getDay(); 
+        if (!restDays.includes(dayOfWeek)) {
+          businessDays++;
+        }
+        current.setDate(current.getDate() + 1);
+      }
+      return businessDays;
+    }
+
+    // Calcular días hábiles en base a un arreglo de fechas (Modo Salteado)
+    function calculateSalteadasBusinessDays(datesArr, restDaysArr) {
+      if (!datesArr || datesArr.length === 0) return 0;
+      const restDays = restDaysArr || [0, 6];
+      let count = 0;
+
+      datesArr.forEach(dateStr => {
+        const dObj = new Date(dateStr + 'T00:00:00');
+        if (!isNaN(dObj.getTime())) {
+          const dayOfWeek = dObj.getDay();
+          if (!restDays.includes(dayOfWeek)) {
+            count++;
+          }
+        }
+      });
+      return count;
+    }
+
+    // Recalcular periodos, respetando la modalidad activa
+    function calculateRequestedPeriod() {
+      // Bloquear cálculo automático si la edición manual de emergencia está activa
+      const override = document.getElementById('manualOverrideToggle')?.checked;
+      if (override) return;
+
+      const selectionMode = document.getElementById('selectionMode').value;
+      const joinInput = document.getElementById('empJoinDate').value;
+      const empNameInput = document.getElementById('empName').value.trim();
+      const daysToTakeInput = document.getElementById('daysToTakeInput');
+      const daysRemainingInput = document.getElementById('daysRemainingInput');
+      const restDaysArr = document.getElementById('selectedRestDays').value.split(',').filter(x => x !== "").map(Number);
+
+      const years = joinInput ? calculateTenureYears(joinInput) : 0;
+      const statutoryTotal = getMexicanVacationDaysScale(years);
+
+      const manualTaken = Number(document.getElementById('manualTakenDays').value || 0);
+      const previousTaken = window.getEmployeePreviousTakenDays(empNameInput) + manualTaken;
+      const startingBalance = Math.max(0, statutoryTotal - previousTaken);
+
+      let daysToTake = 0;
+
+      if (selectionMode === 'consecutive') {
+        const start = document.getElementById('vacStart').value;
+        const end = document.getElementById('vacEnd').value;
+
+        if (!start || !end) {
+          if (daysToTakeInput) daysToTakeInput.value = "0";
+          if (daysRemainingInput) daysRemainingInput.value = "0";
+          return;
+        }
+
+        if (new Date(start) > new Date(end)) {
+          showToast("La fecha de inicio no puede ser posterior a la de término.", "warning");
+          document.getElementById('vacStart').value = end;
+          return;
+        }
+
+        daysToTake = calculateBusinessDays(start, end, restDaysArr);
+      } else if (selectionMode === 'alternate') {
+        const s1 = document.getElementById('altStart1').value;
+        const e1 = document.getElementById('altEnd1').value;
+        const s2 = document.getElementById('altStart2').value;
+        const e2 = document.getElementById('altEnd2').value;
+
+        let b1 = calculateBusinessDays(s1, e1, restDaysArr);
+        let b2 = calculateBusinessDays(s2, e2, restDaysArr);
+        daysToTake = b1 + b2;
+      } else {
+        daysToTake = calculateSalteadasBusinessDays(window.VACATION_STATE.salteadasDates, restDaysArr);
+      }
+
+      if (daysToTakeInput) daysToTakeInput.value = daysToTake;
+
+      const remaining = startingBalance - daysToTake;
+      if (daysRemainingInput) {
+        daysRemainingInput.value = remaining < 0 ? 0 : remaining;
+        if (remaining < 0) {
+          showToast("Alerta: Los días solicitados superan el saldo disponible por solicitudes previas.", "warning");
+          daysRemainingInput.style.color = 'var(--red)';
+        } else {
+          daysRemainingInput.style.color = 'var(--green)';
+        }
+      }
+    }
+
+    window.printEmployeeStatement = function() {
+      const empNameInput = document.getElementById('empName').value.trim().toUpperCase();
+      if (!empNameInput) {
+        showToast("Por favor escribe o selecciona el nombre de un colaborador activo para generar la constancia.", "warning");
+        return;
+      }
+
+      const joinInput = document.getElementById('empJoinDate').value;
+      if (!joinInput) {
+        showToast("Se requiere la fecha de ingreso para calcular los saldos de ley.", "warning");
+        return;
+      }
+
+      const years = calculateTenureYears(joinInput);
+      const statutoryMax = getMexicanVacationDaysScale(years);
+      const manualTaken = Number(document.getElementById('manualTakenDays').value || 0);
+      const previousTaken = window.getEmployeePreviousTakenDays(empNameInput) + manualTaken;
+      const currentRequested = Number(document.getElementById('daysToTakeInput').value || 0);
+      const remainingBalance = Math.max(0, statutoryMax - previousTaken - currentRequested);
+
+      // Inyectar metadatos en el modal imprimible con fecha de solicitud y fechas en formato DD/MM/AAAA
+      document.getElementById('printEmpName').textContent = empNameInput;
+      document.getElementById('printEmpJoin').textContent = window.formatDateDMY(joinInput);
+      
+      const requestDateVal = document.getElementById('requestDate').value;
+      document.getElementById('printEmpRequest').textContent = window.formatDateDMY(requestDateVal);
+
+      document.getElementById('printEmpTenure').textContent = `${years} Años (Ciclo 2026)`;
+      document.getElementById('printEmpStatutory').textContent = `${statutoryMax} Días de Ley`;
+      document.getElementById('printEmpTaken').textContent = `${previousTaken} Días`;
+      document.getElementById('printEmpCurrent').textContent = `${currentRequested} Días`;
+      document.getElementById('printEmpRemaining').textContent = `${remainingBalance} Días`;
+
+      // Formatear fecha y folio de sesión
+      const today = new Date();
+      document.getElementById('printStatementDate').textContent = window.formatDateDMY(today.toISOString().split('T')[0]);
+      document.getElementById('printStatementSession').textContent = localStorage.getItem('maxikash_workspace_id') || 'GENERAL';
+
+      // Filtrar y vaciar el historial de solicitudes registradas de este colaborador específico
+      const list = window.VACATION_STATE.rawList || [];
+      const archive = window.VACATION_STATE.archiveList || [];
+      
+      const combined = [];
+      const seenUids = new Set();
+      const addItem = (item) => {
+        if (!item) return;
+        const uid = item.uid || `${item.name}-${item.startDate}-${item.endDate}`;
+        if (!seenUids.has(uid)) {
+          seenUids.add(uid);
+          combined.push(item);
+        }
+      };
+      list.forEach(addItem);
+      archive.forEach(addItem);
+
+      const historyTableBody = document.getElementById('printHistoryTableBody');
+      historyTableBody.innerHTML = '';
+
+      const empRequests = combined.filter(item => {
+        const itemName = (item.name || '').trim().toUpperCase();
+        const itemFormattedName = (item.name_formatted || '').trim().toUpperCase();
+        return itemName === empNameInput || itemFormattedName === empNameInput;
+      });
+
+      if (empRequests.length === 0) {
+        historyTableBody.innerHTML = `
+          <tr>
+            <td colspan="4" class="py-2 text-center text-slate-400 italic">No existen solicitudes previas registradas. Se procesa saldo inicial.</td>
+          </tr>
+        `;
+      } else {
+        empRequests.forEach(req => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b text-slate-600';
+          const formattedStart = window.formatDateDMY(req.startDate);
+          const formattedEnd = window.formatDateDMY(req.endDate);
+          
+          let periodText = "";
+          if (req.endDate === "FECHAS SALTEADAS" || req.endDate === "PERIODOS ALTERNOS") {
+            periodText = req.startDate;
+          } else {
+            periodText = `${formattedStart} al ${formattedEnd}`;
+          }
+          
+          tr.innerHTML = `
+            <td class="py-1.5">${periodText}</td>
+            <td class="py-1.5 font-bold text-slate-800">${req.daysToTake} días</td>
+            <td class="py-1.5">${req.approverManager}</td>
+            <td class="py-1.5 text-xs">${req.status || 'PENDIENTE'}</td>
+          `;
+          historyTableBody.appendChild(tr);
+        });
+      }
+
+      const modal = document.getElementById('printModal');
+      modal.classList.remove('hidden');
+    };
+
+    window.closePrintModal = function() {
+      document.getElementById('printModal').classList.add('hidden');
+    };
+
+    window.triggerPrintAction = function() {
+      window.print();
+    };
+
+    // Envío del formulario
+    function submitVacationRequest(event) {
+      event.preventDefault();
+
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Registrando...';
+      }
+
+      const nameInputVal = document.getElementById('empName').value.trim().toUpperCase(); 
+      const joinDate = document.getElementById('empJoinDate').value;
+      const requestDate = document.getElementById('requestDate').value;
+      const selectionMode = document.getElementById('selectionMode').value;
+      const comments = document.getElementById('comments').value.trim();
+      const approverManager = document.getElementById('approverManager').value.trim().toUpperCase(); 
+      const hrRepresentative = document.getElementById('hrRepresentative').value.trim().toUpperCase(); 
+      const requestStatus = document.getElementById('requestStatus').value;
+
+      let startDate = "";
+      let endDate = "";
+
+      const restDaysArr = document.getElementById('selectedRestDays').value.split(',').filter(x => x !== "").map(Number);
+
+      if (selectionMode === 'consecutive') {
+        startDate = document.getElementById('vacStart').value;
+        endDate = document.getElementById('vacEnd').value;
+        if (!startDate || !endDate) {
+          showToast("Por favor selecciona un rango de fechas Del / Al válido.", "warning");
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+          return;
+        }
+      } else if (selectionMode === 'alternate') {
+        const s1 = document.getElementById('altStart1').value;
+        const e1 = document.getElementById('altEnd1').value;
+        const s2 = document.getElementById('altStart2').value;
+        const e2 = document.getElementById('altEnd2').value;
+        
+        if (!s1 || !e1) {
+          showToast("El primer bloque alterno es obligatorio.", "warning");
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+          return;
+        }
+        
+        let p1 = `${window.formatDateDMY(s1)} al ${window.formatDateDMY(e1)}`;
+        let p2 = (s2 && e2) ? ` y ${window.formatDateDMY(s2)} al ${window.formatDateDMY(e2)}` : '';
+        startDate = `${p1}${p2}`;
+        endDate = "PERIODOS ALTERNOS";
+      } else {
+        if (window.VACATION_STATE.salteadasDates.length === 0) {
+          showToast("Por favor agrega al menos una fecha individual para el modo salteado.", "warning");
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+          return;
+        }
+        startDate = window.VACATION_STATE.salteadasDates.map(d => window.formatDateDMY(d)).join(', ');
+        endDate = "FECHAS SALTEADAS";
+      }
+
+      if (!nameInputVal || !joinDate || !requestDate || !approverManager || !hrRepresentative) {
+        showToast("Por favor complete todos los campos requeridos.", "warning");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+        return;
+      }
+
+      const dayNames = { 0: "DOMINGO", 1: "LUNES", 2: "MARTES", 3: "MIÉRCOLES", 4: "JUEVES", 5: "VIERNES", 6: "SÁBADO" };
+      const restDaysText = restDaysArr.sort().map(d => dayNames[d]).join(", ");
+
+      const years = calculateTenureYears(joinDate);
+      const statutoryMax = getMexicanVacationDaysScale(years);
+      
+      const manualOverride = document.getElementById('manualOverrideToggle').checked;
+      let daysToTake = 0;
+      let daysRemaining = 0;
+
+      if (manualOverride) {
+        daysToTake = Number(document.getElementById('daysToTakeInput').value || 0);
+        daysRemaining = Number(document.getElementById('daysRemainingInput').value || 0);
+      } else {
+        if (selectionMode === 'consecutive') {
+          daysToTake = calculateBusinessDays(document.getElementById('vacStart').value, document.getElementById('vacEnd').value, restDaysArr);
+        } else if (selectionMode === 'alternate') {
+          let b1 = calculateBusinessDays(document.getElementById('altStart1').value, document.getElementById('altEnd1').value, restDaysArr);
+          let b2 = calculateBusinessDays(document.getElementById('altStart2').value, document.getElementById('altEnd2').value, restDaysArr);
+          daysToTake = b1 + b2;
+        } else {
+          daysToTake = calculateSalteadasBusinessDays(window.VACATION_STATE.salteadasDates, restDaysArr);
+        }
+        const manualTaken = Number(document.getElementById('manualTakenDays').value || 0);
+        const previousTaken = window.getEmployeePreviousTakenDays(nameInputVal) + manualTaken;
+        const availableBalance = Math.max(0, statutoryMax - previousTaken);
+
+        if (daysToTake > availableBalance) {
+          showToast(`Operación denegada: El colaborador solo tiene ${availableBalance} días disponibles. Solicitud de ${daysToTake} días excede el límite.`, "error");
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+          return;
+        }
+        daysRemaining = Math.max(0, availableBalance - daysToTake);
+      }
+
+      const names = parseNameFormats(nameInputVal);
+      const name = names.nombreApellido.toUpperCase();
+      const name_formatted = names.apellidoNombre.toUpperCase();
+      
+      let formattedDate = "";
+      const now = new Date();
+      try {
+        const options = { timeZone: 'America/Mexico_City', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        const formatter = new Intl.DateTimeFormat('es-MX', options);
+        const parts = formatter.formatToParts(now);
+        const partMap = {};
+        parts.forEach(p => partMap[p.type] = p.value);
+        formattedDate = `${partMap.year}-${partMap.month}-${partMap.day} ${partMap.hour}:${partMap.minute}:${partMap.second}`;
+      } catch (e) {
+        formattedDate = now.toISOString();
+      }
+
+      const cleanRangeName = selectionMode === 'consecutive' ? `${startDate}-${endDate}` : `${selectionMode}-${Date.now()}`;
+      const uid = "vac-det-" + name.replace(/\s+/g, "").toLowerCase() + "-" + cleanRangeName;
+      const wId = localStorage.getItem('maxikash_workspace_id') || "";
+
+      const requestObj = {
+        uid, 
+        name,
+        name_formatted, 
+        joinDate,
+        requestDate, 
+        restDaysText, 
+        tenure: `${years} ${years === 1 ? 'AÑO' : 'AÑOS'}`, 
+        statutoryDays: statutoryMax, 
+        startDate,
+        endDate,
+        daysToTake,
+        daysRemaining,
+        manualTakenDays: Number(document.getElementById('manualTakenDays').value || 0),
+        comments, 
+        approverManager,
+        hrRepresentative,
+        workspaceId: wId, 
+        status: requestStatus,
+        formattedCreatedAt: formattedDate,
+        createdAt: now.toISOString()
+      };
+
+      if (typeof window.saveRequestToCloud === 'function') {
+        window.saveRequestToCloud(requestObj).then(() => {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+          const todayStr = new Date().toISOString().split('T')[0];
+          document.getElementById('requestDate').value = todayStr;
+        });
+      } else {
+        showToast("Error de inicialización del sistema.", "error");
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fa-solid fa-calendar-check text-sm"></i> Registrar Solicitud de Vacaciones'; }
+      }
+    }
+
+    // Filtro del listado
+    function filterRequests() {
+      const query = document.getElementById('searchInput').value.toUpperCase().trim(); 
+      const list = window.VACATION_STATE.rawList || [];
+
+      let filtered = list.filter(item => {
+        return (item.name || '').toUpperCase().includes(query) ||
+               (item.name_formatted || '').toUpperCase().includes(query) ||
+               (item.comments || '').toUpperCase().includes(query) ||
+               (item.approverManager || '').toUpperCase().includes(query) ||
+               (item.hrRepresentative || '').toUpperCase().includes(query);
+      });
+
+      const uniqueFiltered = [];
+      filtered.forEach(item => {
+        const uniqueKey = item.uid || `${item.name}-${item.startDate}-${item.endDate}`;
+        if (!uniqueFiltered.some(x => (x.uid === uniqueKey || `${x.name}-${x.startDate}-${x.endDate}` === uniqueKey))) {
+          uniqueFiltered.push(item);
+        }
+      });
+
+      window.VACATION_STATE.filteredList = uniqueFiltered;
+
+      renderVacationTable();
+      calculateDashboardStats();
+    }
+
+    function renderVacationTable() {
+      const tbody = document.getElementById('vacationTableBody');
+      const counterLabel = document.getElementById('tableRecordCount');
+      if (!tbody) return;
+      const filtered = window.VACATION_STATE.filteredList || [];
+
+      tbody.innerHTML = '';
+      if (counterLabel) counterLabel.textContent = `${filtered.length} solicitudes`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-5 py-12 text-center text-[#627194]">
+              <i class="fa-solid fa-folder-open text-3xl block mb-2 text-slate-300"></i>
+              No se encontraron registros de vacaciones en la bitácora.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors';
+
+        const syncBadge = r.synced 
+          ? `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full px-2.5 py-1 text-[10px] font-bold inline-flex items-center gap-1 shadow-sm">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Sincronizado
+             </span>`
+          : `<span class="bg-amber-50 text-amber-600 border border-amber-200 rounded-full px-2.5 py-1 text-[10px] font-bold inline-flex items-center gap-1 shadow-sm">
+              <i class="fa-solid fa-arrows-rotate animate-pulse"></i> Local Inmediato
+             </span>`;
+
+        let statusClass = "bg-amber-100 text-amber-800 border-amber-200";
+        if (r.status === 'APROBADO') statusClass = "bg-emerald-100 text-emerald-800 border-emerald-200";
+        if (r.status === 'RECHAZADO') statusClass = "bg-red-100 text-red-800 border-red-200";
+
+        let displayedPeriod = "";
+        if (r.endDate === "FECHAS SALTEADAS" || r.endDate === "PERIODOS ALTERNOS") {
+          displayedPeriod = `<span class="block font-bold text-slate-700">${r.startDate}</span>`;
+        } else {
+          displayedPeriod = `<span class="block font-bold text-slate-700">Del ${window.formatDateDMY(r.startDate)}</span>
+                             <span class="block font-bold text-slate-500">Al ${window.formatDateDMY(r.endDate)}</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="px-5 py-4">
+            <span class="block font-extrabold text-[#132b80] font-sans">${r.name}</span>
+            <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-wider">${r.name_formatted}</span>
+          </td>
+          <td class="px-5 py-4">
+            <span class="block text-slate-500 font-medium">Ingreso: <b>${window.formatDateDMY(r.joinDate)}</b></span>
+            <span class="block text-[10px] text-slate-400 font-bold mt-0.5">Captura: ${r.formattedCreatedAt || window.formatDateDMY(r.requestDate)}</span>
+          </td>
+          <td class="px-5 py-4">
+            ${displayedPeriod}
+            <span class="block text-[9px] text-[#214bd6] font-bold mt-1 uppercase tracking-tight"><i class="fa-solid fa-bed text-slate-400"></i> Descanso: ${r.restDaysText || "SÁBADO, DOMINGO"}</span>
+          </td>
+          <td class="px-5 py-4 text-center">
+            <span class="block font-extrabold text-sm text-[#214bd6] font-sans">${r.daysToTake}</span>
+            <span class="block text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Hábiles</span>
+            <span class="block text-[9px] text-emerald-600 font-bold mt-0.5 bg-emerald-50 rounded px-1 max-w-[55px] mx-auto">Sld: ${r.daysRemaining}</span>
+          </td>
+          <td class="px-5 py-4">
+            <span class="block font-bold text-slate-700 uppercase tracking-tight text-[11px]"><i class="fa-solid fa-user-tie text-slate-400 mr-1"></i>${r.approverManager || 'N/A'}</span>
+            <p class="text-[11px] text-slate-400 font-medium mt-0.5 italic max-w-xs truncate" title="${r.comments || ''}">${r.comments ? `"${r.comments}"` : 'Sin observaciones.'}</p>
+          </td>
+          <td class="px-5 py-4 text-center">
+            <div class="relative inline-block text-left">
+              <select onchange="window.changeRequestStatus('${r.id}', this.value)" 
+                class="border px-2.5 py-1.5 rounded-xl text-[11px] font-extrabold cursor-pointer focus:outline-none transition-all ${statusClass}">
+                <option value="PENDIENTE" ${r.status === 'PENDIENTE' ? 'selected' : ''}>⏳ PENDIENTE</option>
+                <option value="APROBADO" ${r.status === 'APROBADO' ? 'selected' : ''}>✅ APROBADO</option>
+                <option value="RECHAZADO" ${r.status === 'RECHAZADO' ? 'selected' : ''}>❌ RECHAZADO</option>
+              </select>
+            </div>
+          </td>
+          <td class="px-5 py-4 text-center">${syncBadge}</td>
+          <td class="px-5 py-4 text-center">
+            <button onclick="window.deleteRequestFromCloud('${r.id}')" class="text-slate-400 hover:text-[#df3d3d] p-2 rounded-xl hover:bg-red-50 transition-all text-xs" title="Eliminar permanentemente">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function calculateDashboardStats() {
+      const list = window.VACATION_STATE.rawList || [];
+      document.getElementById('statActiveRequests').textContent = list.length;
+      
+      let sumTaken = 0;
+      list.forEach(x => {
+        if(x.status !== 'RECHAZADO') sumTaken += Number(x.daysToTake || 0);
+      });
+      document.getElementById('statTotalDaysTaken').textContent = sumTaken;
+
+      let sumRemaining = 0;
+      list.forEach(x => sumRemaining += Number(x.daysRemaining || 0));
+      let avg = list.length > 0 ? Math.round(sumRemaining / list.length) : 0;
+      document.getElementById('statAvgRemaining').textContent = avg;
+    }
+
+
+window.forceSyncData = async function() {
+    showLoader(true);
+    const icon = document.getElementById('sync-icon');
+    if(icon) icon.classList.add('fa-spin');
+    
+    showToast("Sincronizando bitácora local con Google Drive...");
+    
+    try {
+        // Traemos la lista de solicitudes guardadas localmente
+        const listData = window.VACATION_STATE.rawList || [];
+        
+        if (listData.length === 0) {
+            showToast("No hay registros locales para sincronizar.");
+            if(icon) icon.classList.remove('fa-spin');
+            showLoader(false);
+            return;
+        }
+
+        // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT (La que copiaste en el paso anterior)
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyQ8ZVXvYZke-0OG7Qj-bI4V47pjLqPF3sP2N49I1ckC2Zg2u6htfUh6f__VNj94u2Y/exec";
+
+        const response = await fetch(URL_APPS_SCRIPT, {
+            method: "POST",
+            mode: "no-cors", // Requerido para Apps Script desde local
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(listData)
+        });
+
+        // Como usamos no-cors la respuesta vendrá opaca, asumimos éxito si no salta al catch
+        showToast("¡Google Drive y base de datos sincronizados correctamente!");
+
+    } catch (error) {
+        console.error("Error al sincronizar:", error);
+        showToast("Error crítico al intentar conectar con Google Drive.");
+    } finally {
+        if(icon) icon.classList.remove('fa-spin');
+        showLoader(false);
+    }
+};
+    window.triggerClearAllConfirmation = function() {
+      const modal = document.getElementById('confirmModal');
+      modal.classList.remove('hidden');
+    };
+
+    document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+      document.getElementById('confirmModal').classList.add('hidden');
+    });
+
+    document.getElementById('confirmYesBtn').addEventListener('click', () => {
+      window.VACATION_STATE.rawList = [];
+      window.saveToLocalStorage();
+      filterRequests();
+      document.getElementById('confirmModal').classList.add('hidden');
+      showToast("Pantalla de monitoreo temporal limpiada.");
+    });
+
+    window.parseNameFormats = function(rawName) {
+      if (!rawName) return { nombreApellido: "", apellidoNombre: "" };
+      let clean = String(rawName).trim().replace(/\s+/g, ' ');
+      return { nombreApellido: clean, apellidoNombre: clean };
+    };
+
+    window.showLoader = function(show) {
+      const loader = document.getElementById('loader');
+      if(loader) {
+        if(show) loader.classList.remove('hidden');
+        else loader.classList.add('hidden');
+      }
+    };
+
+    window.showToast = function(msg, type="success") {
+      const toast = document.getElementById('toast');
+      const message = document.getElementById('toast-message');
+      if(!toast || !message) return;
+      message.textContent = msg;
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    };
+
+    window.downloadCSVReport = function() {
+      showToast("Descargando reporte Excel/CSV ligado...");
+      let csvContent = "data:text/csv;charset=utf-8,Colaborador,Fecha Ingreso,Dias Solicitados,Estatus\n";
+      window.VACATION_STATE.rawList.forEach(r => {
+        csvContent += `"${r.name}","${r.joinDate}",${r.daysToTake},"${r.status}"\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "reporte_vacaciones_2026.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initRestDaysClickHandlers();
+      updateStatusStyle();
+    });
+  </script>
+</body>
+</html>
