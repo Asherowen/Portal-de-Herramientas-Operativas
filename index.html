@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Proyectos Maxikash - Capital Humano</title>
+    <title>Portal de Herramientas Operativas - Capital Humano</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --maxikash-blue: #004ac1;
+            --maxikash-blue: #0042ad;
+            --maxikash-dark-blue: #001f5c;
+            --maxikash-navy: #001233;
             --maxikash-yellow: #d8e522;
             --maxikash-green: #2ecc71;
-            --text-color: #333;
-            --bg-color: #f4f7f6;
+            --text-color: #333333;
+            --bg-color: #f4f6fb;
             --card-bg: #ffffff;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
             --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -31,121 +37,20 @@
             min-height: 100vh;
         }
 
-        /* --- Header y Logo --- */
-        header {
-            width: 100%;
-            background-color: var(--maxikash-blue);
-            padding: 15px 0;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
+        /* --- Banner Superior a Ancho Completo --- */
+        .welcome-header-banner {
             position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            width: 100%;
+            background: linear-gradient(135deg, #001f5c 0%, #004dc5 100%);
+            padding: 35px 20px 40px 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 31, 92, 0.25);
+            color: white;
+            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-
-        /* Botón de Inicio (Casita) */
-        .home-btn {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: transparent;
-            border: 2px solid white;
-            color: white;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .home-btn:hover {
-            background-color: var(--maxikash-yellow);
-            border-color: var(--maxikash-yellow);
-            color: var(--maxikash-blue);
-        }
-
-        .home-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-        }
-
-        .logo-container {
-            display: inline-block;
-            position: relative;
-        }
-
-        .logo-image {
-            height: 55px;
-            width: auto;
-            display: block;
-            margin: 0 auto;
-            animation: logoPulse 2.5s infinite ease-in-out;
-        }
-
-        .logo-container::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px var(--maxikash-yellow);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .logo-container:hover::before {
-            opacity: 1;
-            animation: logoGlow 1.5s infinite alternate;
-        }
-
-        /* --- Título --- */
-        h1 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-top: 15px;
-            margin-bottom: 5px;
-        }
-
-        h2.subtitle {
-            color: var(--maxikash-yellow);
-            font-size: 1rem;
-            font-weight: 400;
-            margin: 0;
-        }
-
-        /* --- Banner de Bienvenida con Partículas --- */
-        .welcome-banner {
-            position: relative;
-            width: 100%;
-            background: linear-gradient(135deg, #002e7a 0%, #004ac1 100%);
-            border-radius: 16px;
-            padding: 40px 30px;
-            margin-bottom: 35px;
-            box-sizing: border-box;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 74, 193, 0.2);
-            color: white;
-            text-align: center;
         }
 
         #particles-canvas {
@@ -158,69 +63,123 @@
             pointer-events: none;
         }
 
+        /* Botón Casita (Inicio) */
+        .home-btn {
+            position: absolute;
+            left: 25px;
+            top: 25px;
+            z-index: 10;
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+
+        .home-btn:hover {
+            background-color: var(--maxikash-yellow);
+            border-color: var(--maxikash-yellow);
+            color: var(--maxikash-dark-blue);
+            transform: scale(1.08);
+        }
+
+        .home-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* --- Estilo para el Logo en la Parte Superior --- */
+        .header-logo-container {
+            margin-bottom: 15px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .header-logo {
+            max-height: 75px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.3));
+            transition: var(--transition);
+        }
+
+        .header-logo:hover {
+            transform: scale(1.04);
+        }
+
         .welcome-content {
             position: relative;
             z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .welcome-content h2 {
-            font-size: 2rem;
-            margin: 0 0 10px 0;
+        .welcome-content h1 {
+            font-size: 2.2rem;
             font-weight: 700;
+            margin: 0 0 12px 0;
             color: #ffffff;
+            letter-spacing: -0.5px;
         }
 
-        .welcome-content h2 span {
+        .welcome-content h1 span {
             color: var(--maxikash-yellow);
         }
 
         .welcome-content p {
-            font-size: 1rem;
+            font-size: 0.98rem;
             margin: 0;
-            color: #e0e8f7;
-            max-width: 750px;
-            margin: 0 auto;
+            color: #e2eafc;
             line-height: 1.5;
+            font-weight: 400;
         }
 
-        /* --- Grid de Proyectos --- */
+        /* --- Contenedor Principal de Tarjetas --- */
         .main-container {
-            width: 90%;
-            max-width: 1200px;
-            padding: 30px 0;
-            flex-grow: 1;
+            width: 92%;
+            max-width: 1240px;
+            padding: 35px 0;
+            flex: 1;
             display: flex;
             flex-direction: column;
+            gap: 25px;
         }
 
+        /* --- Grid de Tarjetas --- */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            transition: opacity 0.3s ease;
+            gap: 22px;
+            width: 100%;
         }
 
-        /* --- Tarjetas de Proyecto --- */
+        /* --- Estilo de Tarjetas --- */
         .project-card {
             background-color: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 14px;
             box-shadow: var(--shadow);
-            padding: 25px;
-            text-decoration: none;
+            padding: 24px;
             color: var(--text-color);
             transition: var(--transition);
             border: 2px solid transparent;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
             position: relative;
             cursor: pointer;
         }
 
         .project-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
             border-color: var(--maxikash-yellow);
         }
 
@@ -232,6 +191,8 @@
             height: 4px;
             width: 100%;
             background-color: var(--maxikash-blue);
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 14px;
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
@@ -241,16 +202,16 @@
         }
 
         .project-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.15rem;
+            font-weight: 700;
             margin: 0 0 10px 0;
             color: var(--maxikash-blue);
         }
 
         .project-description {
-            font-size: 0.88rem;
-            color: #555;
-            line-height: 1.4;
+            font-size: 0.86rem;
+            color: #666;
+            line-height: 1.45;
             margin: 0 0 20px 0;
         }
 
@@ -258,12 +219,12 @@
             background-color: var(--maxikash-blue);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             align-self: flex-start;
             transition: var(--transition);
             cursor: pointer;
@@ -271,49 +232,93 @@
 
         .project-card:hover .go-button {
             background-color: var(--maxikash-yellow);
-            color: var(--maxikash-blue);
+            color: var(--maxikash-dark-blue);
         }
 
-        /* --- Visor de Proyecto (Iframe integrador) --- */
-        .viewer-container {
+        /* --- VISTA PANTALLA COMPLETA (FULLSCREEN MODAL) --- */
+        .fullscreen-container {
             display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 9999;
             flex-direction: column;
-            width: 100%;
-            height: 80vh;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            border: 2px solid var(--maxikash-blue);
         }
 
-        .viewer-header {
-            background-color: #eef2f8;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .viewer-title {
-            font-weight: 600;
-            color: var(--maxikash-blue);
-        }
-
-        .close-btn {
-            background-color: #e74c3c;
+        .fullscreen-header {
+            background: linear-gradient(135deg, #001a4d 0%, #0042ad 100%);
             color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 15px;
-            font-weight: bold;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            z-index: 10000;
+        }
+
+        .fullscreen-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fullscreen-home-btn {
+            background-color: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: var(--transition);
         }
 
-        .close-btn:hover {
+        .fullscreen-home-btn:hover {
+            background-color: var(--maxikash-yellow);
+            color: var(--maxikash-dark-blue);
+            border-color: var(--maxikash-yellow);
+        }
+
+        .fullscreen-home-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .fullscreen-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .close-fullscreen-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-fullscreen-btn:hover {
             background-color: #c0392b;
+        }
+
+        .fullscreen-content {
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 62px);
+            border: none;
+            overflow-y: auto;
         }
 
         iframe {
@@ -322,23 +327,19 @@
             border: none;
         }
 
-        /* --- Panel de Links (Para la tarjeta Misceláneos) --- */
-        .links-container {
-            display: none;
-            flex-direction: column;
+        /* --- Panel Misceláneos --- */
+        .links-fullscreen-body {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
             width: 100%;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 25px;
             box-sizing: border-box;
-            border: 2px solid var(--maxikash-blue);
         }
 
         .links-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
+            gap: 18px;
             margin-top: 20px;
         }
 
@@ -348,13 +349,14 @@
             justify-content: space-between;
             background-color: #f8f9fa;
             border: 1px solid #e2e8f0;
-            padding: 14px 18px;
-            border-radius: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
             text-decoration: none;
             color: var(--text-color);
             font-weight: 600;
             font-size: 0.95rem;
             transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
 
         .sheet-link-btn:hover {
@@ -362,104 +364,78 @@
             color: white;
             border-color: var(--maxikash-blue);
             transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0, 74, 193, 0.2);
+            box-shadow: 0 6px 15px rgba(0, 66, 173, 0.25);
         }
 
         .sheet-link-btn span.icon {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-left: 10px;
         }
 
-        /* --- Footer --- */
+        /* --- Banner Inferior / Footer --- */
         footer {
             width: 100%;
-            background-color: #333;
-            color: #aaa;
+            background: linear-gradient(135deg, #001233 0%, #002b7a 100%);
+            color: #d0dbe9;
             text-align: center;
-            padding: 20px 0;
-            font-size: 0.85rem;
+            padding: 30px 20px;
+            font-size: 0.88rem;
             margin-top: auto;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
         }
 
         footer p {
-            margin: 4px 0;
+            margin: 5px 0;
         }
 
         .developer-credit {
             color: var(--maxikash-green);
             font-weight: 600;
-            font-size: 0.9rem;
-            margin-top: 6px !important;
+            font-size: 0.92rem;
+            margin-top: 8px !important;
         }
 
-        /* --- Animaciones Keyframes --- */
-        @keyframes logoPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        @keyframes logoGlow {
-            from {
-                box-shadow: 0 0 10px var(--maxikash-yellow), 
-                            0 0 20px var(--maxikash-yellow);
-            }
-            to {
-                box-shadow: 0 0 20px var(--maxikash-yellow), 
-                            0 0 30px var(--maxikash-yellow),
-                            0 0 40px var(--maxikash-yellow);
-            }
-        }
-
-        /* --- Responsive --- */
         @media (max-width: 768px) {
-            h1 { font-size: 1.4rem; }
-            .logo-image { height: 45px; }
+            .welcome-content h1 { font-size: 1.5rem; }
+            .welcome-content p { font-size: 0.85rem; }
+            .home-btn { left: 15px; top: 15px; width: 38px; height: 38px; }
+            .header-logo { max-height: 55px; }
             .projects-grid, .links-grid { grid-template-columns: 1fr; }
-            .home-btn {
-                position: static;
-                transform: none;
-                margin-bottom: 10px;
-            }
-            .welcome-content h2 { font-size: 1.5rem; }
-            .welcome-content p { font-size: 0.9rem; }
+            .fullscreen-title { font-size: 0.95rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-content">
-            <!-- Botón Casita (Regresar al menú inicio) -->
-            <button class="home-btn" id="homeBtn" title="Regresar al inicio / Menú principal">
-                <svg viewBox="0 0 24 24">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
-            </button>
+    <!-- BANNER SUPERIOR A ANCHO COMPLETO -->
+    <header class="welcome-header-banner">
+        <!-- Botón Casita para regresar al Inicio -->
+        <button class="home-btn" onclick="showHome()" title="Regresar al inicio">
+            <svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+        </button>
 
-            <div class="logo-container">
-                <img src="logo.png" alt="Logo Maxikash" class="logo-image">
-            </div>
-            <h1>Portal de Herramientas Operativas</h1>
-            <h2 class="subtitle">Capital Humano - Plataforma Centralizada</h2>
+        <!-- Canvas para partículas interconectadas -->
+        <canvas id="particles-canvas"></canvas>
+
+        <!-- LOGO EN LA PARTE SUPERIOR -->
+        <div class="header-logo-container">
+            <img src="logo.png" alt="Logo" class="header-logo" onerror="this.onerror=null; this.src='logo.jpg';">
+        </div>
+
+        <div class="welcome-content">
+            <h1>¡Bienvenido al Portal de <span>Capital Humano</span>!</h1>
+            <p>Gestiona, monitorea y consulta todas las herramientas e indicadores operativos de la organización desde un solo lugar de manera rápida, eficiente e intuitiva.</p>
         </div>
     </header>
 
     <div class="main-container">
-        
-        <!-- INTRO DE BIENVENIDA CON PARTICULAS -->
-        <div class="welcome-banner" id="welcomeBanner">
-            <canvas id="particles-canvas"></canvas>
-            <div class="welcome-content">
-                <h2>¡Bienvenido al Portal de <span>Capital Humano</span>!</h2>
-                <p>Gestiona, monitorea y consulta todas las herramientas e indicadores operativos de la organización desde un solo lugar de manera rápida, eficiente e intuitiva.</p>
-            </div>
-        </div>
-
-        <!-- Rejilla con los módulos -->
+        <!-- REJILLA DE TARJETAS / MÓDULOS -->
         <div class="projects-grid" id="projectsGrid">
 
             <!-- PROYECTO 1 -->
-            <div class="project-card" onclick="openProject('vacaciones.html', 'Registro Vacaciones')">
+            <div class="project-card" onclick="openFullscreen('vacaciones.html', 'Registro Vacaciones')">
                 <div>
                     <h3 class="project-title">1. Registro Vacaciones</h3>
                     <p class="project-description">Gestión, control de días disponibles y solicitudes de periodos vacacionales del personal.</p>
@@ -468,7 +444,7 @@
             </div>
 
             <!-- PROYECTO 2 -->
-            <div class="project-card" onclick="openProject('Registro incapacidades.html', 'Registro Incapacidades')">
+            <div class="project-card" onclick="openFullscreen('Registro incapacidades.html', 'Registro Incapacidades')">
                 <div>
                     <h3 class="project-title">2. Registro Incapacidades</h3>
                     <p class="project-description">Captura, seguimiento médico y control de folios de incapacidades del equipo.</p>
@@ -477,7 +453,7 @@
             </div>
 
             <!-- PROYECTO 3 -->
-            <div class="project-card" onclick="openProject('universidad.html', 'Universidad')">
+            <div class="project-card" onclick="openFullscreen('universidad.html', 'Universidad')">
                 <div>
                     <h3 class="project-title">3. Universidad</h3>
                     <p class="project-description">Plataforma de capacitación interna, avance de cursos y desarrollo profesional.</p>
@@ -486,7 +462,7 @@
             </div>
 
             <!-- PROYECTO 4 -->
-            <div class="project-card" onclick="openProject('puestos.html', 'Matriz Puestos')">
+            <div class="project-card" onclick="openFullscreen('PUESTOS.html', 'Matriz Puestos')">
                 <div>
                     <h3 class="project-title">4. Matriz Puestos</h3>
                     <p class="project-description">Estructura organizacional, perfiles de puesto y competencias requeridas por área.</p>
@@ -495,7 +471,7 @@
             </div>
 
             <!-- PROYECTO 5 -->
-            <div class="project-card" onclick="openProject('encuesta.html', 'Encuesta de Salida')">
+            <div class="project-card" onclick="openFullscreen('encuesta.html', 'Encuesta de Salida')">
                 <div>
                     <h3 class="project-title">5. Encuesta de Salida</h3>
                     <p class="project-description">Formulario y recolección de métricas para el análisis de motivos de baja y rotación.</p>
@@ -504,7 +480,7 @@
             </div>
 
             <!-- PROYECTO 6 -->
-            <div class="project-card" onclick="openProject('actualizacion expedientes 2026.html', 'Carga Expedientes Sparta')">
+            <div class="project-card" onclick="openFullscreen('ACTUALIZACION EXPEDIENTES 2026.html', 'Carga Expedientes Sparta')">
                 <div>
                     <h3 class="project-title">6. Carga Expedientes Sparta</h3>
                     <p class="project-description">Módulo para la carga y actualización de la documentación digital en el sistema Sparta.</p>
@@ -513,7 +489,7 @@
             </div>
 
             <!-- PROYECTO 7 -->
-            <div class="project-card" onclick="openProject('Cierre Proceso.html', 'Cierre de Proceso')">
+            <div class="project-card" onclick="openFullscreen('Cierre Proceso.html', 'Cierre de Proceso')">
                 <div>
                     <h3 class="project-title">7. Cierre de Proceso</h3>
                     <p class="project-description">Verificación y validación de actividades requeridas para la conclusión periódica de procesos.</p>
@@ -522,7 +498,7 @@
             </div>
 
             <!-- PROYECTO 8 -->
-            <div class="project-card" onclick="openProject('onboarding.html', 'Onboarding')">
+            <div class="project-card" onclick="openFullscreen('onboarding.html', 'Onboarding')">
                 <div>
                     <h3 class="project-title">8. Onboarding</h3>
                     <p class="project-description">Flujo de integración, bienvenida y seguimiento inicial para colaboradores de nuevo ingreso.</p>
@@ -531,7 +507,7 @@
             </div>
 
             <!-- PROYECTO 9 -->
-            <div class="project-card" onclick="openProject('Registro candidatos.html', 'Registro Candidatos Entrevistas')">
+            <div class="project-card" onclick="openFullscreen('Registro candidatos.html', 'Registro Candidatos Entrevistas')">
                 <div>
                     <h3 class="project-title">9. Registro Candidatos</h3>
                     <p class="project-description">Control, seguimiento de entrevistas y estatus de candidatos en proceso de selección.</p>
@@ -539,160 +515,177 @@
                 <button class="go-button">Abrir Proyecto</button>
             </div>
 
-            <!-- PROYECTO 10 (Misceláneos) -->
-            <div class="project-card" onclick="openLinksPanel()">
+            <!-- PROYECTO 10 -->
+            <div class="project-card" onclick="openFullscreen('historico.html', 'Control Histórico de Bajas')">
                 <div>
-                    <h3 class="project-title">10. Misceláneos</h3>
+                    <h3 class="project-title">10. Control Histórico de Bajas</h3>
+                    <p class="project-description">Consulta de registros históricos, motivos de baja y archivo consolidado de desvinculaciones.</p>
+                </div>
+                <button class="go-button">Abrir Proyecto</button>
+            </div>
+
+            <!-- TARJETA MISCELÁNEOS -->
+            <div class="project-card" onclick="openMiscelaneosFullscreen()">
+                <div>
+                    <h3 class="project-title">Misceláneos</h3>
                     <p class="project-description">Acceso directo en pestañas externas a Google Sheets, Forms, Docs, Drive y Sparta Ledger.</p>
                 </div>
                 <button class="go-button">Ver Links</button>
             </div>
 
         </div>
-
-        <!-- Contenedor desplegable integrado para cargar los proyectos HTML -->
-        <div class="viewer-container" id="viewerContainer">
-            <div class="viewer-header">
-                <span class="viewer-title" id="viewerTitle">Visualizador de Proyecto</span>
-                <button class="close-btn" onclick="showHome()">Cerrar / Volver</button>
-            </div>
-            <iframe id="projectIframe" src="" title="Contenido del Proyecto"></iframe>
-        </div>
-
-        <!-- Panel del Módulo 10: Misceláneos (Enlaces Externos) -->
-        <div class="links-container" id="linksContainer">
-            <div class="viewer-header" style="background: none; padding: 0 0 15px 0; border-bottom: 2px solid var(--maxikash-yellow);">
-                <span class="viewer-title" style="font-size: 1.3rem;">Misceláneos: Hojas de Control, Formularios y Carpetas</span>
-                <button class="close-btn" onclick="showHome()">Cerrar / Volver</button>
-            </div>
-            <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">Haz clic en cualquiera de las siguientes opciones para abrir el documento directamente en una nueva pestaña:</p>
-            
-            <div class="links-grid">
-                <a href="https://docs.google.com/spreadsheets/d/1bUyQLIID3d1KFDyjUZk-xDX0FtyqdwmX/edit?gid=1414933246#gid=1414933246" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Registro Contratos <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1qbktroajyPsb-ztPlKLhLCzeKLxS6KHS/edit?gid=1729201634#gid=1729201634" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Ingresos <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1bv_Ww9wx0r8iIk-vw8IvaEi2SRJpw8lG/edit?pli=1&gid=1218902246#gid=1218902246" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Control de Empleados 2026 - HC <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1mSHHkinHUn0nWAaqRVDHwCtG4FjqpRlv1GoIxtelmp4/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Control Vacaciones <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1ApJ0KesfWiuQwATDQBxYmunEaMlKnGu134djAJ2fzQ8/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Control Incapacidades <span class="icon">📊</span>
-                </a>
-                <a href="https://drive.google.com/drive/folders/1R_AfbnbkwdKZzJjUgC0VcgeMR1oa9gpk?usp=drive_link" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Drive Incapacidades IMSS <span class="icon">📁</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1U_HF0_ks6kZCKeDqsvq7SmXYBRBTwSpEJowDs3nalak/edit?gid=177028598#gid=177028598" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Registro Encuesta de Salida <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1E8lJHHZdZvTzK50WsgsGCM-tBAElSMPi/edit?gid=198438100#gid=198438100" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Checklist Contrataciones <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/18qYyPZb0OsptFdC4YBbOnUhaFmV5xS4R4vFVOsdtZCs/edit?gid=1718338670#gid=1718338670" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    MasterData Compliance <span class="icon">📊</span>
-                </a>
-                <a href="https://drive.google.com/drive/folders/1Eo3aiSC7OCU-QzEMPmTtNXFyIvyLGVP6?usp=drive_link" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Drive Master Data Contratos <span class="icon">📁</span>
-                </a>
-                <a href="https://docs.google.com/document/d/1YPjoPevBB0HTc0hrpNKQ7WsDd3dJJ_K2/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Formato Renuncia <span class="icon">📄</span>
-                </a>
-                <a href="https://docs.google.com/document/d/1h5YVMxTyAAbSvY5ymeNhF0-5Wh7H7Vj-/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Constancia Laboral <span class="icon">📄</span>
-                </a>
-                <a href="http://34.51.95.211/Inicio" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Sparta Ledger <span class="icon">🌐</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1JG0dilxKlseQkgHBb29mIhYYLkZSQKXd6pjOmMp29JU/edit?gid=1801488679#gid=1801488679" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Campañas MKT - RRHH <span class="icon">📊</span>
-                </a>
-                <a href="https://docs.google.com/forms/d/1Q2BJtKRIy71yNM0t7zn24bkdAYvzSZUII82FSIf3xKs/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Formulario Vacantes Corporativo <span class="icon">📝</span>
-                </a>
-                <a href="https://docs.google.com/spreadsheets/d/1IoD-CWt6O-zAgAFpIb9hMwtiaMXN-Y_D6Ec9MtlepQI/edit?resourcekey&usp=forms_web_b&urp=linked#gid=645515667" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
-                    Control Vacantes Maxicorpo <span class="icon">📊</span>
-                </a>
-            </div>
-        </div>
     </div>
 
+    <!-- BANNER INFERIOR / FOOTER -->
     <footer>
         <p>&copy; 2026 Maxikash - Todos los derechos reservados.</p>
         <p>Departamento de Capital Humano</p>
         <p class="developer-credit">Desarrollado por AsherOwen 🦖</p>
     </footer>
 
+    <!-- CONTENEDOR PANTALLA COMPLETA PARA PROYECTOS EN IFRAME -->
+    <div class="fullscreen-container" id="iframeFullscreen">
+        <div class="fullscreen-header">
+            <div class="fullscreen-header-left">
+                <button class="fullscreen-home-btn" onclick="showHome()" title="Regresar al inicio">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </button>
+                <span class="fullscreen-title" id="fullscreenIframeTitle">Visualizador de Proyecto</span>
+            </div>
+            <button class="close-fullscreen-btn" onclick="showHome()">Cerrar / Volver</button>
+        </div>
+        <div class="fullscreen-content">
+            <iframe id="projectIframe" src="" title="Proyecto Activo"></iframe>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR PANTALLA COMPLETA PARA MISCELÁNEOS -->
+    <div class="fullscreen-container" id="miscelaneosFullscreen">
+        <div class="fullscreen-header">
+            <div class="fullscreen-header-left">
+                <button class="fullscreen-home-btn" onclick="showHome()" title="Regresar al inicio">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </button>
+                <span class="fullscreen-title">Misceláneos - Hojas de Control, Formularios y Carpetas</span>
+            </div>
+            <button class="close-fullscreen-btn" onclick="showHome()">Cerrar / Volver</button>
+        </div>
+        <div class="fullscreen-content" style="background-color: #f4f6fb;">
+            <div class="links-fullscreen-body">
+                <p style="margin-top: 0; color: #555; font-size: 0.95rem;">Haz clic en cualquiera de las siguientes opciones para abrir el documento en una pestaña independiente:</p>
+                
+                <div class="links-grid">
+                    <a href="https://docs.google.com/spreadsheets/d/1bUyQLIID3d1KFDyjUZk-xDX0FtyqdwmX/edit?gid=1414933246#gid=1414933246" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Registro Contratos <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1qbktroajyPsb-ztPlKLhLCzeKLxS6KHS/edit?gid=1729201634#gid=1729201634" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Ingresos <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1bv_Ww9wx0r8iIk-vw8IvaEi2SRJpw8lG/edit?pli=1&gid=1218902246#gid=1218902246" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Control de Empleados 2026 - HC <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1mSHHkinHUn0nWAaqRVDHwCtG4FjqpRlv1GoIxtelmp4/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Control Vacaciones <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1ApJ0KesfWiuQwATDQBxYmunEaMlKnGu134djAJ2fzQ8/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Control Incapacidades <span class="icon">📊</span>
+                    </a>
+                    <a href="https://drive.google.com/drive/folders/1R_AfbnbkwdKZzJjUgC0VcgeMR1oa9gpk?usp=drive_link" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Drive Incapacidades IMSS <span class="icon">📁</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1U_HF0_ks6kZCKeDqsvq7SmXYBRBTwSpEJowDs3nalak/edit?gid=177028598#gid=177028598" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Registro Encuesta de Salida <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1E8lJHHZdZvTzK50WsgsGCM-tBAElSMPi/edit?gid=198438100#gid=198438100" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Checklist Contrataciones <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/18qYyPZb0OsptFdC4YBbOnUhaFmV5xS4R4vFVOsdtZCs/edit?gid=1718338670#gid=1718338670" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        MasterData Compliance <span class="icon">📊</span>
+                    </a>
+                    <a href="https://drive.google.com/drive/folders/1Eo3aiSC7OCU-QzEMPmTtNXFyIvyLGVP6?usp=drive_link" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Drive Master Data Contratos <span class="icon">📁</span>
+                    </a>
+                    <a href="https://docs.google.com/document/d/1YPjoPevBB0HTc0hrpNKQ7WsDd3dJJ_K2/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Formato Renuncia <span class="icon">📄</span>
+                    </a>
+                    <a href="https://docs.google.com/document/d/1h5YVMxTyAAbSvY5ymeNhF0-5Wh7H7Vj-/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Constancia Laboral <span class="icon">📄</span>
+                    </a>
+                    <a href="http://34.51.95.211/Inicio" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Sparta Ledger <span class="icon">🌐</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1JG0dilxKlseQkgHBb29mIhYYLkZSQKXd6pjOmMp29JU/edit?gid=1801488679#gid=1801488679" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Campañas MKT - RRHH <span class="icon">📊</span>
+                    </a>
+                    <a href="https://docs.google.com/forms/d/1Q2BJtKRIy71yNM0t7zn24bkdAYvzSZUII82FSIf3xKs/edit" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Formulario Vacantes Corporativo <span class="icon">📝</span>
+                    </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1IoD-CWt6O-zAgAFpIb9hMwtiaMXN-Y_D6Ec9MtlepQI/edit?resourcekey&usp=forms_web_b&urp=linked#gid=645515667" target="_blank" rel="noopener noreferrer" class="sheet-link-btn">
+                        Control Vacantes Maxicorpo <span class="icon">📊</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const projectsGrid = document.getElementById('projectsGrid');
-        const viewerContainer = document.getElementById('viewerContainer');
-        const linksContainer = document.getElementById('linksContainer');
-        const welcomeBanner = document.getElementById('welcomeBanner');
+        const iframeFullscreen = document.getElementById('iframeFullscreen');
+        const miscelaneosFullscreen = document.getElementById('miscelaneosFullscreen');
         const projectIframe = document.getElementById('projectIframe');
-        const viewerTitle = document.getElementById('viewerTitle');
-        const homeBtn = document.getElementById('homeBtn');
+        const fullscreenIframeTitle = document.getElementById('fullscreenIframeTitle');
 
-        // Función para abrir proyectos en la misma página
-        function openProject(fileUrl, title) {
-            linksContainer.style.display = 'none';
-            welcomeBanner.style.display = 'none';
-            projectIframe.src = fileUrl;
-            viewerTitle.textContent = title;
-            projectsGrid.style.display = 'none';
-            viewerContainer.style.display = 'flex';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function openFullscreen(url, title) {
+            projectIframe.src = url;
+            fullscreenIframeTitle.textContent = title;
+            miscelaneosFullscreen.style.display = 'none';
+            iframeFullscreen.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
-        // Función para abrir el panel de Misceláneos
-        function openLinksPanel() {
+        function openMiscelaneosFullscreen() {
             projectIframe.src = '';
-            welcomeBanner.style.display = 'none';
-            viewerContainer.style.display = 'none';
-            projectsGrid.style.display = 'none';
-            linksContainer.style.display = 'flex';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            iframeFullscreen.style.display = 'none';
+            miscelaneosFullscreen.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
-        // Función para regresar al menú principal
         function showHome() {
             projectIframe.src = '';
-            viewerContainer.style.display = 'none';
-            linksContainer.style.display = 'none';
-            welcomeBanner.style.display = 'block';
-            projectsGrid.style.display = 'grid';
+            iframeFullscreen.style.display = 'none';
+            miscelaneosFullscreen.style.display = 'none';
+            document.body.style.overflow = 'auto';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        homeBtn.addEventListener('click', showHome);
-
-        /* --- SCRIPT DE PARTICULAS (AZUL Y VERDE CORPORATIVO) --- */
+        /* --- SCRIPT DE PARTICULAS --- */
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
+        const headerBanner = document.querySelector('.welcome-header-banner');
 
         function resizeCanvas() {
-            canvas.width = welcomeBanner.offsetWidth;
-            canvas.height = welcomeBanner.offsetHeight;
+            canvas.width = headerBanner.offsetWidth;
+            canvas.height = headerBanner.offsetHeight;
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
         const particles = [];
-        const particleCount = 45;
-        // Colores corporativos: Azules, Verdes y toque de Amarillo
-        const colors = ['#2ecc71', '#004ac1', '#3498db', '#d8e522', '#1abc9c'];
+        const particleCount = 55;
+        const colors = ['#2ecc71', '#3498db', '#d8e522', '#1abc9c', '#ffffff'];
 
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3 + 1;
-                this.speedX = (Math.random() - 0.5) * 1.2;
-                this.speedY = (Math.random() - 0.5) * 1.2;
+                this.size = Math.random() * 2.5 + 1;
+                this.speedX = (Math.random() - 0.5) * 1.0;
+                this.speedY = (Math.random() - 0.5) * 1.0;
                 this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.alpha = Math.random() * 0.6 + 0.3;
+                this.alpha = Math.random() * 0.7 + 0.3;
             }
 
             update() {
@@ -709,7 +702,7 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = 6;
                 ctx.shadowColor = this.color;
                 ctx.fill();
                 ctx.restore();
@@ -727,11 +720,11 @@
                     let dy = particles[a].y - particles[b].y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (distance < 90) {
+                    if (distance < 110) {
                         ctx.save();
-                        ctx.globalAlpha = (1 - distance / 90) * 0.25;
+                        ctx.globalAlpha = (1 - distance / 110) * 0.22;
                         ctx.strokeStyle = '#2ecc71';
-                        ctx.lineWidth = 0.8;
+                        ctx.lineWidth = 0.7;
                         ctx.beginPath();
                         ctx.moveTo(particles[a].x, particles[a].y);
                         ctx.lineTo(particles[b].x, particles[b].y);
