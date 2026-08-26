@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proceso de Solicitud de Vacaciones - Maxikash</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-primary: #0056B3;
+    --blue-dark: #002244;
+    --green-accent: #C4D600;
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --card-border: rgba(255, 255, 255, 0.2);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    /* Fondo azul marino degradado */
+    background: linear-gradient(135deg, #0b2545 0%, #134074 50%, #00121e 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Partículas de Fondo */
+  #canvas-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 540px;
+    background: rgba(15, 37, 73, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 30px 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 86, 179, 0.3);
+    z-index: 2;
+    position: relative;
+  }
+
+  /* Encabezado para el logotipo */
+  .logo-header {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo-img {
+    max-width: 240px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+  }
+
+  .title-banner {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .title-banner h1 {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, #ffffff, #a5c7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .title-banner span {
+    color: var(--green-accent);
+    -webkit-text-fill-color: var(--green-accent);
+  }
+
+  /* Aviso obligatorio */
+  .alert-card {
+    background: linear-gradient(135deg, rgba(196, 214, 0, 0.15) 0%, rgba(0, 86, 179, 0.25) 100%);
+    border: 1px solid var(--green-accent);
+    border-left: 6px solid var(--green-accent);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(196, 214, 0, 0.1);
+  }
+
+  .alert-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green-accent);
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .alert-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e0e6ed;
+  }
+
+  .alert-text strong {
+    color: #ffffff;
+    text-decoration: underline var(--green-accent);
+  }
+
+  /* Opciones / Pasos */
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #b0c4de;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .option-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--green-accent);
+    box-shadow: 0 10px 25px rgba(0, 86, 179, 0.4);
+  }
+
+  .option-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .badge-num {
+    width: 30px;
+    height: 30px;
+    background: var(--green-accent);
+    color: var(--blue-dark);
+    font-weight: 800;
+    font-size: 15px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 10px var(--green-accent);
+  }
+
+  .option-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  /* Botones de acción */
+  .btn-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(90deg, #0056B3, #007bff);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 86, 179, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .btn-link:hover {
+    background: linear-gradient(90deg, #0066d6, #1a8cff);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+    transform: scale(1.02);
+  }
+
+  /* Formato correo */
+  .email-box {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #d0e1f9;
+  }
+
+  .email-box ul {
+    list-style: none;
+    margin-top: 6px;
+  }
+
+  .email-box li {
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .email-box li::before {
+    content: "▹";
+    color: var(--green-accent);
+    font-weight: bold;
+  }
+
+  .footer-tag {
+    text-align: center;
+    font-size: 11px;
+    color: #8da9c4;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas-particles"></canvas>
+
+<div class="container">
+
+  <div class="logo-header">
+    <img src="logo.png" alt="Logotipo Maxikash" class="logo-img">
+  </div>
+
+  <div class="title-banner">
+    <h1>Proceso de Solicitud de <span>Vacaciones</span></h1>
+  </div>
+
+  <div class="alert-card">
+    <div class="alert-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Requisito Obligatorio
+    </div>
+    <div class="alert-text">
+      Cualquiera de las opciones debe ser notificada a tu <strong>jefe inmediato con un mínimo de 15 días de anticipación</strong> para la reprogramación de actividades y cobertura de tu ausencia.
+    </div>
+  </div>
+
+  <div class="section-label">Elige una de las 3 opciones</div>
+
+  <div class="option-card">
+    <div class="option-header">
+      <div class="badge-num">1</div>
+      <div class="option-title">Formulario Digital</div>
+    </div>
+    <p style="font-size: 13px; color: #d0e1f9; margin-bottom: 8px;">Accede al formulario oficial en línea para solicitar tu periodo:</p>
+    <a href="https://forms.gle/TD6d1sn9sNqPdzq37" target="_blank" class="btn-link">
+      ⚡ Abrir Formulario de Vacaciones
+    </a>
+  </div>
+
+  <div class="option-card">
+    <div class="option-header">
+      <div class="badge-num">2</div>
+      <div class="option-title">Plataforma Sparta</div>
+    </div>
+    <p style="font-size: 13px; color: #d0e1f9; margin-bottom: 8px;">Ingresa a la plataforma institucional Sparta con tu cuenta de usuario:</p>
+    <a href="https://esparta.mx/" target="_blank" class="btn-link">
+      🏛️ Ir a Plataforma Sparta
+    </a>
+  </div>
+
+  <div class="option-card">
+    <div class="option-header">
+      <div class="badge-num">3</div>
+      <div class="option-title">Correo Electrónico</div>
+    </div>
+    <p style="font-size: 13px; color: #d0e1f9;">Envía un correo a <strong style="color:#ffffff;">capital.humano@maxikash.mx</strong> con los siguientes datos:</p>
+    
+    <div class="email-box">
+      <ul>
+        <li>Nombre completo</li>
+        <li>Día en que inicia su descanso</li>
+        <li>Periodo que toma</li>
+        <li>Días de vacaciones a disfrutar</li>
+        <li>Jefe directo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-tag">
+    © Maxikash Capital Humano • Guía Visual Interactiva
+  </div>
+
+</div>
+
+<script>
+  const canvas = document.getElementById('canvas-particles');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const particles = [];
+  const colors = ['#0056B3', '#C4D600', '#00d2ff', '#ffffff'];
+
+  for (let i = 0; i < 50; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 2.5 + 1,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      alpha: Math.random() * 0.7 + 0.3
+    });
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = p.color;
+      ctx.fill();
+      ctx.restore();
+    });
+
+    requestAnimationFrame(animateParticles);
+  }
+
+  animateParticles();
+</script>
+
+</body>
+</html>
