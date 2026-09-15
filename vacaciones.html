@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Vacaciones 2026 — MaxiKash México</title>
   
-  <!-- Tailwind CSS para diseño fluido y corporativo -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Google Fonts de alto impacto visual corporativo -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Iconos de Font Awesome -->
+  <!-- Iconos Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- SheetJS para lectura local y procesamiento de archivos Excel (.xlsx, .xls) -->
+  <!-- SheetJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
@@ -42,7 +42,6 @@
       min-height: 100vh;
     }
     
-    /* ANIMACIÓN ROTACIONAL MOEBIUS */
     @keyframes logo-spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -51,7 +50,6 @@
       animation: logo-spin 12s linear infinite;
     }
 
-    /* CUSTOM TOAST NOTIFICATION SYSTEM */
     #toast {
       position: fixed;
       top: 24px;
@@ -62,7 +60,6 @@
       transition: all 0.3s ease;
     }
 
-    /* CUSTOM SCROLLBAR */
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -75,7 +72,6 @@
       border-radius: 99px;
     }
 
-    /* CONFIGURACIÓN NATIVA PARA LA IMPRESIÓN DEL EXPEDIENTE DE SALDO */
     @media print {
       body * {
         visibility: hidden !important;
@@ -113,7 +109,7 @@
     <p class="text-xs font-bold text-[#132b80] mt-3">Procesando información...</p>
   </div>
 
-  <!-- CUSTOM CONFIRMATION MODAL -->
+  <!-- CONFIRMATION MODAL -->
   <div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center space-y-4 transform transition-all scale-95 duration-200">
       <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
@@ -134,12 +130,10 @@
     </div>
   </div>
 
-  <!-- MODAL DE IMPRESIÓN DE CONSTANCIA DE SALDO Y HISTÓRICO -->
+  <!-- MODAL IMPRESIÓN -->
   <div id="printModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl max-w-2xl w-full p-8 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <!-- Printable Area -->
       <div id="printableStatementArea" class="space-y-6 text-slate-800 p-2">
-        <!-- Header -->
         <div class="flex justify-between items-center border-b pb-4">
           <div>
             <h2 class="text-lg font-bold text-[#132b80] font-['Syne']">AMIGO EFECTIVO SAPI DE C.V. MAXIKASH MÉXICO </h2>
@@ -150,7 +144,6 @@
             <p>ID Espacio: <span id="printStatementSession">--</span></p>
           </div>
         </div>
-        <!-- Employee Details -->
         <div class="grid grid-cols-2 gap-4 text-xs border-b pb-4">
           <div>
             <p class="text-slate-400 font-bold uppercase text-[9px]">Colaborador</p>
@@ -173,7 +166,6 @@
             <p id="printEmpStatutory" class="font-bold text-slate-700">--</p>
           </div>
         </div>
-        <!-- Summary Balances -->
         <div class="grid grid-cols-3 gap-2 text-center">
           <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
             <span class="block text-[8px] font-bold text-slate-400 uppercase">Días ya Gozados</span>
@@ -188,7 +180,6 @@
             <span id="printEmpRemaining" class="text-base font-extrabold text-emerald-600">--</span>
           </div>
         </div>
-        <!-- Table of Dates -->
         <div class="space-y-2">
           <h4 class="text-xs font-bold text-[#132b80] uppercase tracking-wider">Historial de Fechas Solicitadas</h4>
           <table class="w-full text-left text-[10px] border-collapse">
@@ -201,11 +192,9 @@
               </tr>
             </thead>
             <tbody id="printHistoryTableBody">
-              <!-- Dynamically populated -->
             </tbody>
           </table>
         </div>
-        <!-- Disclaimer and Signatures -->
         <div class="pt-8 text-[9px] text-slate-400 leading-relaxed text-center">
           <p>Esta constancia avala los registros almacenados en el sistema MaxiKash de Recursos Humanos para el año fiscal 2026.</p>
           <div class="grid grid-cols-2 gap-12 pt-12">
@@ -220,7 +209,6 @@
           </div>
         </div>
       </div>
-      <!-- Actions -->
       <div class="flex gap-3 mt-6 justify-end border-t pt-4">
         <button onclick="closePrintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-4 rounded-xl transition-all">
           Cerrar
@@ -236,7 +224,6 @@
   <nav class="sticky top-0 z-40 bg-gradient-to-r from-[#132b80] to-[#183b9c] px-6 py-4 shadow-lg flex items-center justify-between flex-wrap gap-4">
     <div class="flex items-center gap-3">
       <div class="bg-white/10 p-2 rounded-xl flex items-center justify-center shadow-inner">
-        <!-- Isotipo Moebius Giratorio Corporativo -->
         <svg class="w-8 h-8 animate-logo-spin" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <polygon points="10,50 50,10 50,24 24,50" fill="#214bd6" />
           <polygon points="24,50 50,24 50,38 38,50" fill="#d9ea1c" />
@@ -257,7 +244,6 @@
       </div>
     </div>
 
-    <!-- Indicador de conexión -->
     <div class="flex items-center gap-3">
       <button onclick="forceSyncData()" class="flex items-center gap-2 bg-[#d9ea1c] hover:bg-yellow-400 border border-[#d9ea1c] px-4 py-2 rounded-xl text-xs font-extrabold text-[#132b80] transition-all shadow-md active:scale-95">
         <i id="sync-icon" class="fa-solid fa-rotate"></i>
@@ -273,7 +259,6 @@
   <!-- MAIN WRAPPER -->
   <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
     
-    <!-- BANNER DE INTEGRACIÓN DE BASE DE DATOS ACTIVA (DRAG & DROP) -->
     <section class="bg-gradient-to-r from-[#eff6ff] to-[#e0eafc] border border-[#cbd7ea] rounded-2xl p-6 shadow-sm">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         <div class="lg:col-span-6 space-y-2">
@@ -284,7 +269,7 @@
             <h2 class="font-extrabold text-sm sm:text-base text-[#132b80] font-['Syne']">Cargar Base de Colaboradores Activos</h2>
           </div>
           <p class="text-xs text-[#627194] leading-relaxed">
-            Arrastra tu plantilla de personal aquí (Excel o CSV). El sistema extraerá de forma automática las fechas de ingreso para validar strictly la fecha de aniversario y habilitar los días de ley correspondientes.
+            Arrastra tu plantilla de personal aquí (Excel o CSV). El sistema extraerá de forma automática las fechas de ingreso para validar estrictamente la fecha de aniversario y habilitar los días de ley correspondientes.
           </p>
           <div class="flex flex-wrap gap-2 pt-1">
             <span class="bg-[#214bd6]/10 text-[#214bd6] border border-[#214bd6]/20 text-[10px] px-2.5 py-1 rounded-md font-bold">Validación de Aniversario LFT</span>
@@ -292,7 +277,6 @@
           </div>
         </div>
         
-        <!-- DRAG AND DROP ZONE -->
         <div class="lg:col-span-6">
           <div id="drop-zone" class="border-2 border-dashed border-[#214bd6]/40 hover:border-[#214bd6] bg-white/70 hover:bg-white rounded-2xl p-6 text-center transition-all cursor-pointer relative group">
             <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
@@ -304,10 +288,9 @@
       </div>
     </section>
 
-    <!-- MAIN GRID CONTAINER -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- COLUMNA IZQUIERDA: FORMULARIO DE CAPTURA (5 COLS) -->
+      <!-- COLUMNA IZQUIERDA -->
       <section class="lg:col-span-5 space-y-6">
         
         <div class="bg-white border border-[#cbd7ea] rounded-2xl p-6 shadow-md relative overflow-hidden">
@@ -320,7 +303,6 @@
             </div>
           </div>
 
-          <!-- FORM -->
           <form id="vacationForm" onsubmit="submitVacationRequest(event)" class="space-y-4">
             
             <div class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl p-3 mb-2">
@@ -523,7 +505,7 @@
                     class="bg-transparent text-lg font-extrabold text-[#214bd6] w-20 focus:outline-none transition-all font-sans">
                   <span class="text-[9px] text-[#627194] font-bold uppercase">hábiles</span>
                 </div>
-                <span class="text-[9px] text-slate-400 font-medium leading-none block mt-0.5" id="restDaysSummaryLabel">Excluye: Sábado, Domingo</span>
+                <span class="text-[9px] text-slate-400 font-medium leading-none block mt-0.5" id="restDaysSummaryLabel">Excluye: SÁBADO, DOMINGO</span>
               </div>
               <div>
                 <span class="block text-[9px] font-extrabold text-[#627194] uppercase tracking-wider mb-1">Días Restantes:</span>
@@ -569,7 +551,7 @@
 
       </section>
 
-      <!-- COLUMNA DERECHA: MONITOREO Y ACCIONES (7 COLS) -->
+      <!-- COLUMNA DERECHA -->
       <section class="lg:col-span-7 space-y-6">
         
         <div class="grid grid-cols-3 gap-4">
@@ -764,7 +746,49 @@
       }
     };
 
-    // ENVÍO DE DATOS A GOOGLE SHEETS / DRIVE
+    // ==========================================
+    // SELECCIÓN INTERACTIVA DE DÍAS DE DESCANSO
+    // ==========================================
+    function setupRestDaysButtons() {
+      const buttons = document.querySelectorAll('.rest-day-btn');
+      const hiddenInput = document.getElementById('selectedRestDays');
+      const summaryLabel = document.getElementById('restDaysSummaryLabel');
+
+      const dayNames = {
+        0: "DOMINGO", 1: "LUNES", 2: "MARTES", 3: "MIÉRCOLES",
+        4: "JUEVES", 5: "VIERNES", 6: "SÁBADO"
+      };
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dayNum = parseInt(btn.getAttribute('data-day'));
+          let currentDays = hiddenInput.value ? hiddenInput.value.split(',').map(Number) : [];
+
+          if (currentDays.includes(dayNum)) {
+            currentDays = currentDays.filter(d => d !== dayNum);
+            btn.className = "rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+          } else {
+            currentDays.push(dayNum);
+            btn.className = "rest-day-btn px-3 py-1.5 text-[10px] font-bold rounded-lg border transition-all bg-[#214bd6] text-white border-[#214bd6] shadow-sm";
+          }
+
+          currentDays.sort((a, b) => a - b);
+          hiddenInput.value = currentDays.join(',');
+
+          if (summaryLabel) {
+            if (currentDays.length === 0) {
+              summaryLabel.textContent = "Excluye: Ninguno";
+            } else {
+              const names = currentDays.map(d => dayNames[d]).join(', ');
+              summaryLabel.textContent = `Excluye: ${names}`;
+            }
+          }
+
+          calculateRequestedPeriod();
+        });
+      });
+    }
+
     async function sendToGoogleScript(data) {
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
@@ -819,7 +843,6 @@
         formattedCreatedAt: formattedDate
       };
 
-      // Intentar sincronización directa a Google App Script
       const isSynced = await sendToGoogleScript(newRecord);
       if (isSynced) {
         newRecord.synced = true;
@@ -832,7 +855,6 @@
       window.saveToLocalStorage();
       filterRequests();
 
-      // Resetear Formulario
       document.getElementById('vacationForm').reset();
       document.getElementById('manualTakenDays').value = "0";
       document.getElementById('daysAccruedCard').classList.add('hidden');
@@ -1247,6 +1269,7 @@
         endDate,
         daysToTake,
         daysRemaining,
+        restDaysText: document.getElementById('restDaysSummaryLabel').textContent.replace('Excluye: ', ''),
         comments,
         approverManager,
         hrRepresentative,
@@ -1382,7 +1405,6 @@
       showToast("Bitácora limpiada.");
     };
 
-    // CONSULTAS IA CON GROQ
     window.saveGroqApiKey = function() {
       const key = document.getElementById('groqApiKey').value.trim();
       localStorage.setItem('maxikash_groq_key', key);
@@ -1434,7 +1456,6 @@
       }
     };
 
-    // IMPRESIÓN DE CONSTANCIA
     window.printEmployeeStatement = function() {
       const name = document.getElementById('empName').value.trim();
       if (!name) return showToast("Selecciona o escribe un nombre de colaborador.", "warning");
@@ -1477,9 +1498,10 @@
       window.print();
     };
 
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN COMPLETA
     document.addEventListener('DOMContentLoaded', () => {
       loadLocalStorageData();
+      setupRestDaysButtons(); // Inicializa los clics en los días de descanso
       const storedKey = localStorage.getItem('maxikash_groq_key');
       if (storedKey) document.getElementById('groqApiKey').value = storedKey;
       filterRequests();
