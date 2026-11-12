@@ -143,6 +143,20 @@
             background: rgba(0, 71, 186, 0.08);
         }
 
+        .multi-query-panel { background: rgba(0,71,186,.04); border:1px solid var(--border-color); border-radius:10px; padding:14px 16px; margin-bottom:15px; }
+        .multi-query-title { font-size:13px; font-weight:700; margin-bottom:4px; }
+        .multi-query-help { color:var(--text-muted); font-size:11px; margin-bottom:10px; }
+        .multi-query-entry { display:flex; gap:8px; }
+        .multi-query-entry input { flex:1; min-width:0; padding:8px 10px; border:1px solid var(--border-color); border-radius:6px; font:inherit; }
+        .query-chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+        .query-chip { display:inline-flex; align-items:center; gap:8px; padding:5px 9px; background:#e8eefb; color:var(--dark-blue); border-radius:15px; font-size:11px; }
+        .query-chip button { border:0; background:none; color:#a32626; cursor:pointer; font-size:14px; line-height:1; }
+        .saved-status { color:#287a44; font-size:11px; margin-top:7px; }
+        .column-picker { display:flex; flex-wrap:wrap; gap:7px 13px; align-items:center; background:rgba(0,71,186,.04); border:1px solid var(--border-color); border-radius:9px; padding:10px 12px; margin-bottom:12px; }
+        .column-picker strong { font-size:11px; color:var(--text-main); margin-right:3px; }
+        .column-picker label { display:inline-flex; align-items:center; gap:5px; font-size:11px; cursor:pointer; color:var(--text-main); }
+        .column-picker input { accent-color:var(--primary-blue); cursor:pointer; }
+
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -351,6 +365,17 @@
             </div>
         </div>
 
+        <div class="multi-query-panel">
+            <div class="multi-query-title"><i class="fa-solid fa-magnifying-glass"></i> Consultar varios nombres</div>
+            <div class="multi-query-help">Escribe un nombre y selecciona Agregar para incluir otro. La tabla mostrará coincidencias de cualquiera de los nombres.</div>
+            <div class="multi-query-entry">
+                <input type="text" id="name-query-input" placeholder="Nombre completo (ej. María López)" autocomplete="off">
+                <button class="btn btn-accent" type="button" id="add-name-query"><i class="fa-solid fa-plus"></i> Agregar</button>
+            </div>
+            <div class="query-chips" id="name-query-list"></div>
+            <div class="saved-status" id="saved-db-status" aria-live="polite"></div>
+        </div>
+
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-icon"><i class="fa-solid fa-user-minus"></i></div>
@@ -405,20 +430,21 @@
             </div>
 
             <div class="table-container">
+                <div class="column-picker" id="column-picker" aria-label="Elegir columnas visibles"><strong>Información visible:</strong></div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Origen</th>
-                            <th>Empresa</th>
-                            <th>Cód / Empleado</th>
-                            <th>Nombre Completo</th>
-                            <th>RFC</th>
-                            <th>CURP</th>
-                            <th>NSS</th>
-                            <th>Fecha Ingreso</th>
-                            <th>Fecha Baja</th>
-                            <th>Puesto</th>
-                            <th>Motivo Baja</th>
+                            <th data-col="origen">Origen</th>
+                            <th data-col="empresa">Empresa</th>
+                            <th data-col="codigo">Cód / Empleado</th>
+                            <th data-col="nombre">Nombre Completo</th>
+                            <th data-col="ingreso">Fecha Ingreso</th>
+                            <th data-col="baja">Fecha Baja</th>
+                            <th data-col="puesto">Puesto</th>
+                            <th data-col="motivo">Motivo Baja</th>
+                            <th data-col="rfc">RFC</th>
+                            <th data-col="curp">CURP</th>
+                            <th data-col="nss">NSS</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
@@ -477,8 +503,43 @@
 
         // --- 2. GLOBAL DATA ---
         let allData = [];
+        let nameQueries = [];
+        let processedSheetCount = 0;
+        const BAJAS_STORAGE_KEY = 'maxikash_bajas_database_v1';
+        const COLUMN_PREF_KEY = 'maxikash_bajas_visible_columns_v1';
+        const TABLE_COLUMNS = [
+            ['origen', 'Origen'], ['empresa', 'Empresa'], ['codigo', 'Cód / Empleado'],
+            ['nombre', 'Nombre Completo'], ['ingreso', 'Fecha Ingreso'], ['baja', 'Fecha Baja'],
+            ['puesto', 'Puesto'], ['motivo', 'Motivo Baja'], ['rfc', 'RFC'], ['curp', 'CURP'], ['nss', 'NSS']
+        ];
+        let visibleColumns = new Set(TABLE_COLUMNS.map(([key]) => key));
 
-        // --- 3. FORMATEADOR ESTRICTO DE FECHAS (Solo AAAA-MM-DD) ---
+        function setupColumnPicker() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(COLUMN_PREF_KEY) || 'null');
+                if (Array.isArray(saved)) visibleColumns = new Set(saved.filter(key => TABLE_COLUMNS.some(([id]) => id === key)));
+            } catch (error) { visibleColumns = new Set(TABLE_COLUMNS.map(([key]) => key)); }
+            const picker = document.getElementById('column-picker');
+            TABLE_COLUMNS.forEach(([key, label]) => {
+                const wrap = document.createElement('label');
+                const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = visibleColumns.has(key); checkbox.dataset.column = key;
+                checkbox.addEventListener('change', () => {
+                    if (checkbox.checked) visibleColumns.add(key); else visibleColumns.delete(key);
+                    try { localStorage.setItem(COLUMN_PREF_KEY, JSON.stringify([...visibleColumns])); } catch (error) {}
+                    updateColumnVisibility();
+                });
+                wrap.append(checkbox, document.createTextNode(label)); picker.appendChild(wrap);
+            });
+            updateColumnVisibility();
+        }
+
+        function updateColumnVisibility() {
+            document.querySelectorAll('[data-col]').forEach(cell => { cell.hidden = !visibleColumns.has(cell.dataset.col); });
+            const emptyCell = document.querySelector('#table-body td[colspan]');
+            if (emptyCell) emptyCell.colSpan = Math.max(1, visibleColumns.size);
+        }
+
+        // --- 3. FORMATEADOR DE FECHAS CORTAS EN ESPAÑOL (DD/MM/AAAA) ---
         function parseExcelDate(val) {
             if (val === null || val === undefined || val === '') return '-';
 
@@ -497,30 +558,68 @@
             else if (val instanceof Date && !isNaN(val)) {
                 dateObj = val;
             } 
-            // Caso 3: String (ej: "Fri Dec 06 2024...", "2024-12-06T00:00:00.000Z", "06/12/2024")
+            // Caso 3: texto de fecha. Se reconocen explícitamente los nombres de meses ingleses.
             else {
                 let str = String(val).trim();
                 if (!str || str === '-') return '-';
-
-                const parsedTimestamp = Date.parse(str);
-                if (!isNaN(parsedTimestamp)) {
-                    dateObj = new Date(parsedTimestamp);
+                const iso = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+                const local = str.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+                const english = str.match(/(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/i);
+                if (iso) dateObj = new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+                else if (local) dateObj = new Date(Number(local[3]), Number(local[2]) - 1, Number(local[1]));
+                else if (english) {
+                    const months = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+                    const month = months[english[1].slice(0,3).toLowerCase()];
+                    if (month !== undefined) dateObj = new Date(Number(english[3]), month, Number(english[2]));
+                } else {
+                    const parsedTimestamp = Date.parse(str);
+                    if (!isNaN(parsedTimestamp)) dateObj = new Date(parsedTimestamp);
                 }
             }
 
-            // Si se logró obtener una fecha válida, la formateamos estrictamente como YYYY-MM-DD
+            // Formato corto español: día/mes/año.
             if (dateObj && !isNaN(dateObj.getTime())) {
                 const year = dateObj.getFullYear();
                 const month = String(dateObj.getMonth() + 1).padStart(2, '0');
                 const day = String(dateObj.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
+                return `${day}/${month}/${year}`;
             }
 
-            // Si vino como texto formateado tipo "2024-12-06", extraerlo por Regex
-            let match = String(val).match(/\d{4}-\d{2}-\d{2}/);
-            if (match) return match[0];
-
             return String(val).trim();
+        }
+
+        function dateForCompare(displayDate) {
+            const m = String(displayDate || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+        }
+
+        function saveBajasDatabase() {
+            try {
+                localStorage.setItem(BAJAS_STORAGE_KEY, JSON.stringify({ data: allData, sheets: processedSheetCount }));
+                document.getElementById('saved-db-status').textContent = `Base guardada en este navegador (${allData.length.toLocaleString('es-MX')} registros).`;
+            } catch (error) {
+                document.getElementById('saved-db-status').textContent = 'No se pudo guardar la base; el almacenamiento del navegador está lleno.';
+            }
+        }
+
+        function renderNameQueries() {
+            const list = document.getElementById('name-query-list');
+            list.innerHTML = '';
+            nameQueries.forEach((name, index) => {
+                const chip = document.createElement('span'); chip.className = 'query-chip';
+                const label = document.createElement('span'); label.textContent = name;
+                const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = '×'; remove.title = `Quitar ${name}`;
+                remove.onclick = () => { nameQueries.splice(index, 1); renderNameQueries(); applyFilters(); };
+                chip.append(label, remove); list.appendChild(chip);
+            });
+        }
+
+        function addNameQuery() {
+            const input = document.getElementById('name-query-input');
+            const name = input.value.trim();
+            if (!name) { input.focus(); return; }
+            if (!nameQueries.some(item => item.toLocaleLowerCase('es') === name.toLocaleLowerCase('es'))) nameQueries.push(name);
+            input.value = ''; renderNameQueries(); applyFilters(); input.focus();
         }
 
         // --- 4. BÚSQUEDA DE COLUMNA POR VARIOS ALIAS ---
@@ -610,6 +709,8 @@
 
                     if (extracted.length > 0) {
                         allData = extracted;
+                        processedSheetCount = pestanasContadas;
+                        saveBajasDatabase();
                         document.getElementById('total-pestanas').innerText = pestanasContadas;
                         applyFilters();
                         alert(`¡Proceso completado! Se cargaron ${extracted.length} registros con formato de fecha limpio.`);
@@ -637,22 +738,28 @@
             dataToRender.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="badge badge-pestaña">${row.sheetName}</span></td>
-                    <td><span class="badge badge-empresa">${row.empresa}</span></td>
-                    <td><span class="code-tag">${row.codigo}</span></td>
-                    <td><b>${row.nombre}</b></td>
-                    <td><span class="code-tag">${row.rfc}</span></td>
-                    <td><span class="code-tag">${row.curp}</span></td>
-                    <td><span class="code-tag">${row.nss}</span></td>
-                    <td>${row.fechaIngreso}</td>
-                    <td><span class="badge badge-fecha">${row.fechaSalida}</span></td>
-                    <td>${row.puesto}</td>
-                    <td>${row.motivo}</td>
+                    <td data-col="origen"><span class="badge badge-pestaña">${escapeHtml(row.sheetName)}</span></td>
+                    <td data-col="empresa"><span class="badge badge-empresa">${escapeHtml(row.empresa)}</span></td>
+                    <td data-col="codigo"><span class="code-tag">${escapeHtml(row.codigo)}</span></td>
+                    <td data-col="nombre"><b>${escapeHtml(row.nombre)}</b></td>
+                    <td data-col="ingreso">${escapeHtml(row.fechaIngreso)}</td>
+                    <td data-col="baja"><span class="badge badge-fecha">${escapeHtml(row.fechaSalida)}</span></td>
+                    <td data-col="puesto">${escapeHtml(row.puesto)}</td>
+                    <td data-col="motivo">${escapeHtml(row.motivo)}</td>
+                    <td data-col="rfc"><span class="code-tag">${escapeHtml(row.rfc)}</span></td>
+                    <td data-col="curp"><span class="code-tag">${escapeHtml(row.curp)}</span></td>
+                    <td data-col="nss"><span class="code-tag">${escapeHtml(row.nss)}</span></td>
                 `;
                 tbody.appendChild(tr);
             });
 
+            updateColumnVisibility();
+
             document.getElementById('total-bajas').innerText = dataToRender.length;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '-').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
         }
 
         function applyFilters() {
@@ -674,10 +781,16 @@
                 }
 
                 if (startDate && row.fechaSalida !== '-') {
-                    if (row.fechaSalida < startDate) return false;
+                    if (dateForCompare(row.fechaSalida) < startDate) return false;
                 }
                 if (endDate && row.fechaSalida !== '-') {
-                    if (row.fechaSalida > endDate) return false;
+                    if (dateForCompare(row.fechaSalida) > endDate) return false;
+                }
+
+                if (nameQueries.length > 0) {
+                    const corpus = row.searchCorpus.toLocaleLowerCase('es');
+                    const matchesAny = nameQueries.some(name => corpus.includes(name.toLocaleLowerCase('es')));
+                    if (!matchesAny) return false;
                 }
 
                 return true;
@@ -692,6 +805,23 @@
             document.getElementById('filter-date-start').value = '';
             document.getElementById('filter-date-end').value = '';
             applyFilters();
+        }
+
+        document.getElementById('add-name-query').addEventListener('click', addNameQuery);
+        setupColumnPicker();
+        document.getElementById('name-query-input').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); addNameQuery(); } });
+
+        // Recupera la base de bajas almacenada en este navegador.
+        try {
+            const saved = JSON.parse(localStorage.getItem(BAJAS_STORAGE_KEY) || 'null');
+            if (saved && Array.isArray(saved.data)) {
+                allData = saved.data; processedSheetCount = Number(saved.sheets) || 0;
+                document.getElementById('total-pestanas').innerText = processedSheetCount;
+                document.getElementById('saved-db-status').textContent = `Base restaurada (${allData.length.toLocaleString('es-MX')} registros).`;
+                applyFilters();
+            }
+        } catch (error) {
+            localStorage.removeItem(BAJAS_STORAGE_KEY);
         }
     </script>
 </body>
